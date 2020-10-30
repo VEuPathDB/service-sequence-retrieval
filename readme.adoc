@@ -34,7 +34,7 @@ After the environment has been set up, the project can be built, tested, and
 packaged using `make jar`.
 
 Starting the server can be done by simply running
-`java -jar build/lib/service.jar`.
+`java -jar build/libs/service.jar`.
 
 === In Docker
 
@@ -219,7 +219,7 @@ Running your service locally can be done by following the same steps as defined
 above in the <<Running the Example>> section:
 
 . Run `make jar`
-. Run `java -jar build/lib/service.jar`
+. Run `java -jar build/libs/service.jar`
 
 Running in Docker can be done by:
 
