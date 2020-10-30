@@ -218,7 +218,7 @@ Once you have implemented the interfaces defined under
 Running your service locally can be done by following the same steps as defined
 above in the <<Running the Example>> section:
 
-. Run `make build-jar`
+. Run `make jar`
 . Run `java -jar build/lib/service.jar`
 
 Running in Docker can be done by:
