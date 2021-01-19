@@ -42,18 +42,27 @@ packaged using `make jar`.
 Starting the server can be done by simply running
 `java -jar build/libs/service.jar`.
 
+[NOTE]
+--
+All project specific dependencies must be installed locally for this to work.
+--
+
 === In Docker
 
 ==== Prerequisites
 
 * Docker
+* Docker Compose
 
 ==== Setup & Run
 
 The project container can be built using `make docker`.  The first build
 of the container will take several minutes.
 
-Running the built container can be done with `docker run --rm demo-service`.
+Running the built container can be done with:
+----
+$ docker-compose -f docker/docker-compose.dev.yml up
+----
 
 
 //------------------------------------------------------------------------------
@@ -334,6 +343,7 @@ of the make targets and is included as a local, runtime dependency.
 Due to this method of including FgpUtil, additional dependencies have been added
 to support it in addition to bridging compatibility issues.
 
+
 === The project root
 
 The root directory of this project contains multiple standard files used by
@@ -401,6 +411,10 @@ m| service.properties
 [cols=".^2,.^1,5", options="header]
 |===
 | Directory | For | Description
+
+m| docker/
+| Docker/Docker Compose
+| Contains docker-compose configuration files.
 
 m| gradle/
 | Gradle

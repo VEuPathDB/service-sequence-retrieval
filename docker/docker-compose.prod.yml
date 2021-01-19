@@ -45,20 +45,27 @@ services:
       # Account DB login password
       ACCT_DB_PASS:
 
-    # The ports section defines bindings from ports on your host machine to
-    # ports in the container.  The pattern for each entry is
-    # <host-port>:<container-port>.
-    ports:
-      # This binds the local port 8080 to the container port 80 so all traffic
-      # to your local machine's 8080 port will be forwarded to the dockerized
-      # service bound to this.
-      - 8080:80
+    # Configure this service to be accessible via the external traefik network.
+    # See "networks" below.
+    networks:
+      - traefik
 
-    # The network mode can be set to "host" to bind the service to your local
-    # machine's network.
+    # The labels section defines additional metadata used by ops tooling to
+    # assist in managing this service.
     #
-    # Setting this to "host" will cause the defined "ports" properties to be
-    # ignored, and the service(s) in the running container will attempt to bind
-    # to whatever ports they want; in this case the example service will attempt
-    # to bind to port 80 (see SERVER_PORT).
-    # network_mode: host
+    # In these entries "example" would be replaced with a short name or
+    # abbreviation identifying your service.  For example, the dataset accesss
+    # service is "das".
+    labels:
+      - "traefik.http.routers.${TRAEFIK_ROUTER:-example}.rule=Host(`${TRAEFIK_HOST:-example.local.apidb.org}`)"
+      - "traefik.http.routers.${TRAEFIK_ROUTER:-example}.tls=true"
+      - "traefik.http.routers.${TRAEFIK_ROUTER:-example}.entrypoints=local"
+      - "traefik.http.services.${TRAEFIK_ROUTER:-example}.loadbalancer.server.port=80"
+      - "com.centurylinklabs.watchtower.enable=${SERVICE_WATCHTOWER:-false}"
+
+
+# This defines the existence of the traefik network external to this
+# docker-compose stack.
+networks:
+  traefik:
+    external: true
