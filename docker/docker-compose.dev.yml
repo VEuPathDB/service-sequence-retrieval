@@ -1,0 +1,47 @@
+version: "3.5"
+services:
+  # Definition of a single container in this stack.
+  #
+  # The name "example" will be the address other containers in the stack use to
+  # connect to this service (http://example).
+  #
+  # Each new container in the Docker compose stack will need a service entry.
+  example:
+    # The "build" field tells docker compose how to build the Docker image that
+    # backs this individual service.
+    build:
+      # Context is the root for the docker image to be built, including the
+      # Dockerfile.
+      context: ..
+    # The "environment" field defines a map of environment variables that will
+    # be passed to the service container on startup.
+    #
+    # Fields here that do not have a value provided here will be required on
+    # docker-compose startup.
+    environment:
+      # The port this service will bind to in it's host environment.
+      SERVER_PORT: 8080
+
+      # A comma separated list of LDAP servers this service should hit to fetch
+      # connection details for the configured database(s).
+      #
+      # Each entry should include address and port (ldap.somehost.com:386).
+      LDAP_SERVER:
+
+      # Base context to use when attempting to resolve the given DB TNS.
+      #
+      # Example: ou=Something,dc=Domain,dc=Component
+      #
+      # The correct value for this can be found in the project wiki page titled
+      # LdapTnsNames.
+      ORACLE_BASE_DN:
+
+      # LDAP Net Service Name for the account database.
+      ACCT_DB_TNS_NAME:
+
+      # Account DB login username
+      ACCT_DB_USER:
+
+      # Account DB login password
+      ACCT_DB_PASS:
+
