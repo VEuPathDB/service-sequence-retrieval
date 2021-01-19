@@ -39,12 +39,20 @@ project.
 After the environment has been set up, the project can be built, tested, and
 packaged using `make jar`.
 
-Starting the server can be done by simply running
-`java -jar build/libs/service.jar`.
+Starting the server can be done by running `java -jar build/libs/service.jar`.
+
+[WARNING]
+--
+Most projects will require some CLI or environment arguments to run.  For a full
+listing of available options see the
+https://github.com/VEuPathDB/lib-jaxrs-container-core[core container library]
+documentation.
+--
 
 [NOTE]
 --
-All project specific dependencies must be installed locally for this to work.
+All project specific system level dependencies must be installed locally for
+this to work.
 --
 
 === In Docker
@@ -63,6 +71,16 @@ Running the built container can be done with:
 ----
 $ docker-compose -f docker/docker-compose.dev.yml up
 ----
+
+[WARNING]
+--
+Most projects will require some CLI or environment arguments to run.  For a full
+listing of available options see the
+https://github.com/VEuPathDB/lib-jaxrs-container-core[core container library]
+documentation.  When using docker-compose these options can be
+https://docs.docker.com/compose/environment-variables/[set automatically]
+through the use of a `.env` file.
+--
 
 
 //------------------------------------------------------------------------------
