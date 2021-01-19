@@ -361,6 +361,25 @@ of the make targets and is included as a local, runtime dependency.
 Due to this method of including FgpUtil, additional dependencies have been added
 to support it in addition to bridging compatibility issues.
 
+=== Tunnels and Proxies
+
+When developing or testing a service, you may need to provide that service
+access to resources that cannot be reached without a tunnel or proxy.  This is
+complicated by the fact that Docker containers, by default, will not see those
+resources.
+
+To allow Dockerized services access to these external resources, the running
+container(s) must be given access to the host machine's network.  This can be
+done via `docker run` using the
+https://docs.docker.com/engine/reference/run/#network-settings[network mode "host"]
+or via `docker-compose` by setting the
+https://docs.docker.com/compose/compose-file/compose-file-v3/#network_mode[`network_mode`]
+config option to "host".
+
+Binding the containers to your host machine's network will give the containers
+access to your running tunnels/proxies, but will also mean binding all exposed
+container ports to those ports on your host machine which may cause conflicts.
+
 
 === The project root
 
