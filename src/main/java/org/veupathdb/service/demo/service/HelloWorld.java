@@ -1,12 +1,11 @@
 package org.veupathdb.service.demo.service;
 
-import org.gusdb.fgputil.accountdb.UserProfile;
-
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Request;
 
 import java.util.Random;
 
+import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.service.demo.generated.model.HelloPostRequest;
@@ -42,8 +41,7 @@ public class HelloWorld implements Hello {
 
     var out = new HelloPostResponseImpl();
     out.setMessage(String.format("Hello %s!", UserProvider.lookupUser(req)
-      .map(UserProfile::getProperties)
-      .map(m -> m.get("firstName"))
+      .map(User::getFirstName)
       .orElse("you")));
 
     return PostHelloResponse.respond200WithApplicationJson(out);

@@ -15,8 +15,8 @@ buildProps.load(FileInputStream(File(rootDir, "service.properties")))
 val fullPack = "${buildProps["app.package.root"]}.${buildProps["app.package.service"]}"
 
 java {
-  targetCompatibility = JavaVersion.VERSION_14
-  sourceCompatibility = JavaVersion.VERSION_14
+  targetCompatibility = JavaVersion.VERSION_15
+  sourceCompatibility = JavaVersion.VERSION_15
 }
 
 // Project settings
@@ -24,7 +24,15 @@ group = buildProps["project.group"] ?: error("empty 1")
 version = buildProps["project.version"] ?: error("empty 2")
 
 repositories {
-  jcenter()
+  mavenCentral()
+  maven {
+    name = "GitHubPackages"
+    url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
+    credentials {
+      username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+      password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+    }
+  }
 }
 
 tasks.jar {
