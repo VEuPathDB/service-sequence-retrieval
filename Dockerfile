@@ -5,6 +5,9 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 FROM veupathdb/alpine-dev-base:latest AS prep
 
+ARG GITHUB_USERNAME
+ARG GITHUB_TOKEN
+
 LABEL service="demo-service"
 
 WORKDIR /workspace
