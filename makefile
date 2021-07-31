@@ -71,7 +71,7 @@ install-dev-env:
 		cd .tools && git pull && cd ..; \
 	fi
 	@$(BIN_DIR)/check-env.sh
-	@$(BIN_DIR)/install-fgputil.sh
+	@./gradlew fgputilInstall
 	@$(BIN_DIR)/install-oracle.sh
 	@$(BIN_DIR)/install-raml2jaxrs.sh
 	@$(BIN_DIR)/install-raml-merge.sh

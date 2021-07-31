@@ -5,7 +5,9 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
   java
+  id("org.veupathdb.lib.gradle.container.container-utils") version "1.0.0"
 }
+
 
 apply(from = "dependencies.gradle.kts")
 

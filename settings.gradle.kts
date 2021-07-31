@@ -12,3 +12,16 @@ if (core.exists()) {
   include(":core")
   project(":core").projectDir = core
 }
+
+pluginManagement {
+  repositories {
+    maven {
+      name = "GitHubPackages"
+      url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
+      credentials {
+        username = extra["gpr.user"] as String? ?: System.getenv("GITHUB_USERNAME")
+        password = extra["gpr.key"] as String? ?: System.getenv("GITHUB_TOKEN")
+      }
+    }
+  }
+}
