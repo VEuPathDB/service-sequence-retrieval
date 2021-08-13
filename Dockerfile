@@ -17,26 +17,11 @@ RUN jlink --compress=2 --module-path /opt/jdk/jmods \
     && apk add --no-cache git sed findutils coreutils make npm curl gawk \
     && git config --global advice.detachedHead false
 
-ENV DOCKER=build
-
-COPY ["gradlew", "makefile", "./"]
-COPY gradle/ gradle/
-RUN echo "Installing Gradle" \
-    && ./gradlew wrapper \
-    && make install-dev-env
-
-COPY [ \
-    "build.gradle.kts", \
-    "dependencies.gradle.kts", \
-    "settings.gradle.kts", \
-    "service.properties", \
-    "./"\
-]
-
-RUN ./gradlew dependencies --info --configuration runtimeClasspath
+ENV DOCKER=build \
+    JAVA_HOME=/opt/jdk
 
 COPY . .
-
+RUN make install-dev-env
 RUN mkdir -p vendor \
     && cp -n /jdbc/* vendor \
     && make jar
