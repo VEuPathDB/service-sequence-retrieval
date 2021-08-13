@@ -4,6 +4,7 @@
 /vendor/
 /.tools/
 /bin/
+/.bin/
 /tmp/
 /.settings/
 generated/

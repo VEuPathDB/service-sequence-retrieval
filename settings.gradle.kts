@@ -15,6 +15,8 @@ if (core.exists()) {
 
 pluginManagement {
   repositories {
+    mavenLocal()
+    mavenCentral()
     maven {
       name = "GitHubPackages"
       url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")

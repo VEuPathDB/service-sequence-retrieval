@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
   java
-  id("org.veupathdb.lib.gradle.container.container-utils") version "1.0.0"
+  id("org.veupathdb.lib.gradle.container.container-utils") version "1.3.0"
 }
 
 
@@ -19,6 +19,9 @@ val fullPack = "${buildProps["app.package.root"]}.${buildProps["app.package.serv
 java {
   targetCompatibility = JavaVersion.VERSION_16
   sourceCompatibility = JavaVersion.VERSION_16
+}
+
+containerBuild {
 }
 
 // Project settings

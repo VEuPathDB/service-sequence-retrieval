@@ -71,9 +71,9 @@ install-dev-env:
 		cd .tools && git pull && cd ..; \
 	fi
 	@$(BIN_DIR)/check-env.sh
-	@./gradlew fgputilInstall
+	@./gradlew fgputilInstall --stacktrace
 	@$(BIN_DIR)/install-oracle.sh
-	@$(BIN_DIR)/install-raml2jaxrs.sh
+	@./gradlew ramlGenInstall --stacktrace
 	@$(BIN_DIR)/install-raml-merge.sh
 	@$(BIN_DIR)/install-npm.sh
 
@@ -85,9 +85,8 @@ fix-path:
 	@$(BIN_DIR)/fix-path.sh $(EXAMPLE_TEST_DIR) $(TEST_DIR)
 
 gen-jaxrs: api.raml merge-raml
-	@$(BIN_DIR)/generate-jaxrs.sh $(APP_PACKAGE)
+	@./gradlew generate-jaxrs --stacktrace
 	@$(BIN_DIR)/generate-jaxrs-streams.sh $(APP_PACKAGE)
-	@$(BIN_DIR)/generate-jaxrs-postgen-mods.sh $(APP_PACKAGE)
 
 gen-docs: api.raml merge-raml
 	@$(BIN_DIR)/generate-docs.sh
