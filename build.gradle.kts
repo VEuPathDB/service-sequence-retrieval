@@ -5,9 +5,8 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
   java
-  id("org.veupathdb.lib.gradle.container.container-utils") version "1.3.0"
+  id("org.veupathdb.lib.gradle.container.container-utils") version "1.4.0"
 }
-
 
 apply(from = "dependencies.gradle.kts")
 
@@ -41,12 +40,15 @@ repositories {
 }
 
 tasks.jar {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
   manifest {
     attributes["Main-Class"] = "${fullPack}.${buildProps["app.main-class"]}"
     attributes["Implementation-Title"] = buildProps["project.name"]
     attributes["Implementation-Version"] = buildProps["project.version"]
   }
   println("Packaging Components")
+
   from(configurations.runtimeClasspath.get().map {
     println("  " + it.name)
 
@@ -56,7 +58,8 @@ tasks.jar {
         (name.contains("log4j") && name.contains(".dat")) ||
           name.endsWith(".sf") ||
           name.endsWith(".dsa") ||
-          name.endsWith(".rsa")
+          name.endsWith(".rsa") ||
+          name.endsWith(".md")
       } } })
   archiveFileName.set("service.jar")
 }

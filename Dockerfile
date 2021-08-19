@@ -3,7 +3,7 @@
 #   Build Service & Dependencies
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM veupathdb/alpine-dev-base:latest AS prep
+FROM veupathdb/alpine-dev-base:jdk-16 AS prep
 
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
@@ -17,11 +17,9 @@ RUN jlink --compress=2 --module-path /opt/jdk/jmods \
     && apk add --no-cache git sed findutils coreutils make npm curl gawk \
     && git config --global advice.detachedHead false
 
-ENV DOCKER=build \
-    JAVA_HOME=/opt/jdk
+ENV DOCKER=build
 
 COPY . .
-RUN make install-dev-env
 RUN mkdir -p vendor \
     && cp -n /jdbc/* vendor \
     && make jar
