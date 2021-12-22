@@ -1,7 +1,7 @@
 package org.veupathdb.service.demo.service;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Request;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Request;
 
 import java.util.Random;
 
