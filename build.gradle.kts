@@ -1,9 +1,11 @@
 plugins {
   java
-  id("org.veupathdb.lib.gradle.container.container-utils") version "2.1.20"
+  id("org.veupathdb.lib.gradle.container.container-utils") version "2.1.21"
 }
 
 containerBuild {
+
+  this.logLevel = 5
 
   project {
 
@@ -80,11 +82,11 @@ dependencies {
 
   // Extra FgpUtil dependencies
   runtimeOnly("org.apache.commons:commons-dbcp2:2.8.0")
-  runtimeOnly("org.json:json:20190722")
-  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.13.0")
-  runtimeOnly("com.fasterxml.jackson.module:jackson-module-parameter-names:2.13.0")
-  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.0")
-  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
+  runtimeOnly("org.json:json:20211205")
+  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.13.1")
+  runtimeOnly("com.fasterxml.jackson.module:jackson-module-parameter-names:2.13.1")
+  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.1")
+  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1")
 
   //
   // Project Dependencies
@@ -103,23 +105,23 @@ dependencies {
 
 
   // Jersey
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.0.3")
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.0.3")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.3")
-  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.0.3")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.0.4")
+  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.0.4")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.4")
+  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.0.4")
 
   // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.0")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
+  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.1")
 
   // Log4J
-  implementation("org.apache.logging.log4j:log4j-api:2.16.0")
+  implementation("org.apache.logging.log4j:log4j-api:2.17.0")
   implementation("org.apache.logging.log4j:log4j-core:2.17.0")
   implementation("org.apache.logging.log4j:log4j:2.16.0")
 
   // Metrics
-  implementation("io.prometheus:simpleclient:0.14.1")
-  implementation("io.prometheus:simpleclient_common:0.14.1")
+  implementation("io.prometheus:simpleclient:0.15.0")
+  implementation("io.prometheus:simpleclient_common:0.15.0")
 
   // Utils
   implementation("io.vulpine.lib:Jackfish:1.1.0")
@@ -127,6 +129,6 @@ dependencies {
 
   // Unit Testing
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-  testImplementation("org.mockito:mockito-core:4.1.0")
+  testImplementation("org.mockito:mockito-core:4.3.1")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 }

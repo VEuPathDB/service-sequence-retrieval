@@ -1,9 +1,3 @@
-//val core = file("../lib-jaxrs-container-core");
-//if (core.exists()) {
-//  include(":core")
-//  project(":core").projectDir = core
-//}
-
 pluginManagement {
   repositories {
     mavenLocal()
