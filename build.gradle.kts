@@ -1,12 +1,16 @@
+import org.veupathdb.lib.gradle.container.util.Logger.Level
+
 plugins {
   java
-  id("org.veupathdb.lib.gradle.container.container-utils") version "2.1.21"
+  id("org.veupathdb.lib.gradle.container.container-utils") version "3.0.1"
 }
 
 containerBuild {
 
-  this.logLevel = 5
+  // Change if debugging the build process is necessary.
+  logLevel = Level.Info
 
+  // General project level configuration.
   project {
 
     // Project Name
@@ -25,6 +29,7 @@ containerBuild {
     mainClassName = "Main"
   }
 
+  // Docker build configuration.
   docker {
 
     // Docker build context
@@ -32,6 +37,37 @@ containerBuild {
 
     // Name of the target docker file
     dockerFile = "Dockerfile"
+  }
+
+  // FgpUtil download configuration.
+  fgputil {
+    // Select the FgpUtil tag to use as a dependency.
+    //
+    // This may be omitted to use "latest", however that is discouraged as it
+    // may cause build issues in the future if FgpUtil introduces any breaking
+    // changes.
+    //
+    // For a full list of available tags, see: https://github.com/VEuPathDB/FgpUtil/tags
+    version = "4f2eb70"
+
+    // Optionally limit the dependencies to include from FgpUtil using this
+    // array:
+    // targets = arrayOf(
+    //   AccountDB,
+    //   Cache,
+    //   CLI,
+    //   Client,
+    //   Core,
+    //   DB,
+    //   Events,
+    //   JSON,
+    //   Server,
+    //   Servlet,
+    //   Solr,
+    //   Test,
+    //   Web,
+    //   XML,
+    // )
   }
 
   generateJaxRS {
@@ -43,6 +79,7 @@ containerBuild {
     // command execution.
     environment = mapOf(/*Pair("env-key", "env-val"), Pair("env-key", "env-val")*/)
   }
+
 }
 
 java {
