@@ -2,13 +2,13 @@ import org.veupathdb.lib.gradle.container.util.Logger.Level
 
 plugins {
   java
-  id("org.veupathdb.lib.gradle.container.container-utils") version "3.0.1"
+  id("org.veupathdb.lib.gradle.container.container-utils") version "3.1.0"
 }
 
 containerBuild {
 
   // Change if debugging the build process is necessary.
-  logLevel = Level.Info
+  logLevel = Level.Trace
 
   // General project level configuration.
   project {

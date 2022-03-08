@@ -4,8 +4,7 @@ MAIN_DIR     := src/main/java/$(shell echo $(APP_PACKAGE) | sed 's/\./\//g')
 TEST_DIR     := $(shell echo $(MAIN_DIR) | sed 's/main/test/')
 GEN_DIR      := $(MAIN_DIR)/generated
 ALL_PACKABLE := $(shell find src/main -type f)
-BIN_DIR := .tools/bin
-FGPUTIL_VER  = "4b5d82c"
+BIN_DIR      := .tools/bin
 
 EXAMPLE_DIR      := src/main/java/org/veupathdb/service/demo
 EXAMPLE_TEST_DIR := src/test/java/org/veupathdb/service/demo
@@ -67,27 +66,31 @@ cleanup-example:
 .PHONY: install-dev-env
 install-dev-env:
 	@if [ ! -d .tools ]; then git clone https://github.com/VEuPathDB/lib-jaxrs-container-build-utils .tools; else cd .tools && git pull && cd ..; fi
-	@$(BIN_DIR)/check-env.sh
+	@./gradlew check-env download-fgputil install-raml-4-jax-rs
 	@$(BIN_DIR)/install-oracle.sh
-	@./gradlew install-raml-4-jax-rs --stacktrace
-	@$(BIN_DIR)/install-raml-merge.sh
+	@#$(BIN_DIR)/install-raml-merge.sh
 	@$(BIN_DIR)/install-npm.sh
 
+.PHONY: clean
 clean:
 	@rm -rf .gradle .tools vendor build
 
+.PHONY: fix-path
 fix-path:
 	@$(BIN_DIR)/fix-path.sh $(EXAMPLE_DIR) $(MAIN_DIR)
 	@$(BIN_DIR)/fix-path.sh $(EXAMPLE_TEST_DIR) $(TEST_DIR)
 
+.PHONY: gen-jaxrs
 gen-jaxrs: api.raml merge-raml
-	@./gradlew generate-jaxrs --stacktrace
+	@./gradlew generate-jaxrs
 	@$(BIN_DIR)/generate-jaxrs-streams.sh $(APP_PACKAGE)
 	@grep -Rl javax src | xargs -I{} sed -i 's/javax/jakarta/g' {}
 
+.PHONY: gen-docs
 gen-docs: api.raml merge-raml
-	@$(BIN_DIR)/generate-docs.sh
+	@./gradlew generate-raml-docs
 
+.PHONY: merge-raml
 merge-raml:
 	@$(BIN_DIR)/merge-raml schema > schema/library.raml
 
@@ -95,79 +98,6 @@ merge-raml:
 # File based targets
 #
 
-build/libs/service.jar: \
-      gen-jaxrs \
-      gen-docs \
-      vendor/fgputil-accountdb-1.0.0.jar \
-      vendor/fgputil-cache-1.0.0.jar \
-      vendor/fgputil-cli-1.0.0.jar \
-      vendor/fgputil-client-1.0.0.jar \
-      vendor/fgputil-core-1.0.0.jar \
-      vendor/fgputil-db-1.0.0.jar \
-      vendor/fgputil-events-1.0.0.jar \
-      vendor/fgputil-json-1.0.0.jar \
-      vendor/fgputil-server-1.0.0.jar \
-      vendor/fgputil-servlet-1.0.0.jar \
-      vendor/fgputil-solr-1.0.0.jar \
-      vendor/fgputil-test-1.0.0.jar \
-      vendor/fgputil-web-1.0.0.jar \
-      vendor/fgputil-xml-1.0.0.jar \
-      build.gradle.kts
+build/libs/service.jar: gen-jaxrs gen-docs build.gradle.kts
 	@echo "$(C_BLUE)Building application jar$(C_NONE)"
 	@./gradlew clean test jar
-
-vendor/fgputil-accountdb-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-accountdb-1.0.0.jar -O $@
-
-vendor/fgputil-cache-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-cache-1.0.0.jar -O $@
-
-vendor/fgputil-cli-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-cli-1.0.0.jar -O $@
-
-vendor/fgputil-client-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-client-1.0.0.jar -O $@
-
-vendor/fgputil-core-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-core-1.0.0.jar -O $@
-
-vendor/fgputil-db-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-db-1.0.0.jar -O $@
-
-vendor/fgputil-events-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-events-1.0.0.jar -O $@
-
-vendor/fgputil-json-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-json-1.0.0.jar -O $@
-
-vendor/fgputil-server-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-server-1.0.0.jar -O $@
-
-vendor/fgputil-servlet-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-servlet-1.0.0.jar -O $@
-
-vendor/fgputil-solr-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-solr-1.0.0.jar -O $@
-
-vendor/fgputil-test-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-test-1.0.0.jar -O $@
-
-vendor/fgputil-web-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-web-1.0.0.jar -O $@
-
-vendor/fgputil-xml-1.0.0.jar:
-	@mkdir -p "vendor"
-	@wget https://github.com/VEuPathDB/FgpUtil/releases/download/$(FGPUTIL_VER)/fgputil-xml-1.0.0.jar -O $@
