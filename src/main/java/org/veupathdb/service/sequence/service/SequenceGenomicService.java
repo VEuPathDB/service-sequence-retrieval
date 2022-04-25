@@ -1,4 +1,4 @@
-package org.veupathdb.service.demo.service;
+package org.veupathdb.service.sequence.service;
 
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Request;
@@ -14,8 +14,8 @@ import java.lang.Thread;
 import java.lang.InterruptedException;
 
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
-import org.veupathdb.service.demo.generated.model.SequenceGenomicPostRequest;
-import org.veupathdb.service.demo.generated.resources.SequenceGenomic;
+import org.veupathdb.service.sequence.generated.model.SequenceGenomicPostRequest;
+import org.veupathdb.service.sequence.generated.resources.SequenceGenomic;
 
 public class SequenceGenomicService implements SequenceGenomic {
 

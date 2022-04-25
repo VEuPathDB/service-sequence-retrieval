@@ -1,8 +1,8 @@
-package org.veupathdb.service.demo;
+package org.veupathdb.service.sequence;
 
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
-import org.veupathdb.service.demo.service.SequenceGenomicService;
+import org.veupathdb.service.sequence.service.SequenceGenomicService;
 
 /**
  * Service Resource Registration.

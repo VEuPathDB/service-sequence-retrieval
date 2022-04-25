@@ -15,7 +15,7 @@ containerBuild {
   project {
 
     // Project Name
-    name = "demo-service"
+    name = "service-sequence-retrieval"
 
     // Project Group
     group = "org.veupathdb.service"
@@ -24,7 +24,7 @@ containerBuild {
     version = "1.0.0"
 
     // Project Root Package
-    projectPackage = "org.veupathdb.service.demo"
+    projectPackage = "org.veupathdb.service.sequence"
 
     // Main Class Name
     mainClassName = "Main"
