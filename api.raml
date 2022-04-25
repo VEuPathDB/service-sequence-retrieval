@@ -10,7 +10,6 @@ uses:
   error: https://raw.githubusercontent.com/VEuPathDB/docs-api-schema/v2.0.2/libraries/errors.raml
   lib: schema/library.raml
 
-# TODO: THIS SHOULD BE HEADER
 securitySchemes:
   header-auth:
     description: Authentication based on a WDK auth cookie.
@@ -23,28 +22,17 @@ securitySchemes:
           type: string
 
 
-#
-# Example Endpoints
-#
-
-/hello:
-  displayName: Hello World
-  get:
-    responses:
-      200:
-        body:
-          application/json:
-            type: lib.HelloResponse
+/sequence/genomic:
+  displayName: Genomic Region
   post:
     securedBy: header-auth
     body:
       application/json:
-        type: lib.HelloPostRequest
+        type: lib.SequenceGenomicPostRequest
     responses:
       200:
         body:
-          application/json:
-            type: lib.HelloPostResponse
+          application/octet-stream:
       401:
         body:
           application/json:
@@ -53,3 +41,4 @@ securitySchemes:
         body:
           application/json:
             type: error.ServerError
+

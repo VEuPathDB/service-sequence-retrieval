@@ -15,6 +15,10 @@ public class Main extends Server {
   protected ContainerResources newResourceConfig(Options options) {
     final var out =  new Resources(options);
 
+    // TODO read a property about location of reference
+    // I think these aren't command line args but -D style properties for java
+    //
+
     // Enabled by default for debugging purposes, this should be removed when
     // production ready.
     out.property("jersey.config.server.tracing.type", "ALL")

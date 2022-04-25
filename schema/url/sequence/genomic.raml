@@ -1,0 +1,15 @@
+#%RAML 1.0 Library
+
+
+uses:
+  common: ../../common.raml
+
+types:
+  SequenceGenomicPostRequest:
+    additionalProperties: false
+    properties:
+      contig: string
+      start: integer
+      end: integer
+
+  SequenceGenomicPostResponse: common.PlainTextFastaResponse
