@@ -1,4 +1,4 @@
-package org.veupathdb.service.sequence.service;
+package org.veupathdb.service.sequence.controller;
 
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Request;
@@ -17,7 +17,7 @@ import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.service.sequence.generated.model.SequenceGenomicPostRequest;
 import org.veupathdb.service.sequence.generated.resources.SequenceGenomic;
 
-public class SequenceGenomicService implements SequenceGenomic {
+public class SequenceGenomicController implements SequenceGenomic {
 
   @Context
   private Request req;

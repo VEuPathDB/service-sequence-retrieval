@@ -88,7 +88,6 @@ java {
     languageVersion.set(JavaLanguageVersion.of(17))
   }
 
-
 }
 
 repositories {
@@ -163,9 +162,16 @@ dependencies {
   implementation("io.prometheus:simpleclient:0.15.0")
   implementation("io.prometheus:simpleclient_common:0.15.0")
 
+  // CLI
+  implementation("info.picocli:picocli:4.6.3")
+  annotationProcessor("info.picocli:picocli-codegen:4.6.3")
+
   // Utils
   implementation("io.vulpine.lib:Jackfish:1.1.0")
   implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
+
+  // Working with sequences
+  implementation("com.github.samtools:htsjdk:2.24.1")
 
   // Unit Testing
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
