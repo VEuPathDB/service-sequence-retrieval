@@ -14,20 +14,25 @@ types:
       features:
         type: array
         items: Feature
-      deflineFormat:
-        type: DeflineFormat
-        default: "region_only"
+      deflineFormat: DeflineFormat
       forceStrandedness:
         type: boolean
         default: false
+      basesPerLine?: integer
   SequenceGenomicPostResponse: PlainTextFastaResponse
   PlainTextFastaResponse: string
   DeflineFormat:
     type: string
+    default: "region_only"
+    required: false
     enum:
       - query_only
       - region_only
       - query_and_region
+  Strand:
+    type: string
+    default: '.'
+    required: false
   Feature:
     type: object
     additionalProperties: false
@@ -36,5 +41,5 @@ types:
       start: integer
       end: integer
       query?: string
-      strand?: string
+      strand: Strand
 

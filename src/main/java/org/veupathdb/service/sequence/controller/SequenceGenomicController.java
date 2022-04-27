@@ -24,7 +24,7 @@ public class SequenceGenomicController implements SequenceGenomic {
 
     var sequences = Sequences.genomicSequence;
 
-    var stream = StreamSequences.responseStream(sequences, features, entity.getDeflineFormat(), entity.getForceStrandedness());
+    var stream = StreamSequences.responseStream(sequences, features, entity.getDeflineFormat(), entity.getForceStrandedness(), entity.getBasesPerLine());
 
     return PostSequenceGenomicResponse.respond200WithApplicationOctetStream(stream);
 

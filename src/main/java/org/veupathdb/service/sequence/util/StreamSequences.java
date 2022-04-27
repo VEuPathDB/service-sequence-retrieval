@@ -19,25 +19,26 @@ import org.veupathdb.service.sequence.util.FastaUtil;
 
 public class StreamSequences {
 
-
   public static byte[] sequenceForFeature(IndexedFastaSequenceFile sequences, Feature feature, boolean forceStrandedness){
     var referenceSequence = sequences.getSubsequenceAt(feature.getContig(), feature.getStart(), feature.getEnd());
     var bases = referenceSequence.getBases();
-    if(forceStrandedness && feature.getStrand().equals('-')){
+    if(forceStrandedness && feature.getStrand().equals("-")){
       SequenceUtil.reverseComplement(bases);
     }
     return bases;
   }
 
-  public static StreamingOutput responseStream(IndexedFastaSequenceFile sequences, List<Feature> features, DeflineFormat deflineFormat, boolean forceStrandedness){
+  public static StreamingOutput responseStream(IndexedFastaSequenceFile sequences, List<Feature> features, DeflineFormat deflineFormat, boolean forceStrandedness, int requestedBasesPerLine){
 
-    int basesPerLine = 60;
+    int basesPerLine = requestedBasesPerLine > 0 ? requestedBasesPerLine : Integer.MAX_VALUE;
     return new StreamingOutput(){
       @Override
       public void write(OutputStream outputStream) throws IOException {
         for(var feature: features){
           var bases = sequenceForFeature(sequences, feature, forceStrandedness);
-          FastaUtil.appendSequenceToStream(outputStream, feature, deflineFormat, bases, basesPerLine);
+          var mentionStrand = forceStrandedness && (feature.getStrand().equals("-") || feature.getStrand().equals("+"));
+          
+          FastaUtil.appendSequenceToStream(outputStream, feature, deflineFormat, bases, basesPerLine, mentionStrand);
         }
       }
     };

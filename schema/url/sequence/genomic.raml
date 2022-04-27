@@ -11,12 +11,10 @@ types:
       features:
         type: array
         items: common.Feature
-      deflineFormat:
-        type: common.DeflineFormat
-        default: "region_only"
+      deflineFormat: common.DeflineFormat
       forceStrandedness:
         type: boolean
         default: false
-
+      basesPerLine?: integer
 
   SequenceGenomicPostResponse: common.PlainTextFastaResponse
