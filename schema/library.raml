@@ -7,13 +7,34 @@
 ################################################################################
 
 types:
-  PlainTextFastaResponse: string
   SequenceGenomicPostRequest:
+    type: object
+    additionalProperties: false
+    properties:
+      features:
+        type: array
+        items: Feature
+      deflineFormat:
+        type: DeflineFormat
+        default: "region_only"
+      forceStrandedness:
+        type: boolean
+        default: false
+  SequenceGenomicPostResponse: PlainTextFastaResponse
+  PlainTextFastaResponse: string
+  DeflineFormat:
+    type: string
+    enum:
+      - query_only
+      - region_only
+      - query_and_region
+  Feature:
     type: object
     additionalProperties: false
     properties:
       contig: string
       start: integer
       end: integer
-  SequenceGenomicPostResponse: PlainTextFastaResponse
+      query?: string
+      strand?: string
 

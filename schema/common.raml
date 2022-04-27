@@ -3,3 +3,16 @@
 types:
   PlainTextFastaResponse:
     type: string
+
+  DeflineFormat:
+    type: string
+    enum: ["query_only", "region_only", "query_and_region"]
+
+  Feature:
+    additionalProperties: false
+    properties:
+      contig: string
+      start: integer
+      end: integer
+      query?: string
+      strand?: string

@@ -8,8 +8,15 @@ types:
   SequenceGenomicPostRequest:
     additionalProperties: false
     properties:
-      contig: string
-      start: integer
-      end: integer
+      features:
+        type: array
+        items: common.Feature
+      deflineFormat:
+        type: common.DeflineFormat
+        default: "region_only"
+      forceStrandedness:
+        type: boolean
+        default: false
+
 
   SequenceGenomicPostResponse: common.PlainTextFastaResponse

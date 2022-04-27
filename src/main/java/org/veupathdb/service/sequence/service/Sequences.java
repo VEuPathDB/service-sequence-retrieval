@@ -19,11 +19,17 @@ public class Sequences {
   public static void initialize(ExtOptions options){
     LOG.info("Initializing sequences");
 
-    var sequenceGenomicFaidx = Paths.get(options.getSequenceGenomicFaidx().orElseThrow(()->new RuntimeException("Missing argument for sequenceGenomicFaidx")));
-    var sequenceGenomicFasta = Paths.get(options.getSequenceGenomicFasta().orElseThrow(()->new RuntimeException("Missing argument for sequenceGenomicFasta")));
-    var sequenceGenomicIndex = new FastaSequenceIndex(sequenceGenomicFaidx);
-    genomicSequence = new IndexedFastaSequenceFile(sequenceGenomicFasta, sequenceGenomicIndex);
+    genomicSequence = readFromPaths(
+       options.getSequenceGenomicFasta().orElseThrow(()->new RuntimeException("Missing argument for sequenceGenomicFasta")),
+       options.getSequenceGenomicFaidx().orElseThrow(()->new RuntimeException("Missing argument for sequenceGenomicFaidx"))
+    );
+  }
 
+  public static IndexedFastaSequenceFile readFromPaths(String fasta, String faidx){
+    return new IndexedFastaSequenceFile(
+      Paths.get(fasta),
+      new FastaSequenceIndex((Paths.get(faidx)))
+    );
   }
 
 }
