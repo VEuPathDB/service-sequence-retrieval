@@ -7,14 +7,17 @@ import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
 import org.veupathdb.lib.container.jaxrs.server.Server;
 
-import org.veupathdb.service.sequence.model.config.ExtOptions;
-
 import org.veupathdb.service.sequence.service.Sequences;
+
+import java.io.FileReader;
+import org.veupathdb.service.sequence.model.Config;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
 
 public class Main extends Server {
   private static final Logger LOG = LogManager.getLogger(Main.class);
-
-  public static final ExtOptions options = new ExtOptions();
 
   public static void main(String[] args) {
     var server = new Main();
@@ -36,6 +39,12 @@ public class Main extends Server {
 
   @Override
   protected void postCliParse(Options opts) {
-    Sequences.initialize(options);
+    try {
+      var objectMapper = new ObjectMapper();
+      var jsonConfig = objectMapper.readValue(new FileReader("config.json"), Config.class);
+      Sequences.initialize(jsonConfig);
+    } catch (Exception e ){
+      throw new RuntimeException(e);
+    }
   }
 }

@@ -22,7 +22,12 @@ public class SequenceGenomicController implements SequenceGenomic {
 
     var features = entity.getFeatures();
 
-    var sequences = Sequences.genomicSequence;
+    var sequences = Sequences.getSequenceFile("genomic");
+
+    var spec = Sequences.getSequenceSpec("genomic");
+    var index = Sequences.getSequenceIndex("genomic");
+
+    //todo validate features using index and spec, produce new format
 
     var stream = StreamSequences.responseStream(sequences, features, entity.getDeflineFormat(), entity.getForceStrandedness(), entity.getBasesPerLine());
 
