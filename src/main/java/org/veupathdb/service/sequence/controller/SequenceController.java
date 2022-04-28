@@ -9,6 +9,7 @@ import org.veupathdb.service.sequence.generated.model.SequencePostRequest;
 import org.veupathdb.service.sequence.generated.resources.SequenceSequenceType;
 
 import org.veupathdb.service.sequence.util.StreamSequences;
+import org.veupathdb.service.sequence.util.Validate;
 import org.veupathdb.service.sequence.service.Sequences;
 
 public class SequenceController implements SequenceSequenceType {
@@ -20,14 +21,12 @@ public class SequenceController implements SequenceSequenceType {
   @Authenticated
   public PostSequenceBySequenceTypeResponse postSequenceBySequenceType(String sequenceType, SequencePostRequest entity) {
 
-    var features = entity.getFeatures();
-
-    var sequences = Sequences.getSequenceFile(sequenceType);
 
     var spec = Sequences.getSequenceSpec(sequenceType);
     var index = Sequences.getSequenceIndex(sequenceType);
+    var sequences = Sequences.getSequenceFile(sequenceType);
 
-    //todo validate features using index and spec, produce new format
+    var features = Validate.getValidatedFeatures(sequenceType, index, entity, spec);
 
     var stream = StreamSequences.responseStream(sequences, features, entity.getDeflineFormat(), entity.getForceStrandedness(), entity.getBasesPerLine());
 

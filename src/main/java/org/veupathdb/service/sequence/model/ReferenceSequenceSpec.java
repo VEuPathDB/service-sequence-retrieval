@@ -64,4 +64,15 @@ public class ReferenceSequenceSpec {
     this.maxTotalBasesPerRequest = maxTotalBasesPerRequest;
   }
 
+  private boolean disallowReverseComplement;
+
+  @JsonGetter
+  public boolean getDisallowReverseComplement() {
+    return disallowReverseComplement;
+  }
+
+  @JsonSetter
+  public void setDisallowReverseComplement(boolean disallowReverseComplement) {
+    this.disallowReverseComplement = disallowReverseComplement;
+  }
 }
