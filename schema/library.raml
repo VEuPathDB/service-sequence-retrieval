@@ -7,19 +7,6 @@
 ################################################################################
 
 types:
-  SequenceGenomicPostRequest:
-    type: object
-    additionalProperties: false
-    properties:
-      features:
-        type: array
-        items: Feature
-      deflineFormat: DeflineFormat
-      forceStrandedness:
-        type: boolean
-        default: false
-      basesPerLine?: integer
-  SequenceGenomicPostResponse: PlainTextFastaResponse
   PlainTextFastaResponse: string
   DeflineFormat:
     type: string
@@ -41,5 +28,18 @@ types:
       start: integer
       end: integer
       query?: string
-      strand: Strand
+      strand?: Strand
+  SequencePostRequest:
+    type: object
+    additionalProperties: false
+    properties:
+      features:
+        type: array
+        items: Feature
+      deflineFormat: DeflineFormat
+      forceStrandedness:
+        type: boolean
+        default: false
+      basesPerLine?: integer
+  SequencePostResponse: PlainTextFastaResponse
 

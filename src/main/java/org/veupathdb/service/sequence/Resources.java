@@ -2,7 +2,7 @@ package org.veupathdb.service.sequence;
 
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
-import org.veupathdb.service.sequence.controller.SequenceGenomicController;
+import org.veupathdb.service.sequence.controller.SequenceController;
 
 /**
  * Service Resource Registration.
@@ -23,7 +23,7 @@ public class Resources extends ContainerResources {
   @Override
   protected Object[] resources() {
     return new Object[] {
-      SequenceGenomicController.class
+      SequenceController.class
     };
   }
 }

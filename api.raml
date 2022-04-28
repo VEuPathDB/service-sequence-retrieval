@@ -22,13 +22,13 @@ securitySchemes:
           type: string
 
 
-/sequence/genomic:
-  displayName: Genomic Region
+/sequence/{sequenceType}:
+  displayName: RetrieveSequence
   post:
     securedBy: header-auth
     body:
       application/json:
-        type: lib.SequenceGenomicPostRequest
+        type: lib.SequencePostRequest
     responses:
       200:
         body:

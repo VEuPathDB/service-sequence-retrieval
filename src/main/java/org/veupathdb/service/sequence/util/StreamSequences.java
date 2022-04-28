@@ -22,7 +22,7 @@ public class StreamSequences {
   public static byte[] sequenceForFeature(IndexedFastaSequenceFile sequences, Feature feature, boolean forceStrandedness){
     var referenceSequence = sequences.getSubsequenceAt(feature.getContig(), feature.getStart(), feature.getEnd());
     var bases = referenceSequence.getBases();
-    if(forceStrandedness && feature.getStrand().equals("-")){
+    if(forceStrandedness && "-".equals(feature.getStrand())){
       SequenceUtil.reverseComplement(bases);
     }
     return bases;
@@ -36,7 +36,7 @@ public class StreamSequences {
       public void write(OutputStream outputStream) throws IOException {
         for(var feature: features){
           var bases = sequenceForFeature(sequences, feature, forceStrandedness);
-          var mentionStrand = forceStrandedness && (feature.getStrand().equals("-") || feature.getStrand().equals("+"));
+          var mentionStrand = forceStrandedness && ("-".equals(feature.getStrand()) || "+".equals(feature.getStrand()));
           
           FastaUtil.appendSequenceToStream(outputStream, feature, deflineFormat, bases, basesPerLine, mentionStrand);
         }

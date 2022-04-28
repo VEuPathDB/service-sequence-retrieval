@@ -2,10 +2,10 @@
 
 
 uses:
-  common: ../../common.raml
+  common: ../common.raml
 
 types:
-  SequenceGenomicPostRequest:
+  SequencePostRequest:
     additionalProperties: false
     properties:
       features:
@@ -17,4 +17,4 @@ types:
         default: false
       basesPerLine?: integer
 
-  SequenceGenomicPostResponse: common.PlainTextFastaResponse
+  SequencePostResponse: common.PlainTextFastaResponse
