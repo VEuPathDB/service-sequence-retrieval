@@ -6,6 +6,7 @@ import jakarta.ws.rs.BadRequestException;
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 import htsjdk.samtools.reference.FastaSequenceIndex;
 import htsjdk.samtools.reference.ReferenceSequence;
+import org.veupathdb.service.sequence.generated.model.FeaturesData;
 import org.veupathdb.service.sequence.generated.model.Feature;
 import org.veupathdb.service.sequence.model.ReferenceSequenceSpec;
 import org.veupathdb.service.sequence.generated.model.SequencePostRequest;
@@ -17,11 +18,18 @@ import java.util.ArrayList;
 
 public class Validate {
 
+  private static List<Feature> getFeatures(FeaturesData data){
+    if(data.isFeaturesList()){
+      return data.getFeaturesList().getFeatures();
+    }
+    throw new RuntimeException("todo");
+  }
+
   public static List<Feature> getValidatedFeatures(String sequenceType, FastaSequenceIndex index, SequencePostRequest entity, ReferenceSequenceSpec spec){
     if(entity.getForceStrandedness() && spec.getDisallowReverseComplement()){
       throw new BadRequestException("Reverse complement option not available for sequence type" + sequenceType);
     }
-    var features = entity.getFeatures();
+    var features = getFeatures(entity.getData());
 
     if(features.size() > spec.getMaxSequencesPerRequest()){
       throw new BadRequestException("Requested more features than per-request limit of " + spec.getMaxSequencesPerRequest());

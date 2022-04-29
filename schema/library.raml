@@ -29,13 +29,35 @@ types:
       end: integer
       query?: string
       strand?: Strand
-  SequencePostRequest:
+  FeaturesList:
     type: object
     additionalProperties: false
     properties:
       features:
         type: array
         items: Feature
+  StartOffset:
+    type: string
+    enum:
+      - ZERO
+      - ONE
+  FeaturesBed:
+    type: object
+    additionalProperties: false
+    properties:
+      bed: file
+      startOffset: StartOffset
+  FeaturesGFF3:
+    type: object
+    additionalProperties: false
+    properties:
+      gff3: file
+  FeaturesData: FeaturesList | FeaturesBed | FeaturesGFF3
+  SequencePostRequest:
+    type: object
+    additionalProperties: false
+    properties:
+      data: FeaturesData
       deflineFormat: DeflineFormat
       forceStrandedness:
         type: boolean
