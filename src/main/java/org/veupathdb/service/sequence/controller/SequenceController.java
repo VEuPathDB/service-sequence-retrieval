@@ -20,15 +20,18 @@ public class SequenceController implements SequenceSequenceType {
   @Override
   @Authenticated
   public PostSequenceBySequenceTypeResponse postSequenceBySequenceType(String sequenceType, SequencePostRequest entity) {
-
+    var forceStrandedness = entity.getForceStrandedness();
+    var deflineFormat = entity.getDeflineFormat();
+    var basesPerLine = entity.getBasesPerLine();
+    var requestedFeatures = entity.getFeatures();
 
     var spec = Sequences.getSequenceSpec(sequenceType);
     var index = Sequences.getSequenceIndex(sequenceType);
     var sequences = Sequences.getSequenceFile(sequenceType);
 
-    var features = Validate.getValidatedFeatures(sequenceType, index, entity, spec);
+    var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
 
-    var stream = StreamSequences.responseStream(sequences, features, entity.getDeflineFormat(), entity.getForceStrandedness(), entity.getBasesPerLine());
+    var stream = StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine);
 
     return PostSequenceBySequenceTypeResponse.respond200WithApplicationOctetStream(stream);
 

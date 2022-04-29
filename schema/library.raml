@@ -29,6 +29,11 @@ types:
       end: integer
       query?: string
       strand?: Strand
+  StartOffset:
+    type: string
+    enum:
+      - ZERO
+      - ONE
   SequencePostRequest:
     type: object
     additionalProperties: false
@@ -40,6 +45,8 @@ types:
       forceStrandedness:
         type: boolean
         default: false
-      basesPerLine?: integer
+      basesPerLine:
+        type: integer
+        default: 60
   SequencePostResponse: PlainTextFastaResponse
 

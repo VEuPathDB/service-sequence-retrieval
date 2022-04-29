@@ -22,13 +22,75 @@ securitySchemes:
           type: string
 
 
+/sequenceForGff3/{sequenceType}:
+  displayName: Retrieve sequence for GFF3
+  post:
+    securedBy: header-auth
+    queryParameters:
+      deflineFormat: lib.DeflineFormat
+      forceStrandedness:
+        type: boolean
+        default: false
+      basesPerLine:
+        type: integer
+        default: 60
+    body:
+      multipart/form-data:
+        type: object
+        properties:
+            file: file
+    responses:
+      200:
+        body:
+          application/octet-stream:
+      401:
+        body:
+          application/json:
+            type: error.UnauthorizedError
+      500:
+        body:
+          application/json:
+            type: error.ServerError
+
+/sequenceForBed/{sequenceType}:
+  displayName: Retrieve sequence for BED
+  post:
+    securedBy: header-auth
+    queryParameters:
+      deflineFormat: lib.DeflineFormat
+      forceStrandedness:
+        type: boolean
+        default: false
+      startOffset: lib.StartOffset
+      basesPerLine:
+        type: integer
+        default: 60
+    body:
+      multipart/form-data:
+        type: object
+        properties:
+            file: file
+    responses:
+      200:
+        body:
+          application/octet-stream:
+      401:
+        body:
+          application/json:
+            type: error.UnauthorizedError
+      500:
+        body:
+          application/json:
+            type: error.ServerError
+
 /sequence/{sequenceType}:
-  displayName: RetrieveSequence
+  displayName: Retrieve sequence
   post:
     securedBy: header-auth
     body:
       application/json:
         type: lib.SequencePostRequest
+
     responses:
       200:
         body:

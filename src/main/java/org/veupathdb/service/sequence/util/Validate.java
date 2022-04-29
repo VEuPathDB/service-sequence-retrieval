@@ -17,14 +17,16 @@ import java.util.ArrayList;
 
 public class Validate {
 
-  public static List<Feature> getValidatedFeatures(String sequenceType, FastaSequenceIndex index, SequencePostRequest entity, ReferenceSequenceSpec spec){
-    if(entity.getForceStrandedness() && spec.getDisallowReverseComplement()){
+  public static List<Feature> getValidatedFeatures(String sequenceType, FastaSequenceIndex index, List<Feature> features, boolean forceStrandedness, ReferenceSequenceSpec spec){
+    if(forceStrandedness && spec.getDisallowReverseComplement()){
       throw new BadRequestException("Reverse complement option not available for sequence type" + sequenceType);
     }
-    var features = entity.getFeatures();
 
     if(features.size() > spec.getMaxSequencesPerRequest()){
       throw new BadRequestException("Requested more features than per-request limit of " + spec.getMaxSequencesPerRequest());
+    }
+    if(features.size() == 0){
+      throw new BadRequestException("No features requested");
     }
     var numBasesRequested = 0;
     var errors = new LinkedHashMap<String, List<String>>();
