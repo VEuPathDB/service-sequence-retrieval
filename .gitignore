@@ -27,4 +27,4 @@ local.properties
 .settings
 *~
 .*~
-/local/*
+/local/run.sh

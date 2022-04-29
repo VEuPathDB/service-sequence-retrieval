@@ -1,0 +1,10 @@
+##gff-version 3
+# feature-ontology so.obo
+# attribute-ontology gff3_attributes.obo
+##sequence-region KB823016 846 3788
+KB823016	VEuPathDB	protein_coding_gene	846	3788	.	-	.	ID=EHI7A_117830;description=importin beta SMX1%2C putative
+KB823016	VEuPathDB	mRNA	846	3788	.	-	.	ID=EHI7A_117830-t26_1;Parent=EHI7A_117830;description=importin beta SMX1%2C putative
+KB823016	VEuPathDB	exon	846	3788	.	-	.	ID=exon_EHI7A_117830-t26_1-E1;Parent=EHI7A_117830-t26_1;gene_id=EHI7A_117830
+KB823016	VEuPathDB	CDS	846	3788	.	-	0	ID=EHI7A_117830-t26_1-p1-CDS1;Parent=EHI7A_117830-t26_1;gene_id=EHI7A_117830;protein_source_id=EHI7A_117830-t26_1-p1
+KB823016	VEuPathDB	region 846	3788	.	-	.	ID=EHI7A_117830;description=importin beta SMX1%2C putative
+
