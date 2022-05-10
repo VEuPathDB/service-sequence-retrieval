@@ -1,4 +1,4 @@
-package org.veupathdb.service.sequence.util;
+package org.veupathdb.service.sr.util;
 
 
 import jakarta.ws.rs.BadRequestException;
@@ -6,9 +6,9 @@ import jakarta.ws.rs.BadRequestException;
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 import htsjdk.samtools.reference.FastaSequenceIndex;
 import htsjdk.samtools.reference.ReferenceSequence;
-import org.veupathdb.service.sequence.generated.model.Feature;
-import org.veupathdb.service.sequence.model.ReferenceSequenceSpec;
-import org.veupathdb.service.sequence.generated.model.SequencePostRequest;
+import org.veupathdb.service.sr.generated.model.Feature;
+import org.veupathdb.service.sr.model.ReferenceSequenceSpec;
+import org.veupathdb.service.sr.generated.model.SequencePostRequest;
 
 import java.util.List;
 import java.util.Map;

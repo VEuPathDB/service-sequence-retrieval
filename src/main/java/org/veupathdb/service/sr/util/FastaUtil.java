@@ -1,7 +1,7 @@
-package org.veupathdb.service.sequence.util;
+package org.veupathdb.service.sr.util;
 
-import org.veupathdb.service.sequence.generated.model.Feature;
-import org.veupathdb.service.sequence.generated.model.DeflineFormat;
+import org.veupathdb.service.sr.generated.model.Feature;
+import org.veupathdb.service.sr.generated.model.DeflineFormat;
 
 import java.io.OutputStream;
 import java.nio.charset.Charset;

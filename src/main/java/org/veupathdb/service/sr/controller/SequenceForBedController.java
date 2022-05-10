@@ -1,19 +1,19 @@
-package org.veupathdb.service.sequence.controller;
+package org.veupathdb.service.sr.controller;
 
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.StreamingOutput;
 
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
-import org.veupathdb.service.sequence.generated.model.DeflineFormat;
-import org.veupathdb.service.sequence.generated.model.StartOffset;
-import org.veupathdb.service.sequence.generated.model.SequenceForBedSequenceTypePostMultipartFormData;
-import org.veupathdb.service.sequence.generated.resources.SequenceForBedSequenceType;
+import org.veupathdb.service.sr.generated.model.DeflineFormat;
+import org.veupathdb.service.sr.generated.model.StartOffset;
+import org.veupathdb.service.sr.generated.model.SequenceForBedSequenceTypePostMultipartFormData;
+import org.veupathdb.service.sr.generated.resources.SequenceForBedSequenceType;
 
-import org.veupathdb.service.sequence.util.StreamSequences;
-import org.veupathdb.service.sequence.util.Validate;
-import org.veupathdb.service.sequence.util.ConvertFeatures;
-import org.veupathdb.service.sequence.service.Sequences;
+import org.veupathdb.service.sr.util.StreamSequences;
+import org.veupathdb.service.sr.util.Validate;
+import org.veupathdb.service.sr.util.ConvertFeatures;
+import org.veupathdb.service.sr.service.Sequences;
 
 import java.io.File;
 

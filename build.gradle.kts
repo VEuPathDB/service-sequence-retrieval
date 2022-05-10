@@ -24,7 +24,7 @@ containerBuild {
     version = "1.0.0"
 
     // Project Root Package
-    projectPackage = "org.veupathdb.service.sequence"
+    projectPackage = "org.veupathdb.service.sr"
 
     // Main Class Name
     mainClassName = "Main"

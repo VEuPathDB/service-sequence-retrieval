@@ -1,4 +1,4 @@
-package org.veupathdb.service.sequence.model;
+package org.veupathdb.service.sr.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;

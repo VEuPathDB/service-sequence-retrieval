@@ -1,10 +1,10 @@
-package org.veupathdb.service.sequence.model;
+package org.veupathdb.service.sr.model;
 
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonGetter;
-import org.veupathdb.service.sequence.model.ReferenceSequenceSpec;
+import org.veupathdb.service.sr.model.ReferenceSequenceSpec;
 
 
 public class Config {

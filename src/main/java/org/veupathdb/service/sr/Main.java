@@ -1,4 +1,4 @@
-package org.veupathdb.service.sequence;
+package org.veupathdb.service.sr;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,10 +7,10 @@ import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
 import org.veupathdb.lib.container.jaxrs.server.Server;
 
-import org.veupathdb.service.sequence.service.Sequences;
+import org.veupathdb.service.sr.service.Sequences;
 
 import java.io.FileReader;
-import org.veupathdb.service.sequence.model.Config;
+import org.veupathdb.service.sr.model.Config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -1,17 +1,17 @@
-package org.veupathdb.service.sequence.util;
+package org.veupathdb.service.sr.util;
 
 import java.io.File;
 import java.util.Scanner;
 import java.io.FileInputStream;
 
-import org.veupathdb.service.sequence.generated.model.StartOffset;
+import org.veupathdb.service.sr.generated.model.StartOffset;
 
 import htsjdk.tribble.FeatureCodec;
 import htsjdk.tribble.bed.BEDCodec;
 import htsjdk.tribble.gff.Gff3Codec;
 
-import org.veupathdb.service.sequence.generated.model.Feature;
-import org.veupathdb.service.sequence.generated.model.FeatureImpl;
+import org.veupathdb.service.sr.generated.model.Feature;
+import org.veupathdb.service.sr.generated.model.FeatureImpl;
 
 import java.util.List;
 import java.util.ArrayList;

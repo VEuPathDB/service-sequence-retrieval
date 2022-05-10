@@ -1,10 +1,10 @@
-package org.veupathdb.service.sequence;
+package org.veupathdb.service.sr;
 
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
-import org.veupathdb.service.sequence.controller.SequenceController;
-import org.veupathdb.service.sequence.controller.SequenceForBedController;
-import org.veupathdb.service.sequence.controller.SequenceForGff3Controller;
+import org.veupathdb.service.sr.controller.SequenceController;
+import org.veupathdb.service.sr.controller.SequenceForBedController;
+import org.veupathdb.service.sr.controller.SequenceForGff3Controller;
 
 /**
  * Service Resource Registration.

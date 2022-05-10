@@ -1,10 +1,10 @@
-package org.veupathdb.service.sequence.service;
+package org.veupathdb.service.sr.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.veupathdb.service.sequence.model.Config;
-import org.veupathdb.service.sequence.model.ReferenceSequenceSpec;
+import org.veupathdb.service.sr.model.Config;
+import org.veupathdb.service.sr.model.ReferenceSequenceSpec;
 
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 import htsjdk.samtools.reference.FastaSequenceIndex;

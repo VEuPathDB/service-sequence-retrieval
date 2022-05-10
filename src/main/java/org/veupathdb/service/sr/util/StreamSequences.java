@@ -1,4 +1,4 @@
-package org.veupathdb.service.sequence.util;
+package org.veupathdb.service.sr.util;
 
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 import htsjdk.samtools.reference.FastaSequenceIndex;
@@ -6,15 +6,15 @@ import htsjdk.samtools.reference.ReferenceSequence;
 import htsjdk.samtools.util.SequenceUtil;
 import htsjdk.samtools.reference.FastaReferenceWriterBuilder;
 
-import org.veupathdb.service.sequence.generated.model.Feature;
-import org.veupathdb.service.sequence.generated.model.DeflineFormat;
+import org.veupathdb.service.sr.generated.model.Feature;
+import org.veupathdb.service.sr.generated.model.DeflineFormat;
 
 import java.util.List;
 import jakarta.ws.rs.core.StreamingOutput;
 import java.io.OutputStream;
 import java.io.IOException;
 
-import org.veupathdb.service.sequence.util.FastaUtil;
+import org.veupathdb.service.sr.util.FastaUtil;
 
 
 public class StreamSequences {
