@@ -1,8 +1,8 @@
 package org.veupathdb.service.sr.controller;
 
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.StreamingOutput;
+import org.glassfish.jersey.server.ContainerRequest;
 
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
@@ -20,10 +20,9 @@ import java.io.File;
 public class SequenceForBedController implements SequenceForBedSequenceType {
 
   @Context
-  private Request req;
+  private ContainerRequest req;
 
   @Override
-  @Authenticated
   public PostSequenceForBedBySequenceTypeResponse postSequenceForBedBySequenceType(
        String sequenceType,
        DeflineFormat deflineFormat,
@@ -37,7 +36,7 @@ public class SequenceForBedController implements SequenceForBedSequenceType {
 
     var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
 
-    var stream = StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine);
+    StreamingOutput stream = StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine);
 
     return PostSequenceForBedBySequenceTypeResponse.respond200WithApplicationOctetStream(stream);
 

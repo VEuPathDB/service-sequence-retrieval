@@ -1,8 +1,8 @@
 package org.veupathdb.service.sr.controller;
 
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.StreamingOutput;
+import org.glassfish.jersey.server.ContainerRequest;
 
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.service.sr.generated.model.SequencePostRequest;
@@ -15,10 +15,9 @@ import org.veupathdb.service.sr.service.Sequences;
 public class SequenceController implements SequenceSequenceType {
 
   @Context
-  private Request req;
+  private ContainerRequest req;
 
   @Override
-  @Authenticated
   public PostSequenceBySequenceTypeResponse postSequenceBySequenceType(String sequenceType, SequencePostRequest entity) {
     var forceStrandedness = entity.getForceStrandedness();
     var deflineFormat = entity.getDeflineFormat();
@@ -31,7 +30,7 @@ public class SequenceController implements SequenceSequenceType {
 
     var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
 
-    var stream = StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine);
+    StreamingOutput stream = StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine);
 
     return PostSequenceBySequenceTypeResponse.respond200WithApplicationOctetStream(stream);
 

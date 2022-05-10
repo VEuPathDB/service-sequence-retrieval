@@ -3,6 +3,7 @@ package org.veupathdb.service.sr.controller;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.StreamingOutput;
+import org.glassfish.jersey.server.ContainerRequest;
 
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
@@ -20,10 +21,9 @@ import java.io.File;
 public class SequenceForGff3Controller implements SequenceForGff3SequenceType {
 
   @Context
-  private Request req;
+  private ContainerRequest req;
 
   @Override
-  @Authenticated
   public PostSequenceForGff3BySequenceTypeResponse postSequenceForGff3BySequenceType(
        String sequenceType,
        DeflineFormat deflineFormat,
@@ -37,7 +37,7 @@ public class SequenceForGff3Controller implements SequenceForGff3SequenceType {
 
     var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
 
-    var stream = StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine);
+    StreamingOutput stream = StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine);
 
     return PostSequenceForGff3BySequenceTypeResponse.respond200WithApplicationOctetStream(stream);
 
