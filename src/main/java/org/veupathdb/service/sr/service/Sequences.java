@@ -3,7 +3,7 @@ package org.veupathdb.service.sr.service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.veupathdb.service.sr.model.Config;
+import org.veupathdb.service.sr.model.ReferenceSequenceConfig;
 import org.veupathdb.service.sr.model.ReferenceSequenceSpec;
 
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
@@ -22,7 +22,7 @@ public class Sequences {
   private static Map<String, FastaSequenceIndex> sequenceIndexes;
   private static Map<String, IndexedFastaSequenceFile> sequenceFiles;
 
-  public static void initialize(Config config){
+  public static void initialize(ReferenceSequenceConfig config){
     sequenceSpecs = new HashMap<>();
     sequenceIndexes = new HashMap<>();
     sequenceFiles = new HashMap<>();

@@ -10,7 +10,7 @@ import org.veupathdb.lib.container.jaxrs.server.Server;
 import org.veupathdb.service.sr.service.Sequences;
 
 import java.io.FileReader;
-import org.veupathdb.service.sr.model.Config;
+import org.veupathdb.service.sr.model.ReferenceSequenceConfig;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,8 +41,8 @@ public class Main extends Server {
   protected void postCliParse(Options opts) {
     try(var fileReader = new FileReader("config.json")) {
       var objectMapper = new ObjectMapper();
-      var jsonConfig = objectMapper.readValue(fileReader, Config.class);
-      Sequences.initialize(jsonConfig);
+      var jsonReferenceSequenceConfig = objectMapper.readValue(fileReader, ReferenceSequenceConfig.class);
+      Sequences.initialize(jsonReferenceSequenceConfig);
     } catch (Exception e ){
       throw new RuntimeException(e);
     }

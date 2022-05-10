@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import org.veupathdb.service.sr.model.ReferenceSequenceSpec;
 
 
-public class Config {
+public class ReferenceSequenceConfig {
   private final List < ReferenceSequenceSpec > referenceSequenceSpecs;
 
-  public Config() {
+  public ReferenceSequenceConfig() {
     referenceSequenceSpecs = new ArrayList <>();
   }
 
