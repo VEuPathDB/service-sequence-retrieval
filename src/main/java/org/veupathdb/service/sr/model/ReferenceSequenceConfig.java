@@ -1,9 +1,10 @@
 package org.veupathdb.service.sr.model;
 
-import java.util.*;
+import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonGetter;
 import org.veupathdb.service.sr.model.ReferenceSequenceSpec;
 
 
@@ -14,13 +15,10 @@ public class ReferenceSequenceConfig {
     referenceSequenceSpecs = new ArrayList <>();
   }
 
-  @JsonGetter
   public List < ReferenceSequenceSpec > getReferenceSequenceSpecs() {
     return Collections.unmodifiableList(this.referenceSequenceSpecs);
   }
 
-
-  @JsonSetter
   public void setReferenceSequenceSpecs(ReferenceSequenceSpec[] referenceSequenceSpecs) {
     this.referenceSequenceSpecs.addAll(Arrays.asList(referenceSequenceSpecs));
   }
