@@ -39,9 +39,9 @@ public class Main extends Server {
 
   @Override
   protected void postCliParse(Options opts) {
-    try {
+    try(var fileReader = new FileReader("config.json")) {
       var objectMapper = new ObjectMapper();
-      var jsonConfig = objectMapper.readValue(new FileReader("config.json"), Config.class);
+      var jsonConfig = objectMapper.readValue(fileReader, Config.class);
       Sequences.initialize(jsonConfig);
     } catch (Exception e ){
       throw new RuntimeException(e);

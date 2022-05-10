@@ -18,10 +18,9 @@ import java.util.ArrayList;
 public class ConvertFeatures {
   
   public static List<Feature> featuresFromBed(File file, StartOffset startOffset){
-    try {
+    try(var scanner = new Scanner(file)) {
       var codec = getBedCodec(startOffset);
       var result = new ArrayList<Feature>();
-      var scanner = new Scanner(file);
       while(scanner.hasNextLine()){
         var htsjdkFeature = codec.decode(scanner.nextLine());
         Feature feature = new FeatureImpl();
@@ -45,10 +44,10 @@ public class ConvertFeatures {
    * also gff3 is not read line by line, but feature by feature
   */ 
   public static List<Feature> featuresFromGff3(File file){
-    try {
+    try(var fileInputStream = new FileInputStream(file)) {
       var codec = new Gff3Codec();
       var result = new ArrayList<Feature>();
-      var lineIterator = codec.makeSourceFromStream(new FileInputStream(file));
+      var lineIterator = codec.makeSourceFromStream(fileInputStream);
       while(lineIterator.hasNext()){
         var htsjdkFeature = codec.decode(lineIterator);
         Feature feature = new FeatureImpl();
