@@ -12,6 +12,7 @@ import org.veupathdb.service.sr.generated.model.DeflineFormat;
 import java.util.List;
 import jakarta.ws.rs.core.StreamingOutput;
 import java.io.OutputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 
 import org.veupathdb.service.sr.util.FastaUtil;
@@ -34,12 +35,15 @@ public class StreamSequences {
     return new StreamingOutput(){
       @Override
       public void write(OutputStream outputStream) throws IOException {
+        var buf = new BufferedOutputStream(outputStream);
         for(var feature: features){
           var bases = sequenceForFeature(sequences, feature, forceStrandedness);
           var mentionStrand = forceStrandedness && ("-".equals(feature.getStrand()) || "+".equals(feature.getStrand()));
           
-          FastaUtil.appendSequenceToStream(outputStream, feature, deflineFormat, bases, basesPerLine, mentionStrand);
+          FastaUtil.appendSequenceToStream(buf, feature, deflineFormat, bases, basesPerLine, mentionStrand);
+          buf.flush();
         }
+        buf.close();
       }
     };
   }
