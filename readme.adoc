@@ -7,7 +7,7 @@ Environment/dependency setup for local development can be done via the command
 project.
 
 After the environment has been set up, the project can be built, tested, and
-packaged using `make shadowJar`.
+packaged using `./gradlew shadowJar`.
 
 Starting the server can be done by running `java -jar build/libs/service-sequence-retrieval-1.0.0-all.jar`.
 
@@ -31,4 +31,4 @@ List one entry per sequence, providing paths to fasta and index files. The name 
 
 == Example queries
 
-See `cURL` scripts in the `local/` folder.
+See `cURL` scripts in the `src/test/query` folder.
