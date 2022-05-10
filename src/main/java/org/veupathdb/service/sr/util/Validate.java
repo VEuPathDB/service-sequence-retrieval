@@ -68,9 +68,7 @@ public class Validate {
   }
 
   private static int addError(Map<String, List<String>> m, String reason, String value){
-    if(!m.containsKey(reason)){
-      m.put(reason, new ArrayList<>());
-    }
+    m.putIfAbsent(reason, new ArrayList<>());
     m.get(reason).add(value);
     return 1;
   }

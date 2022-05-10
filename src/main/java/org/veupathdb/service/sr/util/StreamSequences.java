@@ -19,7 +19,7 @@ import org.veupathdb.service.sr.util.FastaUtil;
 
 public class StreamSequences {
 
-  public static byte[] sequenceForFeature(IndexedFastaSequenceFile sequences, Feature feature, boolean forceStrandedness){
+ private static byte[] sequenceForFeature(IndexedFastaSequenceFile sequences, Feature feature, boolean forceStrandedness){
     var referenceSequence = sequences.getSubsequenceAt(feature.getContig(), feature.getStart(), feature.getEnd());
     var bases = referenceSequence.getBases();
     if(forceStrandedness && "-".equals(feature.getStrand())){
