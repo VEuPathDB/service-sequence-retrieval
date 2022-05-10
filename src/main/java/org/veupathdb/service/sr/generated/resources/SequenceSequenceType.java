@@ -8,17 +8,12 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.veupathdb.service.sr.generated.model.SequencePostRequest;
-import org.veupathdb.service.sr.generated.model.ServerError;
-import org.veupathdb.service.sr.generated.model.UnauthorizedError;
 import org.veupathdb.service.sr.generated.support.ResponseDelegate;
 
 @Path("/sequence/{sequenceType}")
 public interface SequenceSequenceType {
   @POST
-  @Produces({
-      "application/octet-stream",
-      "application/json"
-  })
+  @Produces("application/octet-stream")
   @Consumes("application/json")
   PostSequenceBySequenceTypeResponse postSequenceBySequenceType(
       @PathParam("sequenceType") String sequenceType, SequencePostRequest entity);
@@ -35,20 +30,6 @@ public interface SequenceSequenceType {
     public static PostSequenceBySequenceTypeResponse respond200WithApplicationOctetStream(
         StreamingOutput entity) {
       Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/octet-stream");
-      responseBuilder.entity(entity);
-      return new PostSequenceBySequenceTypeResponse(responseBuilder.build(), entity);
-    }
-
-    public static PostSequenceBySequenceTypeResponse respond401WithApplicationJson(
-        UnauthorizedError entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(401).header("Content-Type", "application/json");
-      responseBuilder.entity(entity);
-      return new PostSequenceBySequenceTypeResponse(responseBuilder.build(), entity);
-    }
-
-    public static PostSequenceBySequenceTypeResponse respond500WithApplicationJson(
-        ServerError entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(500).header("Content-Type", "application/json");
       responseBuilder.entity(entity);
       return new PostSequenceBySequenceTypeResponse(responseBuilder.build(), entity);
     }

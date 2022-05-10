@@ -2,7 +2,7 @@
 
 extends: https://raw.githubusercontent.com/VEuPathDB/docs-api-schema/v2.0.2/libraries/base-service.raml
 
-title: Example JaxRS Container Service
+title: Service for sequence retrieval
 version: v1.0.0
 mediaType: application/json
 
@@ -43,14 +43,6 @@ securitySchemes:
       200:
         body:
           application/octet-stream:
-      401:
-        body:
-          application/json:
-            type: error.UnauthorizedError
-      500:
-        body:
-          application/json:
-            type: error.ServerError
 
 /sequenceForBed/{sequenceType}:
   displayName: Retrieve sequence for BED
@@ -74,14 +66,6 @@ securitySchemes:
       200:
         body:
           application/octet-stream:
-      401:
-        body:
-          application/json:
-            type: error.UnauthorizedError
-      500:
-        body:
-          application/json:
-            type: error.ServerError
 
 /sequence/{sequenceType}:
   displayName: Retrieve sequence
@@ -95,12 +79,4 @@ securitySchemes:
       200:
         body:
           application/octet-stream:
-      401:
-        body:
-          application/json:
-            type: error.UnauthorizedError
-      500:
-        body:
-          application/json:
-            type: error.ServerError
 

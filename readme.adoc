@@ -6,6 +6,8 @@ Environment/dependency setup for local development can be done via the command
 `make install-dev-env`.  This will install the dependencies required to build the
 project.
 
+Redoing the api? run `./gradlew generate-jax-rs && make jar`
+
 After the environment has been set up, the project can be built, tested, and
 packaged using `./gradlew shadowJar`.
 

@@ -11,17 +11,12 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
 import org.veupathdb.service.sr.generated.model.SequenceForGff3SequenceTypePostMultipartFormData;
-import org.veupathdb.service.sr.generated.model.ServerError;
-import org.veupathdb.service.sr.generated.model.UnauthorizedError;
 import org.veupathdb.service.sr.generated.support.ResponseDelegate;
 
 @Path("/sequenceForGff3/{sequenceType}")
 public interface SequenceForGff3SequenceType {
   @POST
-  @Produces({
-      "application/octet-stream",
-      "application/json"
-  })
+  @Produces("application/octet-stream")
   @Consumes("multipart/form-data")
   PostSequenceForGff3BySequenceTypeResponse postSequenceForGff3BySequenceType(
       @PathParam("sequenceType") String sequenceType,
@@ -42,20 +37,6 @@ public interface SequenceForGff3SequenceType {
     public static PostSequenceForGff3BySequenceTypeResponse respond200WithApplicationOctetStream(
         StreamingOutput entity) {
       Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/octet-stream");
-      responseBuilder.entity(entity);
-      return new PostSequenceForGff3BySequenceTypeResponse(responseBuilder.build(), entity);
-    }
-
-    public static PostSequenceForGff3BySequenceTypeResponse respond401WithApplicationJson(
-        UnauthorizedError entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(401).header("Content-Type", "application/json");
-      responseBuilder.entity(entity);
-      return new PostSequenceForGff3BySequenceTypeResponse(responseBuilder.build(), entity);
-    }
-
-    public static PostSequenceForGff3BySequenceTypeResponse respond500WithApplicationJson(
-        ServerError entity) {
-      Response.ResponseBuilder responseBuilder = Response.status(500).header("Content-Type", "application/json");
       responseBuilder.entity(entity);
       return new PostSequenceForGff3BySequenceTypeResponse(responseBuilder.build(), entity);
     }
