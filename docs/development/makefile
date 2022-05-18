@@ -8,5 +8,5 @@ nothing:
 .PHONY: graphs
 graphs: $(PNGS)
 
-$(PNGS): $(GRAPHS)
+graphs/%.png: graphs/%.dot
 	@dot $< -Tpng -o$@
