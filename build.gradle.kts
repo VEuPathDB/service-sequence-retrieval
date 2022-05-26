@@ -6,9 +6,6 @@ plugins {
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-val myProjectPackage = "org.veupathdb.service.demo"
-val myMainClassName = "Main"
-
 containerBuild {
 
   // Change if debugging the build process is necessary.
@@ -27,10 +24,10 @@ containerBuild {
     version = "1.0.0"
 
     // Project Root Package
-    projectPackage = myProjectPackage
+    projectPackage = "org.veupathdb.service.demo"
 
     // Main Class Name
-    mainClassName = myMainClassName
+    mainClassName = "Main"
   }
 
   // Docker build configuration.
@@ -53,11 +50,6 @@ containerBuild {
     environment = mapOf(/*Pair("env-key", "env-val"), Pair("env-key", "env-val")*/)
   }
 
-  tasks.shadowJar {
-    manifest { attributes["Main-Class"] = "${myProjectPackage}.${myMainClassName}" }
-    exclude("**/Log4j2Plugins.dat")
-    archiveFileName.set("service.jar")
-  }
 }
 
 java {
@@ -66,8 +58,14 @@ java {
   }
 }
 
+tasks.shadowJar {
+  exclude("**/Log4j2Plugins.dat")
+  archiveFileName.set("service.jar")
+}
+
 repositories {
   mavenCentral()
+  mavenLocal()
   maven {
     name = "GitHubPackages"
     url  = uri("https://maven.pkg.github.com/veupathdb/maven-packages")
@@ -80,40 +78,26 @@ repositories {
 
 dependencies {
 
-  //
-  // Project Dependencies
-  //
-
-  // Core lib, prefers local checkout if available
-  implementation(findProject(":core") ?: "org.veupathdb.lib:jaxrs-container-core:6.5.0")
-
-  // Oracle
-  runtimeOnly("com.oracle.database.jdbc:ojdbc8:12.2.0.1")
+  // Core lib
+  implementation("org.veupathdb.lib:jaxrs-container-core:6.5.1")
 
   // Jersey
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-http:3.0.4")
-  implementation("org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.0.4")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.4")
-  runtimeOnly("org.glassfish.jersey.inject:jersey-hk2:3.0.4")
+  implementation("org.glassfish.jersey.core:jersey-server:3.0.4")
 
   // Jackson
   implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.3")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.3")
 
   // Log4J
   implementation("org.apache.logging.log4j:log4j-api:2.17.2")
   implementation("org.apache.logging.log4j:log4j-core:2.17.2")
 
-  // Metrics
+  // Metrics (can remove if not adding custom service metrics over those provided by container core)
   implementation("io.prometheus:simpleclient:0.15.0")
   implementation("io.prometheus:simpleclient_common:0.15.0")
 
-  // Utils
-  implementation("io.vulpine.lib:Jackfish:1.1.0")
-  implementation("com.devskiller.friendly-id:friendly-id:1.1.0")
-
   // Unit Testing
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-  testImplementation("org.mockito:mockito-core:4.3.1")
+  testImplementation("org.mockito:mockito-core:4.5.1")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 }
