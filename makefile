@@ -1,13 +1,7 @@
-APP_PACKAGE  := $(shell ./gradlew -q print-package)
-PWD          := $(shell pwd)
+APP_PACKAGE  := $(shell ./gradlew -q print-app-package | tail -1)
 MAIN_DIR     := src/main/java/$(shell echo $(APP_PACKAGE) | sed 's/\./\//g')
 TEST_DIR     := $(shell echo $(MAIN_DIR) | sed 's/main/test/')
-GEN_DIR      := $(MAIN_DIR)/generated
-ALL_PACKABLE := $(shell find src/main -type f)
 BIN_DIR      := .tools/bin
-
-EXAMPLE_DIR      := src/main/java/org/veupathdb/service/demo
-EXAMPLE_TEST_DIR := src/test/java/org/veupathdb/service/demo
 
 C_BLUE := "\\033[94m"
 C_NONE := "\\033[0m"
@@ -59,16 +53,11 @@ jar: install-dev-env build/libs/service.jar
 docker:
 	@./gradlew build-docker --stacktrace
 
-.PHONY: cleanup-example
-cleanup-example:
-	@$(BIN_DIR)/demo-cleanup.sh $(MAIN_DIR)
-
 .PHONY: install-dev-env
 install-dev-env:
-	@if [ ! -d .tools ]; then git clone https://github.com/VEuPathDB/lib-jaxrs-container-build-utils .tools; else cd .tools && git pull && cd ..; fi
-	@./gradlew check-env download-fgputil install-raml-4-jax-rs
-	@$(BIN_DIR)/install-oracle.sh
-	@#$(BIN_DIR)/install-raml-merge.sh
+	@if [ ! -d .tools ]; then git clone https://github.com/VEuPathDB/lib-jaxrs-container-build-utils .tools && cd .tools && git checkout jakarta && cd ..; else cd .tools && git pull && cd ..; fi
+	@./gradlew check-env install-raml-4-jax-rs
+	@$(BIN_DIR)/install-raml-merge.sh
 	@$(BIN_DIR)/install-npm.sh
 
 .PHONY: clean
@@ -77,14 +66,14 @@ clean:
 
 .PHONY: fix-path
 fix-path:
-	@$(BIN_DIR)/fix-path.sh $(EXAMPLE_DIR) $(MAIN_DIR)
-	@$(BIN_DIR)/fix-path.sh $(EXAMPLE_TEST_DIR) $(TEST_DIR)
+	@$(BIN_DIR)/fix-path.sh $(MAIN_DIR)
+	@$(BIN_DIR)/fix-path.sh $(TEST_DIR)
 
 .PHONY: gen-jaxrs
 gen-jaxrs: api.raml merge-raml
 	@./gradlew generate-jaxrs
 	@$(BIN_DIR)/generate-jaxrs-streams.sh $(APP_PACKAGE)
-	@grep -Rl javax src | xargs -I{} sed -i 's/javax/jakarta/g' {}
+	@$(BIN_DIR)/generate-jaxrs-postgen-mods.sh $(APP_PACKAGE)
 
 .PHONY: gen-docs
 gen-docs: api.raml merge-raml
@@ -100,4 +89,4 @@ merge-raml:
 
 build/libs/service.jar: gen-jaxrs gen-docs build.gradle.kts
 	@echo "$(C_BLUE)Building application jar$(C_NONE)"
-	@./gradlew clean test jar
+	@./gradlew clean test shadowJar

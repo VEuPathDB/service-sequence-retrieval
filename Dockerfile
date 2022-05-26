@@ -20,9 +20,8 @@ RUN jlink --compress=2 --module-path /opt/jdk/jmods \
 ENV DOCKER=build
 
 COPY . .
-RUN mkdir -p vendor \
-    && cp -n /jdbc/* vendor \
-    && make jar
+
+RUN make jar
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
