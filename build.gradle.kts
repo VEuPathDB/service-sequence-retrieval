@@ -60,9 +60,6 @@ containerBuild {
   }
 }
 
-// need this since some build utils are not yet converted to the gradle plugin
-tasks.register("print-app-package") { print(myProjectPackage) }
-
 java {
   toolchain {
     languageVersion.set(JavaLanguageVersion.of(17))

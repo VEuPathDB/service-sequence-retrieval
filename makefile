@@ -1,4 +1,4 @@
-APP_PACKAGE  := $(shell ./gradlew -q print-app-package | tail -1)
+APP_PACKAGE  := $(shell ./gradlew -q print-package | tail -1)
 MAIN_DIR     := src/main/java/$(shell echo $(APP_PACKAGE) | sed 's/\./\//g')
 TEST_DIR     := $(shell echo $(MAIN_DIR) | sed 's/main/test/')
 BIN_DIR      := .tools/bin
@@ -62,7 +62,7 @@ install-dev-env:
 
 .PHONY: clean
 clean:
-	@rm -rf .gradle .tools vendor build
+	@rm -rf .bin .gradle .tools build vendor
 
 .PHONY: fix-path
 fix-path:
