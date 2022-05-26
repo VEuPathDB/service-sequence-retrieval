@@ -27,10 +27,10 @@ containerBuild {
     version = "1.0.0"
 
     // Project Root Package
-    projectPackage = myProjectPackage //"org.veupathdb.service.demo"
+    projectPackage = myProjectPackage
 
     // Main Class Name
-    mainClassName = myMainClassName //"Main"
+    mainClassName = myMainClassName
   }
 
   // Docker build configuration.
@@ -57,14 +57,11 @@ containerBuild {
     manifest { attributes["Main-Class"] = "${myProjectPackage}.${myMainClassName}" }
     exclude("**/Log4j2Plugins.dat")
     archiveFileName.set("service.jar")
-    //exclude {
-    //  f -> f.name == "Log4j2Plugins.dat"
-    //}
   }
 }
 
 // need this since some build utils are not yet converted to the gradle plugin
-tasks.register("print-app-package") { print("org.veupathdb.service.demo") }
+tasks.register("print-app-package") { print(myProjectPackage) }
 
 java {
   toolchain {
