@@ -55,7 +55,7 @@ docker:
 
 .PHONY: install-dev-env
 install-dev-env:
-	@if [ ! -d .tools ]; then git clone https://github.com/VEuPathDB/lib-jaxrs-container-build-utils .tools && cd .tools && git checkout jakarta && cd ..; else cd .tools && git pull && cd ..; fi
+	@if [ ! -d .tools ]; then git clone https://github.com/VEuPathDB/lib-jaxrs-container-build-utils .tools; else cd .tools && git pull && cd ..; fi
 	@./gradlew check-env install-raml-4-jax-rs
 	@$(BIN_DIR)/install-raml-merge.sh
 	@$(BIN_DIR)/install-npm.sh
