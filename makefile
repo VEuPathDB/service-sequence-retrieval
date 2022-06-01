@@ -60,20 +60,15 @@ install-dev-env:
 	@$(BIN_DIR)/install-raml-merge.sh
 	@$(BIN_DIR)/install-npm.sh
 
-.PHONY: clean
-clean:
-	@rm -rf .bin .gradle .tools build vendor
-
-.PHONY: fix-path
-fix-path:
-	@$(BIN_DIR)/fix-path.sh $(MAIN_DIR)
-	@$(BIN_DIR)/fix-path.sh $(TEST_DIR)
-
 .PHONY: gen-jaxrs
 gen-jaxrs: api.raml merge-raml
 	@./gradlew generate-jaxrs
 	@$(BIN_DIR)/generate-jaxrs-streams.sh $(APP_PACKAGE)
 	@$(BIN_DIR)/generate-jaxrs-postgen-mods.sh $(APP_PACKAGE)
+
+.PHONY: clean
+clean:
+	@rm -rf .bin .gradle .tools build vendor
 
 .PHONY: gen-docs
 gen-docs: api.raml merge-raml
