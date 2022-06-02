@@ -5,12 +5,13 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 FROM veupathdb/alpine-dev-base:jdk-17 AS prep
 
+LABEL service="demo-service"
+
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
 
-LABEL service="demo-service"
-
 WORKDIR /workspace
+
 RUN jlink --compress=2 --module-path /opt/jdk/jmods \
        --add-modules java.base,java.logging,java.xml,java.desktop,java.management,java.sql,java.naming \
        --output /jlinked \
@@ -19,8 +20,20 @@ RUN jlink --compress=2 --module-path /opt/jdk/jmods \
 
 ENV DOCKER=build
 
+# copy files required to build dev environment and fetch dependencies
+COPY makefile build.gradle.kts settings.gradle.kts gradlew ./
+COPY gradle gradle
+
+# cache build environment
+RUN make install-dev-env
+
+# cache gradle and dependencies installation
+RUN ./gradlew dependencies
+
+# copy remaining files
 COPY . .
 
+# build the project
 RUN make jar
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
