@@ -1,10 +1,10 @@
 package org.veupathdb.service.demo.service;
 
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.Request;
 
 import java.util.Random;
 
+import org.glassfish.jersey.server.ContainerRequest;
 import org.veupathdb.lib.container.jaxrs.model.User;
 import org.veupathdb.lib.container.jaxrs.providers.UserProvider;
 import org.veupathdb.lib.container.jaxrs.server.annotations.Authenticated;
@@ -18,7 +18,7 @@ import org.veupathdb.service.demo.generated.resources.Hello;
 public class HelloWorld implements Hello {
 
   @Context
-  private Request req;
+  private ContainerRequest req;
 
   @Override
   public GetHelloResponse getHello() {
