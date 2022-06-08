@@ -1,1 +1,2 @@
 *.html linguist-documentation
+*.gradle.kts linguist-vendored
