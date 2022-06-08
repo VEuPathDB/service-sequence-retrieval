@@ -6,6 +6,7 @@ plugins {
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
+// configure VEupathDB container plugin
 containerBuild {
 
   // Change if debugging the build process is necessary.
