@@ -2,7 +2,7 @@ import org.veupathdb.lib.gradle.container.util.Logger.Level
 
 plugins {
   java
-  id("org.veupathdb.lib.gradle.container.container-utils") version "3.3.0"
+  id("org.veupathdb.lib.gradle.container.container-utils") version "3.4.0"
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -38,6 +38,10 @@ containerBuild {
 
     // Name of the target docker file
     dockerFile = "Dockerfile"
+
+    // Resulting image tag
+    imageName = "example-service"
+
   }
 
   generateJaxRS {
