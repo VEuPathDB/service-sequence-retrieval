@@ -256,7 +256,7 @@ public class MyOptions extends Options {
   private Integer jobCacheTimeoutDays;
   private static final int DEFAULT_JOB_CACHE_TIMEOUT_DAYS = 30;
 
-  public Integer getJobCacheTimeoutDays() {
+  public int getJobCacheTimeoutDays() {
     return jobCacheTimeoutDays == null ? DEFAULT_JOB_CACHE_TIMEOUT_DAYS : jobCacheTimeoutDays;
   }
 
