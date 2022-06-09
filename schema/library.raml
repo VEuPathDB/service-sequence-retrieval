@@ -7,31 +7,34 @@
 ################################################################################
 
 types:
-  HelloResponse:
+  ReverseRequest:
     type: object
     additionalProperties: false
     properties:
-      greeting:
+      input:
         type: string
-        enum:
-          - Hello World
-      anotherType: AnotherType
-  HelloPostRequest:
+        minLength: 3
+        maxLength: 32
+  ReverseResponse:
     type: object
     additionalProperties: false
     properties:
-      greet:
-        description: Who do you want to say hello to?
+      jobID:
         type: string
-  HelloPostResponse:
-    type: object
-    additionalProperties: false
-    properties:
-      message:
-        description: Generated greeting
-        type: string
-  AnotherType:
-    type: object
-    properties:
-      something?: string
+        pattern: ^[\dA-Fa-f]{32}$
+        minLength: 32
+        maxLength: 32
+      status: JobStatus
+      queuePosition?:
+        type: integer
+        format: int32
+  JobDataResponse: any
+  JobStatus:
+    type: string
+    enum:
+      - queued
+      - in-progress
+      - complete
+      - failed
+      - expired
 

@@ -2,29 +2,39 @@
 
 types:
   # Type name determines the name of the Java class that will be generated.
-  HelloResponse:
-    additionalProperties: false
+  ReverseRequest:
+    type: object
     properties:
-      greeting:
+      input:
         type: string
-        enum:
-          - Hello World
-      anotherType: AnotherType
-
-  HelloPostRequest:
-    properties:
-      greet:
-        description: Who do you want to say hello to?
-        type: string
+        minLength: 3
+        maxLength: 32
     additionalProperties: false
 
-  HelloPostResponse:
+  ReverseResponse:
+    type: object
     properties:
-      message:
-        description: Generated greeting
+      jobID:
         type: string
+        minLength: 32
+        maxLength: 32
+        pattern: '^[\dA-Fa-f]{32}$'
+      status:
+        type: JobStatus
+      queuePosition?:
+        type: integer
+        format: int32
     additionalProperties: false
 
-  AnotherType:
-    properties:
-      something?: string
+  JobDataResponse:
+    # Actual type is string, but it is returned as an untyped stream.
+    type: any
+
+  JobStatus:
+    type: string
+    enum:
+      - queued
+      - in-progress
+      - complete
+      - failed
+      - expired

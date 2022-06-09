@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(
-    as = HelloPostResponseImpl.class
+    as = ReverseRequestImpl.class
 )
-public interface HelloPostResponse {
-  @JsonProperty("message")
-  String getMessage();
+public interface ReverseRequest {
+  @JsonProperty("input")
+  String getInput();
 
-  @JsonProperty("message")
-  void setMessage(String message);
+  @JsonProperty("input")
+  void setInput(String input);
 }

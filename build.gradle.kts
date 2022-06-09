@@ -84,6 +84,7 @@ dependencies {
 
   // Core lib
   implementation("org.veupathdb.lib:jaxrs-container-core:6.5.1")
+  implementation("info.picocli:picocli:4.6.3")
 
   // Jersey
   implementation("org.glassfish.jersey.core:jersey-server:3.0.4")
@@ -95,6 +96,13 @@ dependencies {
   // Log4J
   implementation("org.apache.logging.log4j:log4j-api:2.17.2")
   implementation("org.apache.logging.log4j:log4j-core:2.17.2")
+
+  // Internal libraries
+  implementation("org.veupathdb.lib:hash-id:1.0.2")
+  implementation("org.veupathdb.lib:jackson-singleton:3.0.0")
+
+  // Async platform core
+  implementation("org.veupathdb.lib:compute-platform:1.0-SNAPSHOT") { isChanging = true }
 
   // Metrics (can remove if not adding custom service metrics over those provided by container core)
   implementation("io.prometheus:simpleclient:0.15.0")
