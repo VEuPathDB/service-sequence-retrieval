@@ -22,33 +22,139 @@ uses:
         type: lib.ReverseRequest
     responses:
       200:
+        description: |
+          Success
+          
+          Job was processed and queued successfully.
         body:
           application/json:
             type: lib.ReverseResponse
       500:
+        description: |
+          Internal Server Error
+          
+          An unexpected exception was thrown while attempting to process
+          the request.
         body:
           application/json:
             type: error.ServerError
 
-/jobs/{job-id}:
-  uriParameters:
-    job-id:
-      type: string
-      minLength: 32
-      maxLength: 32
-      pattern: '^[\dA-Fa-f]{32}$'
-  get:
-    description: Gets the status of the target job.
-    responses:
-      200:
-        body:
-          application/json:
-            type: lib.ReverseResponse
-      404:
-        body:
-          application/json:
-            type: error.NotFoundError
-      500:
-        body:
-          application/json:
-            type: error.ServerError
+/jobs:
+  /{job-id}:
+    uriParameters:
+      job-id:
+        type: string
+        minLength: 32
+        maxLength: 32
+        pattern: '^[\dA-Fa-f]{32}$'
+    get:
+      description: Gets the status of the target job.
+      responses:
+        200:
+          description: |
+            Success
+            
+            The target job exists and its status returned.
+          body:
+            application/json:
+              type: lib.ReverseResponse
+        404:
+          description: |
+            Not Found
+            
+            The target `{job-id}` was not found.
+          body:
+            application/json:
+              type: error.NotFoundError
+        500:
+          description: |
+            Internal Server Error
+            
+            An unexpected exception was thrown while attempting to process
+            the request.
+          body:
+            application/json:
+              type: error.ServerError
+    /files:
+      get:
+        description: |
+          Lists the files available for a completed job.
+        responses:
+          200:
+            description: |
+              Success
+              
+              The job has completed and has files available.
+            body:
+              application/json:
+                type: string[]
+          403:
+            description: |
+              Forbidden
+              
+              The job has not yet completed and thus cannot yet be queried for
+              files.
+            body:
+              application/json:
+                type: error.ForbiddenError
+          404:
+            description: |
+              Not Found
+              
+              The target `{job-id}` was not found.
+            body:
+              application/json:
+                type: error.NotFoundError
+          500:
+            description: |
+              Internal Server Error
+              
+              An unexpected exception was thrown while attempting to process
+              the request.
+            body:
+              application/json:
+                type: error.ServerError
+      /{file-name}:
+        uriParameters:
+          file-name:
+            type: string
+            minLength: 1
+        get:
+          description: |
+            Returns the target file from a completed job.
+          responses:
+            200:
+              description: |
+                Success
+                
+                The job has completed and the target file exists to return.
+              body:
+                text/plain:
+                  type: any
+            403:
+              description: |
+                Forbidden
+                
+                The job has not yet completed and thus cannot yet be queried for
+                files.
+              body:
+                application/json:
+                  type: error.ForbiddenError
+            404:
+              description: |
+                Not Found
+                
+                Either the target `{job-id}` was not found or no file with the
+                name `{file-name}` exists.
+              body:
+                application/json:
+                  type: error.NotFoundError
+            500:
+              description: |
+                Internal Server Error
+                
+                An unexpected exception was thrown while attempting to process
+                the request.
+              body:
+                application/json:
+                  type: error.ServerError
