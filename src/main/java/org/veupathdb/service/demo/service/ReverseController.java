@@ -13,6 +13,14 @@ public class ReverseController extends Controller implements Reverse {
     var json  = Json.convert(entity);
     var jobID = HashID.ofMD5(json.toString());
 
+    // Check if we have a job already with this hash ID
+    var oldJob = AsyncPlatform.getJob(jobID);
+
+    // If we do (if the AsyncPlatform call returned non-null)
+    if (oldJob != null)
+      // Return that job status.
+      return PostReverseResponse.respond200WithApplicationJson(convert(oldJob));
+
     AsyncPlatform.submitJob("string-reverse-queue", jobID, json);
 
     return PostReverseResponse.respond200WithApplicationJson(convert(AsyncPlatform.getJob(jobID)));
