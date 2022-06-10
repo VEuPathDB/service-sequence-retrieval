@@ -24,6 +24,8 @@ services:
       "
   queue-db:
     image: postgres:14.3-alpine3.16
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: demouser
       POSTGRES_PASSWORD: demopass
@@ -39,6 +41,12 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - minio
+      - queue
+      - queue-db
     environment:
       # Queue Platform Postgres
       QUEUE_DB_NAME: demodb

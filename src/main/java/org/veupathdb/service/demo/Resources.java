@@ -3,6 +3,8 @@ package org.veupathdb.service.demo;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
 import org.veupathdb.service.demo.service.Controller;
+import org.veupathdb.service.demo.service.JobController;
+import org.veupathdb.service.demo.service.ReverseController;
 
 /**
  * Service Resource Registration.
@@ -23,7 +25,8 @@ public class Resources extends ContainerResources {
   @Override
   protected Object[] resources() {
     return new Object[] {
-      Controller.class,
+      JobController.class,
+      ReverseController.class,
     };
   }
 }

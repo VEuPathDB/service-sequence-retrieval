@@ -51,10 +51,12 @@ RUN apk add --no-cache tzdata \
 
 ENV JAVA_HOME=/opt/jdk \
     PATH=/opt/jdk/bin:$PATH \
-    JVM_MEM_ARGS="-Xms=32M -Xmx=256M" \
+    JVM_MEM_ARGS="-Xms32m -Xmx256m" \
     JVM_ARGS=""
 
 COPY --from=prep /jlinked /opt/jdk
 COPY --from=prep /workspace/build/libs/service.jar /service.jar
 
-CMD java -jar -XX:+CrashOnOutOfMemoryError $JVM_MEM_ARGS $JVM_ARGS /service.jar
+COPY startup.sh startup.sh
+
+CMD ./startup.sh
