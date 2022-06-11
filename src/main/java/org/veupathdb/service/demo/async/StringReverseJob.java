@@ -1,9 +1,9 @@
 package org.veupathdb.service.demo.async;
 
 import org.jetbrains.annotations.NotNull;
-import org.veupathdb.lib.compute.platform.JobContext;
-import org.veupathdb.lib.compute.platform.JobExecutor;
-import org.veupathdb.lib.compute.platform.JobResult;
+import org.veupathdb.lib.compute.platform.job.JobContext;
+import org.veupathdb.lib.compute.platform.job.JobExecutor;
+import org.veupathdb.lib.compute.platform.job.JobResult;
 import org.veupathdb.lib.jackson.Json;
 import org.veupathdb.service.demo.generated.model.ReverseRequest;
 
