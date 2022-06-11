@@ -17,6 +17,7 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c "
+      sleep 1;
       /usr/bin/mc alias set minioc http://minio:9000 demouser demopass;
       /usr/bin/mc mb minioc/demobucket;
       /usr/bin/mc policy set public minioc/demobucket;

@@ -48,7 +48,7 @@ public class JobController extends Controller implements Jobs {
           try (var input = res.open()) {
             input.transferTo(output);
           }
-        });
+        }, GetJobsFilesByJobIdAndFileNameResponse.headersFor200().withContentDisposition("attachment; filename=output.txt"));
       }
     }
 

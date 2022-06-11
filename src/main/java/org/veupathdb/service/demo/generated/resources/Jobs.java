@@ -106,9 +106,15 @@ public interface Jobs {
       super(response);
     }
 
-    public static GetJobsFilesByJobIdAndFileNameResponse respond200WithTextPlain(Object entity) {
+    public static HeadersFor200 headersFor200() {
+      return new HeadersFor200();
+    }
+
+    public static GetJobsFilesByJobIdAndFileNameResponse respond200WithTextPlain(Object entity,
+        HeadersFor200 headers) {
       Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "text/plain");
       responseBuilder.entity(entity);
+      headers.toResponseBuilder(responseBuilder);
       return new GetJobsFilesByJobIdAndFileNameResponse(responseBuilder.build(), entity);
     }
 
@@ -131,6 +137,16 @@ public interface Jobs {
       Response.ResponseBuilder responseBuilder = Response.status(500).header("Content-Type", "application/json");
       responseBuilder.entity(entity);
       return new GetJobsFilesByJobIdAndFileNameResponse(responseBuilder.build(), entity);
+    }
+
+    public static class HeadersFor200 extends HeaderBuilderBase {
+      private HeadersFor200() {
+      }
+
+      public HeadersFor200 withContentDisposition(final String p) {
+        headerMap.put("Content-Disposition", String.valueOf(p));;
+        return this;
+      }
     }
   }
 }
