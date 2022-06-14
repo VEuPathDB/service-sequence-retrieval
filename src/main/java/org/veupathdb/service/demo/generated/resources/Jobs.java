@@ -8,8 +8,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.GenericEntity;
 import jakarta.ws.rs.core.Response;
 import org.veupathdb.service.demo.generated.model.ForbiddenError;
+import org.veupathdb.service.demo.generated.model.JobResponse;
 import org.veupathdb.service.demo.generated.model.NotFoundError;
-import org.veupathdb.service.demo.generated.model.ReverseResponse;
 import org.veupathdb.service.demo.generated.model.ServerError;
 import org.veupathdb.service.demo.generated.support.ResponseDelegate;
 
@@ -43,7 +43,7 @@ public interface Jobs {
       super(response);
     }
 
-    public static GetJobsByJobIdResponse respond200WithApplicationJson(ReverseResponse entity) {
+    public static GetJobsByJobIdResponse respond200WithApplicationJson(JobResponse entity) {
       Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
       responseBuilder.entity(entity);
       return new GetJobsByJobIdResponse(responseBuilder.build(), entity);

@@ -53,6 +53,30 @@ tool, the following actions may be performed on the example service:
 . Get the output files from your job
 . Download the output file from your job
 
+=== RabbitMQ
+
+The example uses a RabbitMQ image with the management plugin.  This means that
+it is possible to view the queues and their state from the browser by navigating
+to http://localhost:9002 when the example docker-compose stack is online.
+
+The credentials for the management plugin login are `demouser` / `demopass` by
+default, but are configured via the `RABBITMQ_DEFAULT_USER` and
+`RABBITMQ_DEFAULT_PASS` environment variables set in the
+https://github.com/VEuPathDB/example-async-compute-service/blob/master/docker-compose.example.yml[example docker-compose config].
+
+
+=== S3 / MinIO
+
+The S3 store backing the example project is https://min.io[MinIO].  This MinIO
+instance may be accessed and managed via a web interface by navigating to
+http://localhost:9001 when the example docker-compose stack is online.
+
+The credentials for the web interface are `demouser` / `demopass` by default,
+but are configured via the `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`
+environment variables set in the
+https://github.com/VEuPathDB/example-async-compute-service/blob/master/docker-compose.example.yml[example docker-compose config].
+
+
 ==== Job Submission
 
 The example project offers one job type under the endpoint `/reverse` which

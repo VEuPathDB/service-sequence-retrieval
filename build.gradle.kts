@@ -53,7 +53,6 @@ containerBuild {
     // command execution.
     environment = mapOf(/*Pair("env-key", "env-val"), Pair("env-key", "env-val")*/)
   }
-
 }
 
 java {
@@ -95,6 +94,7 @@ dependencies {
 
   // Jersey
   implementation("org.glassfish.jersey.core:jersey-server:3.0.4")
+  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.4")
 
   // Jackson
   implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")

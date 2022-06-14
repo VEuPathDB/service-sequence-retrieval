@@ -28,7 +28,33 @@ uses:
           Job was processed and queued successfully.
         body:
           application/json:
-            type: lib.ReverseResponse
+            type: lib.JobResponse
+      500:
+        description: |
+          Internal Server Error
+          
+          An unexpected exception was thrown while attempting to process
+          the request.
+        body:
+          application/json:
+            type: error.ServerError
+
+# TODO: need the file upload patch in the gradle plugin for this
+/word-count:
+  post:
+    description: Counts the words in an uploaded file.
+    body:
+      multipart/form-data:
+        type: file
+    responses:
+      200:
+        description: |
+          Success
+          
+          Job was processed and queued successfully.
+        body:
+          application/json:
+            type: lib.JobResponse
       500:
         description: |
           Internal Server Error
@@ -57,7 +83,7 @@ uses:
             The target job exists and its status returned.
           body:
             application/json:
-              type: lib.ReverseResponse
+              type: lib.JobResponse
         404:
           description: |
             Not Found

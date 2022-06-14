@@ -33,7 +33,9 @@ services:
       POSTGRES_DB: demodb
 
   queue:
-    image: rabbitmq:3.10.5-alpine
+    image: rabbitmq:3.10.5-management-alpine
+    ports:
+      - "9002:15672"
     environment:
       RABBITMQ_DEFAULT_USER: demouser
       RABBITMQ_DEFAULT_PASS: demopass

@@ -23,7 +23,7 @@ public class JobController extends Controller implements Jobs {
     if (!job.getStatus().isFinished())
       throw new ForbiddenException();
 
-    var results = AsyncPlatform.getJobResults(job.getJobID());
+    var results = AsyncPlatform.getJobFiles(job.getJobID());
     var out     = new ArrayList<String>(results.size());
 
     for (var res : results)
@@ -40,7 +40,7 @@ public class JobController extends Controller implements Jobs {
     if (!job.getStatus().isFinished())
       throw new ForbiddenException();
 
-    var results = AsyncPlatform.getJobResults(job.getJobID());
+    var results = AsyncPlatform.getJobFiles(job.getJobID());
 
     for (var res : results) {
       if (res.getName().equals(fileName)) {

@@ -9,7 +9,7 @@ types:
         type: string
     additionalProperties: false
 
-  ReverseResponse:
+  JobResponse:
     type: object
     properties:
       jobID:
@@ -25,7 +25,6 @@ types:
     additionalProperties: false
 
   JobDataResponse:
-    # Actual type is string, but it is returned as an untyped stream.
     type: any
 
   JobStatus:

@@ -1,6 +1,7 @@
 package org.veupathdb.service.demo.service;
 
 import org.veupathdb.lib.compute.platform.AsyncPlatform;
+import org.veupathdb.lib.compute.platform.job.JobSubmission;
 import org.veupathdb.lib.hash_id.HashID;
 import org.veupathdb.lib.jackson.Json;
 import org.veupathdb.service.demo.generated.model.ReverseRequest;
@@ -21,7 +22,10 @@ public class ReverseController extends Controller implements Reverse {
       // Return that job status.
       return PostReverseResponse.respond200WithApplicationJson(convert(oldJob));
 
-    AsyncPlatform.submitJob("string-reverse-queue", jobID, json);
+    AsyncPlatform.submitJob("string-reverse-queue", JobSubmission.builder()
+      .jobID(jobID)
+      .config(json)
+      .build());
 
     return PostReverseResponse.respond200WithApplicationJson(convert(AsyncPlatform.getJob(jobID)));
   }

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "status",
     "queuePosition"
 })
-public class ReverseResponseImpl implements ReverseResponse {
+public class JobResponseImpl implements JobResponse {
   @JsonProperty("jobID")
   private String jobID;
 

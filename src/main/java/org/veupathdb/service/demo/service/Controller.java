@@ -5,9 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import org.veupathdb.lib.compute.platform.job.AsyncJob;
 import org.veupathdb.lib.compute.platform.AsyncPlatform;
 import org.veupathdb.lib.hash_id.HashID;
+import org.veupathdb.service.demo.generated.model.JobResponse;
+import org.veupathdb.service.demo.generated.model.JobResponseImpl;
 import org.veupathdb.service.demo.generated.model.JobStatus;
-import org.veupathdb.service.demo.generated.model.ReverseResponse;
-import org.veupathdb.service.demo.generated.model.ReverseResponseImpl;
 
 public class Controller {
 
@@ -57,8 +57,8 @@ public class Controller {
     }
   }
 
-  protected ReverseResponse convert(AsyncJob job) {
-    var out = new ReverseResponseImpl();
+  protected JobResponse convert(AsyncJob job) {
+    var out = new JobResponseImpl();
 
     out.setJobID(job.getJobID().toString());
     out.setQueuePosition(job.getQueuePosition());

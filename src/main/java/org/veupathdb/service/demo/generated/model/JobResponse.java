@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(
-    as = ReverseResponseImpl.class
+    as = JobResponseImpl.class
 )
-public interface ReverseResponse {
+public interface JobResponse {
   @JsonProperty("jobID")
   String getJobID();
 
