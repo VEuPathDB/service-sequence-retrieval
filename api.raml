@@ -1,0 +1,191 @@
+#%RAML 1.0 Extension
+
+extends: https://raw.githubusercontent.com/VEuPathDB/docs-api-schema/v2.0.2/libraries/base-service.raml
+
+title: Example Async JaxRS Container Service
+version: v1.0.0
+mediaType: application/json
+
+uses:
+  error: https://raw.githubusercontent.com/VEuPathDB/docs-api-schema/v2.0.2/libraries/errors.raml
+  lib: schema/library.raml
+
+#
+# Example Endpoints
+#
+
+/reverse:
+  post:
+    description: Reverses a given input string.
+    body:
+      application/json:
+        type: lib.ReverseRequest
+    responses:
+      200:
+        description: |
+          Success
+          
+          Job was processed and queued successfully.
+        body:
+          application/json:
+            type: lib.JobResponse
+      500:
+        description: |
+          Internal Server Error
+          
+          An unexpected exception was thrown while attempting to process
+          the request.
+        body:
+          application/json:
+            type: error.ServerError
+
+# TODO: need the file upload patch in the gradle plugin for this
+/word-count:
+  post:
+    description: Counts the words in an uploaded file.
+    body:
+      multipart/form-data:
+        type: file
+    responses:
+      200:
+        description: |
+          Success
+          
+          Job was processed and queued successfully.
+        body:
+          application/json:
+            type: lib.JobResponse
+      500:
+        description: |
+          Internal Server Error
+          
+          An unexpected exception was thrown while attempting to process
+          the request.
+        body:
+          application/json:
+            type: error.ServerError
+
+/jobs:
+  /{job-id}:
+    uriParameters:
+      job-id:
+        type: string
+        minLength: 32
+        maxLength: 32
+        pattern: '^[\dA-Fa-f]{32}$'
+    get:
+      description: Gets the status of the target job.
+      responses:
+        200:
+          description: |
+            Success
+            
+            The target job exists and its status returned.
+          body:
+            application/json:
+              type: lib.JobResponse
+        404:
+          description: |
+            Not Found
+            
+            The target `{job-id}` was not found.
+          body:
+            application/json:
+              type: error.NotFoundError
+        500:
+          description: |
+            Internal Server Error
+            
+            An unexpected exception was thrown while attempting to process
+            the request.
+          body:
+            application/json:
+              type: error.ServerError
+    /files:
+      get:
+        description: |
+          Lists the files available for a completed job.
+        responses:
+          200:
+            description: |
+              Success
+              
+              The job has completed and has files available.
+            body:
+              application/json:
+                type: string[]
+          403:
+            description: |
+              Forbidden
+              
+              The job has not yet completed and thus cannot yet be queried for
+              files.
+            body:
+              application/json:
+                type: error.ForbiddenError
+          404:
+            description: |
+              Not Found
+              
+              The target `{job-id}` was not found.
+            body:
+              application/json:
+                type: error.NotFoundError
+          500:
+            description: |
+              Internal Server Error
+              
+              An unexpected exception was thrown while attempting to process
+              the request.
+            body:
+              application/json:
+                type: error.ServerError
+      /{file-name}:
+        uriParameters:
+          file-name:
+            type: string
+            minLength: 1
+        get:
+          description: |
+            Returns the target file from a completed job.
+          responses:
+            200:
+              description: |
+                Success
+                
+                The job has completed and the target file exists to return.
+              headers:
+                Content-Disposition:
+                  type: string
+                  example:
+                    value: attachment; filename=output.txt
+              body:
+                text/plain:
+                  type: any
+            403:
+              description: |
+                Forbidden
+                
+                The job has not yet completed and thus cannot yet be queried for
+                files.
+              body:
+                application/json:
+                  type: error.ForbiddenError
+            404:
+              description: |
+                Not Found
+                
+                Either the target `{job-id}` was not found or no file with the
+                name `{file-name}` exists.
+              body:
+                application/json:
+                  type: error.NotFoundError
+            500:
+              description: |
+                Internal Server Error
+                
+                An unexpected exception was thrown while attempting to process
+                the request.
+              body:
+                application/json:
+                  type: error.ServerError
