@@ -5,9 +5,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.veupathdb.service.demo.generated.model.JobResponse;
 import org.veupathdb.service.demo.generated.model.ServerError;
 import org.veupathdb.service.demo.generated.support.ResponseDelegate;
@@ -17,7 +15,7 @@ public interface WordCount {
   @POST
   @Produces("application/json")
   @Consumes("multipart/form-data")
-  PostWordCountResponse postWordCount(ContainerRequestContext entity);
+  PostWordCountResponse postWordCount(File entity);
 
   class PostWordCountResponse extends ResponseDelegate {
     private PostWordCountResponse(Response response, Object entity) {
