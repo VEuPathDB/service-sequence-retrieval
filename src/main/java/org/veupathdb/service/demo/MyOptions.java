@@ -91,7 +91,7 @@ public class MyOptions extends Options {
     return queueDBPoolSize == null ? DEFAULT_QUEUE_DB_POOL_SIZE : queueDBPoolSize;
   }
 
-// endregion Postgres
+  // endregion Postgres
 
   // region RabbitMQ
 
