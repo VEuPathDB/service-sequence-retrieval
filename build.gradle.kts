@@ -89,35 +89,63 @@ configurations.all {
 
 dependencies {
 
+  // Required Dependencies
+  //
+  // These dependencies are required for all projects based on this example
+  // repository:
+
   // Core lib
   implementation("org.veupathdb.lib:jaxrs-container-core:6.5.1")
-  implementation("info.picocli:picocli:4.6.3")
 
   // Jersey
   implementation("org.glassfish.jersey.core:jersey-server:3.0.4")
-  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.4")
-
-  // Jackson
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.3")
-
-  // Logging
-  implementation("org.slf4j:slf4j-api:1.7.36")
-  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
-
-  // Internal libraries
-  implementation("org.veupathdb.lib:hash-id:1.0.2")
-  implementation("org.veupathdb.lib:jackson-singleton:3.0.0")
 
   // Async platform core
   implementation("org.veupathdb.lib:compute-platform:1.0-SNAPSHOT") { isChanging = true }
 
-  // Metrics (can remove if not adding custom service metrics over those provided by container core)
+  // Job IDs
+  implementation("org.veupathdb.lib:hash-id:1.0.2")
+
+  // Logging
+  implementation("org.slf4j:slf4j-api:1.7.36")
+  implementation("org.apache.logging.log4j:log4j-core:2.17.2")
+  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
+
+
+  // Example Dependencies
+  //
+  // These dependencies were added for the demo/example project and may not be
+  // needed
+
+  // Pico CLI
+  // Only required if your project adds custom CLI/environment options, see
+  // the "MyOptions" class in the demo source code.
+  implementation("info.picocli:picocli:4.6.3")
+
+  // Multipart/Form-Data Jersey Plugin
+  // Only required if your project will be handling multipart/form-data HTTP
+  // requests.
+  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.4")
+
+  // Jackson
+  // Only required if you are going to be directly using Jackson's JSON api.
+  implementation("org.veupathdb.lib:jackson-singleton:3.0.0")
+
+  // Prometheus Metrics Gathering
+  // Only required if your project will be doing custom metric reporting outside
+  // of the metrics provided by the container core library.
   implementation("io.prometheus:simpleclient:0.15.0")
   implementation("io.prometheus:simpleclient_common:0.15.0")
 
-  // Unit Testing
+
+  // Recommended Dependencies
+  //
+  // These dependencies are not required, but are recommended.
+
+  // JUnit 5
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-  testImplementation("org.mockito:mockito-core:4.5.1")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+
+  // Mockito Test Mocking
+  testImplementation("org.mockito:mockito-core:4.6.1")
 }

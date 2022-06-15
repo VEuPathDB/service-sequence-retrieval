@@ -35,7 +35,6 @@ new-project-initialization:
 	$(MAKE) register-template-repo
 	@git fetch template
 	@git merge template/master --allow-unrelated-histories
-	$(MAKE) install-dev-env
 
 .PHONY: link-template-repo
 link-template-repo:

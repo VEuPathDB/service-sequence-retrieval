@@ -45,7 +45,7 @@ $ make example-run
 
 https://veupathdb.github.io/example-async-compute-service/api.html[API Documentation]
 
-Using `curl`, https://www.postman.com/[Postman], or your favorite API request
+Using curl, https://www.postman.com/[Postman], or your favorite API request
 tool, the following actions may be performed on the example service:
 
 . <<Job Submission,Submitting string reversal jobs>>
@@ -117,8 +117,10 @@ listed using the `/jobs/{job-id}/files` endpoint.
 ]
 ----
 
+
 ==== Job File Download
 
+The outputs of a completed job can
 
 
 === RabbitMQ
@@ -147,4 +149,45 @@ https://github.com/VEuPathDB/example-async-compute-service/blob/master/docker-co
 
 == Using this Template
 
-=== Defining Queues
+=== Creating a New Project
+
+Creating a new project from this template can be done by first pressing the
+"*Use this template*" button at the top of this page to create a new git
+repository that is a copy of this one.
+
+After you have created your new project, follow these steps to get set up for
+development:
+
+. Clone your new project onto your local development machine.
++
+[source, shell]
+----
+git clone git@github.com:veupathdb/my-new-project
+----
+. Using a console or terminal emulator, navigate to the directory in which you
+  cloned your project.
++
+[source, shell]
+----
+cd my-new-project
+----
+. Perform the new-project init step. +
++
+This step will link your new project's git history with the history of this
+template repository to enable pulling in patches and updates from this
+template into your new project in the future.
++
+[source, shell]
+----
+make new-project-initialization
+----
+. Install the required development tools and ensure your dev environment has all
+  the needed components to develop your new project.
++
+[source, shell]
+----
+make install-dev-env
+----
+. Using your favorite editor, open the `build.gradle.kts` file and update the
+  configuration in the `containerBuild` block near the top of the file with your
+  new project's properties.
