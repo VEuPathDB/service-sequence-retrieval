@@ -87,13 +87,17 @@ through the use of a `.env` file.
 
 == Development
 
-To use this project as a template for the development of a new service, use the
-"Use this template" button above to create a new project based off of this repo.
+=== Quick Start for New Projects
 
-=== Quick Start
-
-. Clone your new project and cd into the cloned directory
-. Run `make install-dev-env`
+. Create a new project from this template by clicking the "*Use this template*"
+button above.
+. Clone your new project and cd into the clone directory
+. Run `make new-project-initialization` +
+  This will:
+  .. Link your new project's git history with the git history of this template
+     repo which will enable the ability to pull fixes and updates from this
+     template into your new project.
+  .. Install the dev tools needed to build and test your project.
 . Edit `build.gradle.kts` with your service's details
 . Edit `api.raml` with your API design
 . Create any necessary types in `docs/schema`
@@ -102,6 +106,25 @@ To use this project as a template for the development of a new service, use the
 . Implement the generated service interfaces
 . Register your services in the `Resources` class
 . Run `make test` to run any unit tests and verify that things compile
+
+=== Quick Start for Contributing
+
+. Clone this project and cd into the clone directory
+. Run `make link-template-repo` +
+  This will link your currently checked out project back up to the template repo
+  which will enable the ability to pull in fixes and updates published to that
+  template.
+. Run `make install-dev-env` +
+This will install the dev tools needed to build and test the project.
+. Edit `build.gradle.kts` with your service's details
+. Edit `api.raml` with your API design
+. Create any necessary types in `docs/schema`
+. Run `make gen-jaxrs` to generate skeleton code
+. Further rename and edit the Java packages and source code under `src/` as desired
+. Implement the generated service interfaces
+. Register your services in the `Resources` class
+. Run `make test` to run any unit tests and verify that things compile
+
 
 === Detailed Overview
 
@@ -267,6 +290,42 @@ profile information to the incoming request object.
 
 === Make Targets
 
+
+==== Meta Targets
+
+`help`::
+. Lists the available make targets. +
+This is the default target that will be executed if you just run `make`.
+
+
+==== Project & Environment Setup Targets
+
+`new-project-initialization`::
+. Runs the make target `link-template-repo`
+. Merges the git history of a new template-based project with the git history of
+  template that the project was based on. +
+. Runs the make target `install-dev-env`
+
+`link-template-repo`::
+. Links the currently cloned repository back up to the template repository from
+  which the project was created. +
+  This is done to allow pulling in fixes and updates from the template into the
+  template based project.
+
+`merge-template-repo`::
+. Pulls in changes from the template repo from which this project was created.
+
+`install-dev-env`::
+. Checks for system prerequisites.
+. Downloads and builds raml-to-jaxrs.
+. Installs the Oracle JDBC components into the `vendor` directory.
+. Downloads, builds, and installs the FgpUtil project into the `vendor`
+directory.
+. Installs the required NPM packages
+
+
+==== Build & Test Targets
+
 `compile`::
 . Generates code & docs if the API def has changed.
 . Compiles Java code if anything has changed.
@@ -285,19 +344,14 @@ profile information to the incoming request object.
 `docker`::
 . Runs `docker build` for the project.
 
-`install-dev-env`::
-. Checks for system prerequisites.
-. Downloads and builds raml-to-jaxrs.
-. Installs the Oracle JDBC components into the `vendor` directory.
-. Downloads, builds, and installs the FgpUtil project into the `vendor`
-  directory.
-. Installs the required NPM packages
 
-`gen-jaxrs`::
-. Generates Java code from the Raml spec.
+==== Code & Doc Generation
 
-`gen-docs`::
-. Generates API docs from the Raml spec.
+`raml-gen-code`::
+. Generates JAX-RS Java code from the RAML spec.
+
+`raml-gen-docs`::
+. Generates API docs from the RAML spec.
 
 === Build Process
 
