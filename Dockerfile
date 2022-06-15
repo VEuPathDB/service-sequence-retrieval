@@ -51,7 +51,7 @@ RUN apk add --no-cache tzdata \
 
 ENV JAVA_HOME=/opt/jdk \
     PATH=/opt/jdk/bin:$PATH \
-    JVM_MEM_ARGS="-Xms32m -Xmx256m" \
+    JVM_MEM_ARGS="-Xms32M -Xmx256M" \
     JVM_ARGS=""
 
 COPY --from=prep /jlinked /opt/jdk
