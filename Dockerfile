@@ -31,7 +31,7 @@ RUN make install-dev-env
 RUN ./gradlew dependencies
 
 # copy remaining files
-COPY . .
+COPY .. .
 
 # build the project
 RUN make jar

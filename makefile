@@ -54,17 +54,17 @@ merge-raml:
 
 .PHONY: example-build
 example-build:
-	@docker-compose -f docker-compose.example.yml build \
+	@docker-compose -f docker-compose/docker-compose.dev.yml build \
 		--build-arg=GITHUB_USERNAME=${GITHUB_USERNAME} \
 		--build-arg=GITHUB_TOKEN=${GITHUB_TOKEN}
 
 .PHONY: example-run
 example-run:
-	@docker-compose -f docker-compose.example.yml up
+	@docker-compose -f docker-compose/docker-compose.dev.yml up
 
 .PHONY: example-clean
 example-clean:
-	@docker-compose -f docker-compose.example.yml down
+	@docker-compose -f docker-compose/docker-compose.dev.yml down
 
 #
 # File based targets
