@@ -3,7 +3,7 @@
 extends: https://raw.githubusercontent.com/VEuPathDB/docs-api-schema/v2.0.2/libraries/base-service.raml
 
 title: Example Async JaxRS Container Service
-version: v1.0.0
+version: 1.0.0
 mediaType: application/json
 
 uses:
@@ -20,6 +20,8 @@ uses:
     body:
       application/json:
         type: lib.ReverseRequest
+        example:
+          input: "hello world"
     responses:
       200:
         description: |
@@ -29,6 +31,33 @@ uses:
         body:
           application/json:
             type: lib.JobResponse
+            examples:
+              queued:
+                strict: true
+                value:
+                  jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                  status: queued
+                  queuePosition: 3
+              in-progress:
+                strict: true
+                value:
+                  jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                  status: in-progress
+              complete:
+                strict: true
+                value:
+                  jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                  status: complete
+              failed:
+                strict: true
+                value:
+                  jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                  status: failed
+              expired:
+                strict: true
+                value:
+                  jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                  status: expired
       500:
         description: |
           Internal Server Error
@@ -84,6 +113,33 @@ uses:
           body:
             application/json:
               type: lib.JobResponse
+              examples:
+                queued:
+                  strict: true
+                  value:
+                    jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                    status: queued
+                    queuePosition: 3
+                in-progress:
+                  strict: true
+                  value:
+                    jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                    status: in-progress
+                complete:
+                  strict: true
+                  value:
+                    jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                    status: complete
+                failed:
+                  strict: true
+                  value:
+                    jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                    status: failed
+                expired:
+                  strict: true
+                  value:
+                    jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                    status: expired
         404:
           description: |
             Not Found
@@ -114,6 +170,8 @@ uses:
             body:
               application/json:
                 type: string[]
+                example:
+                  - output
           403:
             description: |
               Forbidden
@@ -162,6 +220,7 @@ uses:
               body:
                 text/plain:
                   type: any
+                  example: dlrow olleh
             403:
               description: |
                 Forbidden
