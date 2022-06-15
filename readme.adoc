@@ -191,3 +191,83 @@ make install-dev-env
 . Using your favorite editor, open the `build.gradle.kts` file and update the
   configuration in the `containerBuild` block near the top of the file with your
   new project's properties.
+
+
+=== Development Prerequisites
+
+* JDK 17+
+* Docker
+* Docker Compose
+* NodeJS / NPM
+
+=== Makefile Targets
+
+This project includes a Makefile which includes the following targets.
+
+==== Meta
+
+`help`::
+Prints the list of available make targets.
+
+==== Project Setup & Maintenance
+
+`new-project-initialization`::
+A one-time-use target that should be used as the first step when initializing a
+brand-new project based on this template.
++
+This target links the git histories of the new project with this template repo
+and merges the two histories together to enable the new project to pull in
+patches and updates from the template.
++
+This is required because GitHub squashes the history of the template repo into
+a single "Initial commit" in the new project repo, creating a separate
+"unrelated" git history.
+
+`link-template-repo`::
+(Re)Adds a git-remote entry for this template repo to the local project repo
+where this make target is called.  This is done to enable pulling down patches
+and updates from the template repo via the `merge-template-repo` make target.
+
+`merge-template-repo`::
+Merges in changes from the template repo into the project in which this make
+target was called.
+
+`install-dev-env`::
+Checks the user's environment to ensure that the necessary development
+prerequisites are installed and installs the extra tooling necessary to build
+and test the project.
+
+==== Dev Process
+
+`compile`::
+Performs a clean compile of the project source code.
+
+`test`::
+Performs a clean run of the project's unit tests.
+
+`jar`::
+Builds an output jar of the project source plus all dependencies, otherwise
+known as a "fat" or "uber" jar.
+
+`docker`::
+Builds the project as a docker image with the name configured in the
+`build.gradle.kts` file's `containerBuild.docker` block.
+
+`raml-gen-code`::
+Generates Jax-RS source code from the RAML API definition.
+
+`raml-gen-docs`::
+Generates API HTML docs from the RAML API definition.
+
+==== Example Project
+
+`example-clean`::
+Removes any offline docker containers and networks from the example project's
+docker-compose stack.
+
+`example-build`::
+Builds the example project docker-compose stack.
+
+`example-run`::
+Runs the example project docker-compose stack.
+
