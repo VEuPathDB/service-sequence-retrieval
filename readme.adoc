@@ -1,0 +1,273 @@
+= Example Containerized Async Service
+:toc:
+:source-highlighter: highlightjs
+:icons: font
+// Github specifics
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+Elizabeth Paige Harper <epharper@upenn.edu>
+v1.0.0
+
+This repository is a template for and demonstration of creating asynchronous
+job processing services utilizing VEuPathDB's
+https://github.com/VEuPathDB/lib-jaxrs-container-core[container infrastructure]
+and https://github.com/VEuPathDB/lib-compute-platform[async compute platform].
+
+For additional information about the components this project is built upon, see
+the following projects:
+
+* https://github.com/VEuPathDB/example-jaxrs-container-service[Example Container Service]
+* https://github.com/VEuPathDB/lib-jaxrs-container-core[Container Service Core]
+* https://github.com/VEuPathDB/lib-compute-platform[Async Compute Platform]
+
+== Running the Example
+
+=== Prerequisites
+
+* https://docs.docker.com/engine/[Docker]
+* https://docs.docker.com/compose/[Docker Compose]
+
+=== Start Up
+
+[source, shell]
+----
+$ make example-clean
+$ make example-build
+$ make example-run
+----
+
+=== Using the Service
+
+https://veupathdb.github.io/example-async-compute-service/api.html[API Documentation]
+
+Using curl, https://www.postman.com/[Postman], or your favorite API request
+tool, the following actions may be performed on the example service:
+
+. <<Job Submission,Submitting string reversal jobs>>
+. <<Job Status Check,Check the status of your job>>
+. Get the output files from your job
+. Download the output file from your job
+
+==== Job Submission
+
+The example project offers one job type under the endpoint `/reverse` which
+simply reverses the given input string.
+
+The input is taken as a JSON object with an `"input"` field containing the text
+to reverse.
+
+.Example Input
+[source, json]
+----
+{
+  "input": "racecar"
+}
+----
+
+Once the job is accepted, the API will return a JSON object containing
+information about the submitted job.  The key piece of information in this
+response is the `"jobID"` field which is the ID of the created job that can be
+used in requests to other API endpoints to retrieve information about the job
+and the job's results.
+
+.Example Response
+[source, json]
+----
+{
+  "jobID": "6c3ac2cc4489e81857e1e2290523a505",
+  "status": "queued",
+  "queuePosition": 0
+}
+----
+
+==== Job Status Check
+
+Once a job has been submitted, the API may be used to check on the status of the
+job.  In a more realistic situation, this endpoint could be used to poll the API
+waiting for the job's status to be updated to a completion status.
+
+In the example API, a job's status/details may be retrieved using the
+`/jobs/{job-id}` endpoint.  In this endpoint the `{job-id}` variable should be
+replaced with the ID of the job returned on job submission.
+
+.Example Response
+[source, json]
+----
+{
+  "jobID": "6c3ac2cc4489e81857e1e2290523a505",
+  "status": "complete"
+}
+----
+
+==== Job File Listing
+
+A completed job will have result files associated with it.  These files may be
+listed using the `/jobs/{job-id}/files` endpoint.
+
+.Example Response
+[source, json]
+----
+[
+  "output"
+]
+----
+
+
+==== Job File Download
+
+The outputs of a completed job can
+
+
+=== RabbitMQ
+
+The example uses a RabbitMQ image with the management plugin.  This means that
+it is possible to view the queues and their state from the browser by navigating
+to http://localhost:9002 when the example docker-compose stack is online.
+
+The credentials for the management plugin login are `demouser` / `demopass` by
+default, but are configured via the `RABBITMQ_DEFAULT_USER` and
+`RABBITMQ_DEFAULT_PASS` environment variables set in the
+https://github.com/VEuPathDB/example-async-compute-service/blob/master/docker-compose.example.yml[example docker-compose config].
+
+
+=== S3 / MinIO
+
+The S3 store backing the example project is https://min.io[MinIO].  This MinIO
+instance may be accessed and managed via a web interface by navigating to
+http://localhost:9001 when the example docker-compose stack is online.
+
+The credentials for the web interface are `demouser` / `demopass` by default,
+but are configured via the `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`
+environment variables set in the
+https://github.com/VEuPathDB/example-async-compute-service/blob/master/docker-compose.example.yml[example docker-compose config].
+
+
+== Using this Template
+
+=== Creating a New Project
+
+Creating a new project from this template can be done by first pressing the
+"*Use this template*" button at the top of this page to create a new git
+repository that is a copy of this one.
+
+After you have created your new project, follow these steps to get set up for
+development:
+
+. Clone your new project onto your local development machine.
++
+[source, shell]
+----
+git clone git@github.com:veupathdb/my-new-project
+----
+. Using a console or terminal emulator, navigate to the directory in which you
+  cloned your project.
++
+[source, shell]
+----
+cd my-new-project
+----
+. Perform the new-project init step. +
++
+This step will link your new project's git history with the history of this
+template repository to enable pulling in patches and updates from this
+template into your new project in the future.
++
+[source, shell]
+----
+make new-project-initialization
+----
+. Install the required development tools and ensure your dev environment has all
+  the needed components to develop your new project.
++
+[source, shell]
+----
+make install-dev-env
+----
+. Using your favorite editor, open the `build.gradle.kts` file and update the
+  configuration in the `containerBuild` block near the top of the file with your
+  new project's properties.
+
+
+=== Development Prerequisites
+
+* JDK 17+
+* Docker
+* Docker Compose
+* NodeJS / NPM
+
+=== Makefile Targets
+
+This project includes a Makefile which includes the following targets.
+
+==== Meta
+
+`help`::
+Prints the list of available make targets.
+
+==== Project Setup & Maintenance
+
+`new-project-initialization`::
+A one-time-use target that should be used as the first step when initializing a
+brand-new project based on this template.
++
+This target links the git histories of the new project with this template repo
+and merges the two histories together to enable the new project to pull in
+patches and updates from the template.
++
+This is required because GitHub squashes the history of the template repo into
+a single "Initial commit" in the new project repo, creating a separate
+"unrelated" git history.
+
+`link-template-repo`::
+(Re)Adds a git-remote entry for this template repo to the local project repo
+where this make target is called.  This is done to enable pulling down patches
+and updates from the template repo via the `merge-template-repo` make target.
+
+`merge-template-repo`::
+Merges in changes from the template repo into the project in which this make
+target was called.
+
+`install-dev-env`::
+Checks the user's environment to ensure that the necessary development
+prerequisites are installed and installs the extra tooling necessary to build
+and test the project.
+
+==== Dev Process
+
+`compile`::
+Performs a clean compile of the project source code.
+
+`test`::
+Performs a clean run of the project's unit tests.
+
+`jar`::
+Builds an output jar of the project source plus all dependencies, otherwise
+known as a "fat" or "uber" jar.
+
+`docker`::
+Builds the project as a docker image with the name configured in the
+`build.gradle.kts` file's `containerBuild.docker` block.
+
+`raml-gen-code`::
+Generates Jax-RS source code from the RAML API definition.
+
+`raml-gen-docs`::
+Generates API HTML docs from the RAML API definition.
+
+==== Example Project
+
+`example-clean`::
+Removes any offline docker containers and networks from the example project's
+docker-compose stack.
+
+`example-build`::
+Builds the example project docker-compose stack.
+
+`example-run`::
+Runs the example project docker-compose stack.
+
