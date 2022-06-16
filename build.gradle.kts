@@ -101,7 +101,7 @@ dependencies {
   implementation("org.glassfish.jersey.core:jersey-server:3.0.4")
 
   // Async platform core
-  implementation("org.veupathdb.lib:compute-platform:1.0-SNAPSHOT") { isChanging = true }
+  implementation("org.veupathdb.lib:compute-platform:1.0.0")
 
   // Job IDs
   implementation("org.veupathdb.lib:hash-id:1.0.2")
