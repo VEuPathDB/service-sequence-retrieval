@@ -104,7 +104,7 @@ dependencies {
   implementation("org.veupathdb.lib:compute-platform:1.0.0")
 
   // Job IDs
-  implementation("org.veupathdb.lib:hash-id:1.0.2")
+  implementation("org.veupathdb.lib:hash-id:1.1.0")
 
   // Logging
   implementation("org.slf4j:slf4j-api:1.7.36")
