@@ -2,21 +2,13 @@ package org.veupathdb.service.sr.generated.model;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import java.io.File;
 import java.util.Map;
 
 @JsonDeserialize(
-    as = SequenceForBedSequenceTypePostMultipartFormDataImpl.class
+    as = PlainTextFastaResponseImpl.class
 )
-public interface SequenceForBedSequenceTypePostMultipartFormData {
-  @JsonProperty("file")
-  File getFile();
-
-  @JsonProperty("file")
-  void setFile(File file);
-
+public interface PlainTextFastaResponse {
   @JsonAnyGetter
   Map<String, Object> getAdditionalProperties();
 

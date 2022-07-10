@@ -23,13 +23,13 @@ public class SequencePostRequestImpl implements SequencePostRequest {
       value = "forceStrandedness",
       defaultValue = "false"
   )
-  private boolean forceStrandedness;
+  private Boolean forceStrandedness;
 
   @JsonProperty(
       value = "basesPerLine",
       defaultValue = "60"
   )
-  private int basesPerLine;
+  private Integer basesPerLine;
 
   @JsonProperty("features")
   public List<Feature> getFeatures() {
@@ -55,7 +55,7 @@ public class SequencePostRequestImpl implements SequencePostRequest {
       value = "forceStrandedness",
       defaultValue = "false"
   )
-  public boolean getForceStrandedness() {
+  public Boolean getForceStrandedness() {
     return this.forceStrandedness;
   }
 
@@ -63,7 +63,7 @@ public class SequencePostRequestImpl implements SequencePostRequest {
       value = "forceStrandedness",
       defaultValue = "false"
   )
-  public void setForceStrandedness(boolean forceStrandedness) {
+  public void setForceStrandedness(Boolean forceStrandedness) {
     this.forceStrandedness = forceStrandedness;
   }
 
@@ -71,7 +71,7 @@ public class SequencePostRequestImpl implements SequencePostRequest {
       value = "basesPerLine",
       defaultValue = "60"
   )
-  public int getBasesPerLine() {
+  public Integer getBasesPerLine() {
     return this.basesPerLine;
   }
 
@@ -79,7 +79,7 @@ public class SequencePostRequestImpl implements SequencePostRequest {
       value = "basesPerLine",
       defaultValue = "60"
   )
-  public void setBasesPerLine(int basesPerLine) {
+  public void setBasesPerLine(Integer basesPerLine) {
     this.basesPerLine = basesPerLine;
   }
 }

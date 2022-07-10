@@ -2,16 +2,16 @@ package org.veupathdb.service.sr.generated.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public enum StartOffset {
-  @JsonProperty("zero")
-  ZERO("zero"),
+public enum UploadMethod {
+  @JsonProperty("file")
+  FILE("file"),
 
-  @JsonProperty("one")
-  ONE("one");
+  @JsonProperty("url")
+  URL("url");
 
   private String name;
 
-  StartOffset(String name) {
+  UploadMethod(String name) {
     this.name = name;
   }
   public String getValue(){ return name; } 

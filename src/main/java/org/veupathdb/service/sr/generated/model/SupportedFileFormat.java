@@ -2,16 +2,16 @@ package org.veupathdb.service.sr.generated.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public enum StartOffset {
-  @JsonProperty("zero")
-  ZERO("zero"),
+public enum SupportedFileFormat {
+  @JsonProperty("bed")
+  BED("bed"),
 
-  @JsonProperty("one")
-  ONE("one");
+  @JsonProperty("gff3")
+  GFF3("gff3");
 
   private String name;
 
-  StartOffset(String name) {
+  SupportedFileFormat(String name) {
     this.name = name;
   }
   public String getValue(){ return name; } 

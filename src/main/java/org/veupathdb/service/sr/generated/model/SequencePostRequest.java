@@ -24,23 +24,23 @@ public interface SequencePostRequest {
       value = "forceStrandedness",
       defaultValue = "false"
   )
-  boolean getForceStrandedness();
+  Boolean getForceStrandedness();
 
   @JsonProperty(
       value = "forceStrandedness",
       defaultValue = "false"
   )
-  void setForceStrandedness(boolean forceStrandedness);
+  void setForceStrandedness(Boolean forceStrandedness);
 
   @JsonProperty(
       value = "basesPerLine",
       defaultValue = "60"
   )
-  int getBasesPerLine();
+  Integer getBasesPerLine();
 
   @JsonProperty(
       value = "basesPerLine",
       defaultValue = "60"
   )
-  void setBasesPerLine(int basesPerLine);
+  void setBasesPerLine(Integer basesPerLine);
 }

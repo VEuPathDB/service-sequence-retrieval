@@ -8,9 +8,21 @@ import java.io.File;
 import java.util.Map;
 
 @JsonDeserialize(
-    as = SequenceForGff3SequenceTypePostMultipartFormDataImpl.class
+    as = SequencesForFileFormatSequenceTypePostMultipartFormDataImpl.class
 )
-public interface SequenceForGff3SequenceTypePostMultipartFormData {
+public interface SequencesForFileFormatSequenceTypePostMultipartFormData {
+  @JsonProperty("uploadMethod")
+  UploadMethod getUploadMethod();
+
+  @JsonProperty("uploadMethod")
+  void setUploadMethod(UploadMethod uploadMethod);
+
+  @JsonProperty("url")
+  String getUrl();
+
+  @JsonProperty("url")
+  void setUrl(String url);
+
   @JsonProperty("file")
   File getFile();
 

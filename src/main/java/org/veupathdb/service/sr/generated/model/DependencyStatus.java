@@ -14,10 +14,10 @@ public interface DependencyStatus {
   void setName(String name);
 
   @JsonProperty("reachable")
-  boolean getReachable();
+  Boolean getReachable();
 
   @JsonProperty("reachable")
-  void setReachable(boolean reachable);
+  void setReachable(Boolean reachable);
 
   @JsonProperty("online")
   OnlineType getOnline();
@@ -40,5 +40,6 @@ public interface DependencyStatus {
     OnlineType(String name) {
       this.name = name;
     }
-  }
+    public String getValue(){ return name; } 
+}
 }

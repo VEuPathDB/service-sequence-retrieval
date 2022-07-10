@@ -14,16 +14,16 @@ public interface Feature {
   void setContig(String contig);
 
   @JsonProperty("start")
-  int getStart();
+  Integer getStart();
 
   @JsonProperty("start")
-  void setStart(int start);
+  void setStart(Integer start);
 
   @JsonProperty("end")
-  int getEnd();
+  Integer getEnd();
 
   @JsonProperty("end")
-  void setEnd(int end);
+  void setEnd(Integer end);
 
   @JsonProperty("query")
   String getQuery();

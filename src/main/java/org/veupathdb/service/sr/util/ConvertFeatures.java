@@ -1,24 +1,21 @@
 package org.veupathdb.service.sr.util;
 
-import java.io.File;
-import java.util.Scanner;
-import java.io.FileInputStream;
-
-import org.veupathdb.service.sr.generated.model.StartOffset;
-
-import htsjdk.tribble.FeatureCodec;
 import htsjdk.tribble.bed.BEDCodec;
 import htsjdk.tribble.gff.Gff3Codec;
-
 import org.veupathdb.service.sr.generated.model.Feature;
 import org.veupathdb.service.sr.generated.model.FeatureImpl;
+import org.veupathdb.service.sr.generated.model.StartOffset;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 public class ConvertFeatures {
   
-  public static List<Feature> featuresFromBed(File file, StartOffset startOffset){
-    try(var scanner = new Scanner(file)) {
+  public static List<Feature> featuresFromBed(InputStream in, StartOffset startOffset){
+    try (var scanner = new Scanner(in)) {
       var codec = getBedCodec(startOffset);
       var result = new ArrayList<Feature>();
       while(scanner.hasNextLine()){
@@ -43,48 +40,36 @@ public class ConvertFeatures {
    * Gff3Feature and BedFeature don't have getName in their common interface
    * also gff3 is not read line by line, but feature by feature
   */ 
-  public static List<Feature> featuresFromGff3(File file){
-    try(var fileInputStream = new FileInputStream(file)) {
-      var codec = new Gff3Codec();
-      var result = new ArrayList<Feature>();
-      var lineIterator = codec.makeSourceFromStream(fileInputStream);
-      while(lineIterator.hasNext()){
-        var htsjdkFeature = codec.decode(lineIterator);
-        Feature feature = new FeatureImpl();
-        feature.setContig(htsjdkFeature.getContig());
-        feature.setStart(htsjdkFeature.getStart());
-        feature.setEnd(htsjdkFeature.getEnd());
-        feature.setQuery(htsjdkFeature.getName());
-        feature.setStrand(ourStrand(htsjdkFeature.getStrand()));
-        result.add(feature);
-      }
-      return result;
-    } catch (Exception e){
-      throw new RuntimeException(e);
+  public static List<Feature> featuresFromGff3(InputStream in) throws IOException {
+    var codec = new Gff3Codec();
+    var result = new ArrayList<Feature>();
+    var lineIterator = codec.makeSourceFromStream(in);
+    while(lineIterator.hasNext()){
+      var htsjdkFeature = codec.decode(lineIterator);
+      Feature feature = new FeatureImpl();
+      feature.setContig(htsjdkFeature.getContig());
+      feature.setStart(htsjdkFeature.getStart());
+      feature.setEnd(htsjdkFeature.getEnd());
+      feature.setQuery(htsjdkFeature.getName());
+      feature.setStrand(ourStrand(htsjdkFeature.getStrand()));
+      result.add(feature);
     }
+    return result;
   }
 
   private static String ourStrand(htsjdk.tribble.annotation.Strand tribbleStrand){
-    switch(tribbleStrand){
-      case NEGATIVE:
-        return "-";
-      case POSITIVE:
-        return "+";
-      case NONE:
-        return ".";
-    }
-    return null;
+    return switch (tribbleStrand) {
+      case NEGATIVE -> "-";
+      case POSITIVE -> "+";
+      case NONE -> ".";
+    };
   }
 
   private static BEDCodec getBedCodec(StartOffset startOffset){
-    switch(startOffset){
-      case ZERO:
-        return new BEDCodec(BEDCodec.StartOffset.ZERO);
-      case ONE:
-        return new BEDCodec(BEDCodec.StartOffset.ONE);
-    }
-    return null;
+    return switch (startOffset) {
+      case ZERO -> new BEDCodec(BEDCodec.StartOffset.ZERO);
+      case ONE -> new BEDCodec(BEDCodec.StartOffset.ONE);
+    };
   }
-
 
 }

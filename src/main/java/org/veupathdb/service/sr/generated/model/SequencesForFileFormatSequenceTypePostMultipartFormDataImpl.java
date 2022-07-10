@@ -10,13 +10,43 @@ import java.io.File;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("file")
-public class SequenceForGff3SequenceTypePostMultipartFormDataImpl implements SequenceForGff3SequenceTypePostMultipartFormData {
+@JsonPropertyOrder({
+    "uploadMethod",
+    "url",
+    "file"
+})
+public class SequencesForFileFormatSequenceTypePostMultipartFormDataImpl implements SequencesForFileFormatSequenceTypePostMultipartFormData {
+  @JsonProperty("uploadMethod")
+  private UploadMethod uploadMethod;
+
+  @JsonProperty("url")
+  private String url;
+
   @JsonProperty("file")
   private File file;
 
   @JsonIgnore
   private Map<String, Object> additionalProperties = new ExcludingMap();
+
+  @JsonProperty("uploadMethod")
+  public UploadMethod getUploadMethod() {
+    return this.uploadMethod;
+  }
+
+  @JsonProperty("uploadMethod")
+  public void setUploadMethod(UploadMethod uploadMethod) {
+    this.uploadMethod = uploadMethod;
+  }
+
+  @JsonProperty("url")
+  public String getUrl() {
+    return this.url;
+  }
+
+  @JsonProperty("url")
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
   @JsonProperty("file")
   public File getFile() {

@@ -1,22 +1,52 @@
 #%RAML 1.0 Library
 
-
-uses:
-  common: ../common.raml
-
 types:
+
+  PlainTextFastaResponse:
+    # making this an object triggers generation of Response and ResponseStream mechanisms
+    type: object
+
+  DeflineFormat:
+    type: string
+    enum: ["query_only", "region_only", "query_and_region"]
+    default: "region_only"
+
+  Strand:
+    type: string
+    # enum: ['+', '-', '.'] gives errors
+    default: '.'
+
+  Feature:
+    additionalProperties: false
+    properties:
+      contig: string
+      start: integer
+      end: integer
+      query?: string
+      strand?: Strand
+
+  StartOffset:
+    type: string
+    enum: ['zero', 'one']
+
+  UploadMethod:
+    type: string
+    enum: ['file', 'url']
+
+  SupportedFileFormat:
+    type: string
+    enum: ['bed', 'gff3']
+
   SequencePostRequest:
     additionalProperties: false
     properties:
       features:
         type: array
-        items: common.Feature
-      deflineFormat: common.DeflineFormat
-      forceStrandedness:
+        items: Feature
+      deflineFormat?: DeflineFormat
+      forceStrandedness?:
         type: boolean
         default: false
-      basesPerLine:
+      basesPerLine?:
         type: integer
         default: 60
-
-  SequencePostResponse: common.PlainTextFastaResponse

@@ -5,12 +5,13 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 FROM veupathdb/alpine-dev-base:jdk-17 AS prep
 
+LABEL service="sequence-retrieval-build"
+
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
 
-LABEL service="demo-service"
-
 WORKDIR /workspace
+
 RUN jlink --compress=2 --module-path /opt/jdk/jmods \
        --add-modules java.base,java.logging,java.xml,java.desktop,java.management,java.sql,java.naming \
        --output /jlinked \
@@ -19,19 +20,30 @@ RUN jlink --compress=2 --module-path /opt/jdk/jmods \
 
 ENV DOCKER=build
 
+# copy files required to build dev environment and fetch dependencies
+COPY makefile build.gradle.kts settings.gradle.kts gradlew ./
+COPY gradle gradle
+
+# cache build environment
+RUN make install-dev-env
+
+# cache gradle and dependencies installation
+RUN ./gradlew dependencies
+
+# copy remaining files
 COPY . .
-RUN mkdir -p vendor \
-    && cp -n /jdbc/* vendor \
-    && make jar
+
+# build the project
+RUN make jar
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 #   Run the service
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM foxcapades/alpine-oracle:1.6
+FROM alpine:3.16
 
-LABEL service="demo-service"
+LABEL service="sequence-retrieval"
 
 RUN apk add --no-cache tzdata \
     && cp /usr/share/zoneinfo/America/New_York /etc/localtime \
@@ -39,7 +51,7 @@ RUN apk add --no-cache tzdata \
 
 ENV JAVA_HOME=/opt/jdk \
     PATH=/opt/jdk/bin:$PATH \
-    JVM_MEM_ARGS="-Xms=32M -Xmx=256M" \
+    JVM_MEM_ARGS="-Xms32M -Xmx256M" \
     JVM_ARGS=""
 
 COPY --from=prep /jlinked /opt/jdk

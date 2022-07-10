@@ -17,10 +17,10 @@ public class FeatureImpl implements Feature {
   private String contig;
 
   @JsonProperty("start")
-  private int start;
+  private Integer start;
 
   @JsonProperty("end")
-  private int end;
+  private Integer end;
 
   @JsonProperty("query")
   private String query;
@@ -39,22 +39,22 @@ public class FeatureImpl implements Feature {
   }
 
   @JsonProperty("start")
-  public int getStart() {
+  public Integer getStart() {
     return this.start;
   }
 
   @JsonProperty("start")
-  public void setStart(int start) {
+  public void setStart(Integer start) {
     this.start = start;
   }
 
   @JsonProperty("end")
-  public int getEnd() {
+  public Integer getEnd() {
     return this.end;
   }
 
   @JsonProperty("end")
-  public void setEnd(int end) {
+  public void setEnd(Integer end) {
     this.end = end;
   }
 

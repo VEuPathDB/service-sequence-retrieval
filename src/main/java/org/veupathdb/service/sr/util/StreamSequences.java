@@ -1,22 +1,15 @@
 package org.veupathdb.service.sr.util;
 
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
-import htsjdk.samtools.reference.FastaSequenceIndex;
-import htsjdk.samtools.reference.ReferenceSequence;
 import htsjdk.samtools.util.SequenceUtil;
-import htsjdk.samtools.reference.FastaReferenceWriterBuilder;
-
-import org.veupathdb.service.sr.generated.model.Feature;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
+import org.veupathdb.service.sr.generated.model.Feature;
 
-import java.util.List;
-import jakarta.ws.rs.core.StreamingOutput;
-import java.io.OutputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-
-import org.veupathdb.service.sr.util.FastaUtil;
-
+import java.io.OutputStream;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class StreamSequences {
 
@@ -29,21 +22,21 @@ public class StreamSequences {
     return bases;
   }
 
-  public static StreamingOutput responseStream(IndexedFastaSequenceFile sequences, List<Feature> features, DeflineFormat deflineFormat, boolean forceStrandedness, int requestedBasesPerLine){
+  public static Consumer<OutputStream> responseStream(IndexedFastaSequenceFile sequences, List<Feature> features, DeflineFormat deflineFormat, boolean forceStrandedness, int requestedBasesPerLine){
 
     int basesPerLine = requestedBasesPerLine > 0 ? requestedBasesPerLine : Integer.MAX_VALUE;
-    return new StreamingOutput(){
-      @Override
-      public void write(OutputStream outputStream) throws IOException {
-        var buf = new BufferedOutputStream(outputStream);
-        for(var feature: features){
+    return outputStream -> {
+      try (var buf = new BufferedOutputStream(outputStream)) {
+        for (var feature : features) {
           var bases = sequenceForFeature(sequences, feature, forceStrandedness);
           var mentionStrand = forceStrandedness && ("-".equals(feature.getStrand()) || "+".equals(feature.getStrand()));
-          
+
           FastaUtil.appendSequenceToStream(buf, feature, deflineFormat, bases, basesPerLine, mentionStrand);
           buf.flush();
         }
-        buf.close();
+      }
+      catch (IOException e) {
+        throw new RuntimeException("Unable to stream sequences response", e);
       }
     };
   }
