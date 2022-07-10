@@ -25,7 +25,7 @@ public class SequencesFromFileController implements SequencesForFileFormatSequen
   @Override
   public PostSequencesForByFileFormatAndSequenceTypeResponse postSequencesForByFileFormatAndSequenceType(
       String fileFormatStr,
-      String sequenceType,
+      String sequenceTypeStr,
       DeflineFormat deflineFormat,
       Boolean forceStrandedness,
       Integer basesPerLine,
@@ -37,6 +37,8 @@ public class SequencesFromFileController implements SequencesForFileFormatSequen
 
     // throw not found since this is a path param
     var fileFormat = EnumUtil.validate(fileFormatStr, SupportedFileFormat.values(), NotFoundException::new);
+    // throw not found since this is a path param
+    var sequenceType = EnumUtil.validate(sequenceTypeStr, SequenceType.values(), NotFoundException::new);
     // throw bad request since this is in the request body
     var uploadMethod = EnumUtil.validate(uploadMethodStr, UploadMethod.values(), BadRequestException::new);
 

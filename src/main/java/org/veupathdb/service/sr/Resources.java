@@ -4,6 +4,8 @@ import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
 import org.veupathdb.service.sr.controller.SequencesController;
 import org.veupathdb.service.sr.controller.SequencesFromFileController;
+import org.veupathdb.service.sr.model.ReferenceSequenceConfig;
+import org.veupathdb.service.sr.service.Sequences;
 
 /**
  * Service Resource Registration.
@@ -12,8 +14,12 @@ import org.veupathdb.service.sr.controller.SequencesFromFileController;
  * should be registered.
  */
 public class Resources extends ContainerResources {
+
   public Resources(Options opts) {
     super(opts);
+
+    // read environment to create a configuration and initialize sequence processing
+    Sequences.initialize(ReferenceSequenceConfig.getInstance());
   }
 
   /**

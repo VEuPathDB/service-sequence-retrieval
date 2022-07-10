@@ -7,6 +7,7 @@ import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 import htsjdk.samtools.reference.FastaSequenceIndex;
 import htsjdk.samtools.reference.ReferenceSequence;
 import org.veupathdb.service.sr.generated.model.Feature;
+import org.veupathdb.service.sr.generated.model.SequenceType;
 import org.veupathdb.service.sr.model.ReferenceSequenceSpec;
 import org.veupathdb.service.sr.generated.model.SequencePostRequest;
 
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 
 public class Validate {
 
-  public static List<Feature> getValidatedFeatures(String sequenceType, FastaSequenceIndex index, List<Feature> features, boolean forceStrandedness, ReferenceSequenceSpec spec){
+  public static List<Feature> getValidatedFeatures(SequenceType sequenceType, FastaSequenceIndex index, List<Feature> features, boolean forceStrandedness, ReferenceSequenceSpec spec){
     if(forceStrandedness && spec.getDisallowReverseComplement()){
       throw new BadRequestException("Reverse complement option not available for sequence type" + sequenceType);
     }

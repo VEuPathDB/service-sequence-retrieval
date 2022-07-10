@@ -86,6 +86,9 @@ dependencies {
   // Working with sequences
   implementation("com.github.samtools:htsjdk:2.24.1")
 
+  // FgpUtil
+  implementation("org.gusdb:fgputil-core:2.7.1-jakarta")
+
   // Core lib
   implementation("org.veupathdb.lib:jaxrs-container-core:6.7.4")
 
