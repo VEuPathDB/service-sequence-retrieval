@@ -13,6 +13,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
 import org.veupathdb.service.sr.generated.model.PlainTextFastaResponse;
 import org.veupathdb.service.sr.generated.model.SequencePostRequest;
+import org.veupathdb.service.sr.generated.model.SequencesSequenceTypeFileFormatPostMultipartFormData;
 import org.veupathdb.service.sr.generated.model.StartOffset;
 import org.veupathdb.service.sr.generated.support.ResponseDelegate;
 
@@ -31,12 +32,11 @@ public interface SequencesSequenceType {
   @Produces("text/x-fasta")
   @Consumes("multipart/form-data")
   PostSequencesBySequenceTypeAndFileFormatResponse postSequencesBySequenceTypeAndFileFormat(
-      @PathParam("fileFormat") String fileFormat,
-      @PathParam("sequenceType") String sequenceType,
-      @QueryParam("deflineFormat") DeflineFormat deflineFormat,
+      @PathParam("sequenceType") String sequenceType, @PathParam("fileFormat") String fileFormat,
+      @QueryParam("deflineFormat") @DefaultValue("region_only") DeflineFormat deflineFormat,
       @QueryParam("forceStrandedness") @DefaultValue("false") Boolean forceStrandedness,
       @QueryParam("basesPerLine") @DefaultValue("60") Integer basesPerLine,
-      @QueryParam("startOffset") StartOffset startOffset,
+      @QueryParam("startOffset") @DefaultValue("one") StartOffset startOffset,
       @FormDataParam("uploadMethod") String uploadMethod,
       @FormDataParam("file") InputStream file,
       @FormDataParam("file") FormDataContentDisposition meta,

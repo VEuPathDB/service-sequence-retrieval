@@ -2,6 +2,7 @@ package org.veupathdb.service.sr.util;
 
 import org.veupathdb.service.sr.generated.model.Feature;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
+import org.veupathdb.service.sr.generated.model.Strand;
 
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -48,7 +49,7 @@ public class FastaUtil {
         result.append(feature.getEnd());
         if(mentionStrand){
           result.append(BEFORE_STRAND_CHAR);
-          result.append(feature.getStrand());
+          result.append(getStrandChar(feature.getStrand()));
           result.append(AFTER_STRAND_CHAR);
         }
         break;
@@ -56,10 +57,18 @@ public class FastaUtil {
     return result.toString();
   }
 
-/*
- * appends sequence to stream
-  customized from htsjdk.samtools.reference.FastaReferenceWriter;
-*/
+  public static char getStrandChar(Strand strand) {
+    return switch(strand) {
+      case POSITIVE -> '+';
+      case NEGATIVE -> '-';
+      case EITHER -> '.';
+    };
+  }
+
+  /*
+   * appends sequence to stream
+   * customized from htsjdk.samtools.reference.FastaReferenceWriter;
+   */
   public static void appendSequenceToStream(OutputStream outputStream, Feature feature, DeflineFormat deflineFormat, byte[] bases, int basesPerLine, boolean mentionStrand) throws IOException {
 
     var defline = deflineForFeature(feature, deflineFormat, mentionStrand);

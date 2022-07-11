@@ -8,22 +8,11 @@ types:
 
   DeflineFormat:
     type: string
-    enum: ["query_only", "region_only", "query_and_region"]
-    default: "region_only"
+    enum: ['query_only', 'region_only', 'query_and_region']
 
   Strand:
     type: string
-    # enum: ['+', '-', '.'] gives errors
-    default: '.'
-
-  Feature:
-    additionalProperties: false
-    properties:
-      contig: string
-      start: integer
-      end: integer
-      query?: string
-      strand?: Strand
+    enum: ['positive', 'negative', 'either']
 
   StartOffset:
     type: string
@@ -41,13 +30,26 @@ types:
     type: string
     enum: ['genomic', 'protein']
 
+  Feature:
+    additionalProperties: false
+    properties:
+      contig: string
+      start: integer
+      end: integer
+      query?: string
+      strand?:
+        type: Strand
+        default: 'either'
+
   SequencePostRequest:
     additionalProperties: false
     properties:
       features:
         type: array
         items: Feature
-      deflineFormat?: DeflineFormat
+      deflineFormat?:
+        type: DeflineFormat
+        default: 'region_only'
       forceStrandedness?:
         type: boolean
         default: false

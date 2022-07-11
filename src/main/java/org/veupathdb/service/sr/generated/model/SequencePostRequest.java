@@ -14,10 +14,16 @@ public interface SequencePostRequest {
   @JsonProperty("features")
   void setFeatures(List<Feature> features);
 
-  @JsonProperty("deflineFormat")
+  @JsonProperty(
+      value = "deflineFormat",
+      defaultValue = "region_only"
+  )
   DeflineFormat getDeflineFormat();
 
-  @JsonProperty("deflineFormat")
+  @JsonProperty(
+      value = "deflineFormat",
+      defaultValue = "region_only"
+  )
   void setDeflineFormat(DeflineFormat deflineFormat);
 
   @JsonProperty(

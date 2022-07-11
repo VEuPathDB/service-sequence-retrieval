@@ -31,9 +31,15 @@ public interface Feature {
   @JsonProperty("query")
   void setQuery(String query);
 
-  @JsonProperty("strand")
-  String getStrand();
+  @JsonProperty(
+      value = "strand",
+      defaultValue = "either"
+  )
+  Strand getStrand();
 
-  @JsonProperty("strand")
-  void setStrand(String strand);
+  @JsonProperty(
+      value = "strand",
+      defaultValue = "either"
+  )
+  void setStrand(Strand strand);
 }

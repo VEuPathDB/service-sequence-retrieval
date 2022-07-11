@@ -25,8 +25,11 @@ public class FeatureImpl implements Feature {
   @JsonProperty("query")
   private String query;
 
-  @JsonProperty("strand")
-  private String strand;
+  @JsonProperty(
+      value = "strand",
+      defaultValue = "either"
+  )
+  private Strand strand;
 
   @JsonProperty("contig")
   public String getContig() {
@@ -68,13 +71,19 @@ public class FeatureImpl implements Feature {
     this.query = query;
   }
 
-  @JsonProperty("strand")
-  public String getStrand() {
+  @JsonProperty(
+      value = "strand",
+      defaultValue = "either"
+  )
+  public Strand getStrand() {
     return this.strand;
   }
 
-  @JsonProperty("strand")
-  public void setStrand(String strand) {
+  @JsonProperty(
+      value = "strand",
+      defaultValue = "either"
+  )
+  public void setStrand(Strand strand) {
     this.strand = strand;
   }
 }

@@ -10,23 +10,16 @@ types:
   PlainTextFastaResponse: object
   DeflineFormat:
     type: string
-    default: "region_only"
     enum:
       - query_only
       - region_only
       - query_and_region
   Strand:
     type: string
-    default: '.'
-  Feature:
-    type: object
-    additionalProperties: false
-    properties:
-      contig: string
-      start: integer
-      end: integer
-      query?: string
-      strand?: Strand
+    enum:
+      - positive
+      - negative
+      - either
   StartOffset:
     type: string
     enum:
@@ -47,6 +40,17 @@ types:
     enum:
       - genomic
       - protein
+  Feature:
+    type: object
+    additionalProperties: false
+    properties:
+      contig: string
+      start: integer
+      end: integer
+      query?: string
+      strand?:
+        type: Strand
+        default: 'either'
   SequencePostRequest:
     type: object
     additionalProperties: false
@@ -54,7 +58,9 @@ types:
       features:
         type: array
         items: Feature
-      deflineFormat?: DeflineFormat
+      deflineFormat?:
+        type: DeflineFormat
+        default: 'region_only'
       forceStrandedness?:
         type: boolean
         default: false

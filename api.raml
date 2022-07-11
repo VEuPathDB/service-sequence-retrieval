@@ -39,14 +39,18 @@ securitySchemes:
     post:
       securedBy: header-auth
       queryParameters:
-        deflineFormat?: lib.DeflineFormat
+        deflineFormat?:
+          type: lib.DeflineFormat
+          default: 'region_only'
         forceStrandedness?:
           type: boolean
           default: false
         basesPerLine?:
           type: integer
           default: 60
-        startOffset?: lib.StartOffset
+        startOffset?:
+          type: lib.StartOffset
+          default: 'one'
       body:
         multipart/form-data:
           type: object
