@@ -2,35 +2,27 @@
 
 == Running locally
 
-Environment/dependency setup for local development can be done via the command
-`make install-dev-env`.  This will install the dependencies required to build the
-project.
+To build the service in place (produce a jar), run:
+```
+make jar
+```
 
-Redoing the api? run `./gradlew generate-jax-rs && make jar`
+To build a runnable "test" docker image, run:
+```
+make docker
+```
 
-After the environment has been set up, the project can be built, tested, and
-packaged using `./gradlew shadowJar`.
-
-Starting the server can be done by running `java -jar build/libs/service-sequence-retrieval-1.0.0-all.jar`.
-
-Export user and account DB credentials like documented in https://github.com/VEuPathDB/lib-jaxrs-container-core[Core container library].
+The service can be brought up via docker, using the sample docker-compose and env files, like this:
+```
+docker compose -f docker-compose.test.yml --env-file ./.env.test up
+```
 
 == Configuration
-Edit the file `config.json` 's default contents:
-```
-{
-  "referenceSequenceSpecs": [
-    {
-      "name": "genomic",
-      "fasta": "src/test/resources/veupathdb/service/sequence/reference/Genome.fa",
-      "index": "src/test/resources/veupathdb/service/sequence/reference/Genome.fa.fai",
-      "maxSequencesPerRequest": 10,
-      "maxTotalBasesPerRequest": 1000
-...
-```
 
-List one entry per sequence, providing paths to fasta and index files. The name parameter corresponds to URL of the sequence for retrieval.
+Configuration is handled via docker-compose.yml, which reads values from environment (provided by default by .env or you may specify another file)
+
+Please see `docker-compose.test.yml` and `.evn.test` for test configuration.  The file `docker-compose.yml` is used for production configuration.
 
 == Example queries
 
-See `cURL` scripts in the `src/test/query` folder.
+See `cURL` scripts in the `src/test/query` folder.  Note: some of these may no longer work.
