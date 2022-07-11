@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.veupathdb.service.sr.generated.model.SequenceType;
 import org.veupathdb.service.sr.model.ReferenceSequenceConfig;
-import org.veupathdb.service.sr.model.ReferenceSequenceSpec;
+import org.veupathdb.service.sr.model.ReferenceSequenceTypeSpec;
 
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 import htsjdk.samtools.reference.FastaSequenceIndex;
@@ -19,7 +19,7 @@ public class Sequences {
 
   private static final Logger LOG = LogManager.getLogger(Sequences.class);
 
-  private static Map<SequenceType, ReferenceSequenceSpec> sequenceSpecs;
+  private static Map<SequenceType, ReferenceSequenceTypeSpec> sequenceSpecs;
   private static Map<SequenceType, FastaSequenceIndex> sequenceIndexes;
   private static Map<SequenceType, IndexedFastaSequenceFile> sequenceFiles;
 
@@ -27,7 +27,7 @@ public class Sequences {
     sequenceSpecs = new HashMap<>();
     sequenceIndexes = new HashMap<>();
     sequenceFiles = new HashMap<>();
-    for (Map.Entry<SequenceType, ReferenceSequenceSpec> spec: config.entrySet()) {
+    for (Map.Entry<SequenceType, ReferenceSequenceTypeSpec> spec: config.entrySet()) {
       SequenceType name = spec.getKey();
       LOG.info("Initializing reference sequence: " + spec.getKey());
       sequenceSpecs.put(name, spec.getValue());
@@ -40,7 +40,7 @@ public class Sequences {
 
 
 
-  public static ReferenceSequenceSpec getSequenceSpec(SequenceType sequenceType){
+  public static ReferenceSequenceTypeSpec getSequenceSpec(SequenceType sequenceType){
     return Objects.requireNonNull(sequenceSpecs.get(sequenceType), "Sequence spec not available for sequence type: " + sequenceType);
   }
 

@@ -1,11 +1,11 @@
 package org.veupathdb.service.sr.model;
 
-public class ReferenceSequenceSpec {
+public class ReferenceSequenceTypeSpec {
 
   private String fastaFile;
   private String indexFile;
-  private int maxSequencesPerRequest;
-  private int maxTotalBasesPerRequest;
+  private long maxSequencesPerRequest;
+  private long maxTotalBasesPerRequest;
   private boolean disallowReverseComplement = true;
 
   public String getFastaFile() {
@@ -24,19 +24,19 @@ public class ReferenceSequenceSpec {
     this.indexFile = indexFile;
   }
 
-  public int getMaxSequencesPerRequest() {
+  public long getMaxSequencesPerRequest() {
     return maxSequencesPerRequest;
   }
 
-  public void setMaxSequencesPerRequest(int maxSequencesPerRequest) {
+  public void setMaxSequencesPerRequest(long maxSequencesPerRequest) {
     this.maxSequencesPerRequest = maxSequencesPerRequest;
   }
 
-  public int getMaxTotalBasesPerRequest() {
+  public long getMaxTotalBasesPerRequest() {
     return maxTotalBasesPerRequest;
   }
 
-  public void setMaxTotalBasesPerRequest(int maxTotalBasesPerRequest) {
+  public void setMaxTotalBasesPerRequest(long maxTotalBasesPerRequest) {
     this.maxTotalBasesPerRequest = maxTotalBasesPerRequest;
   }
 

@@ -3,9 +3,10 @@ package org.veupathdb.service.sr.model;
 import org.gusdb.fgputil.runtime.Environment;
 import org.veupathdb.service.sr.generated.model.SequenceType;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
-public class ReferenceSequenceConfig extends HashMap<SequenceType, ReferenceSequenceSpec> {
+public class ReferenceSequenceConfig extends HashMap<SequenceType, ReferenceSequenceTypeSpec> {
 
   // environment variable suffixes (used for each available sequence type)
   private static final String SUFFIX_FASTA_FILE = "_FASTA_FILE";
@@ -26,13 +27,18 @@ public class ReferenceSequenceConfig extends HashMap<SequenceType, ReferenceSequ
   // loads config for each supported sequence type from environment vars
   private ReferenceSequenceConfig() {
     for (SequenceType type : SequenceType.values()) {
-      ReferenceSequenceSpec typeConfig = new ReferenceSequenceSpec();
+      ReferenceSequenceTypeSpec typeConfig = new ReferenceSequenceTypeSpec();
       typeConfig.setFastaFile(Environment.getRequiredVar(type.name() + SUFFIX_FASTA_FILE));
       typeConfig.setIndexFile(Environment.getRequiredVar(type.name() + SUFFIX_INDEX_FILE));
-      typeConfig.setMaxSequencesPerRequest(Integer.parseInt(Environment.getRequiredVar(type.name() + SUFFIX_MAX_SEQUENCES_PER_REQUEST)));
-      typeConfig.setMaxTotalBasesPerRequest(Integer.parseInt(Environment.getRequiredVar(type.name() + SUFFIX_MAX_TOTAL_BASES_PER_REQUEST)));
+      typeConfig.setMaxSequencesPerRequest(toLong(Environment.getRequiredVar(type.name() + SUFFIX_MAX_SEQUENCES_PER_REQUEST)));
+      typeConfig.setMaxTotalBasesPerRequest(toLong(Environment.getRequiredVar(type.name() + SUFFIX_MAX_TOTAL_BASES_PER_REQUEST)));
       typeConfig.setDisallowReverseComplement(Boolean.parseBoolean(Environment.getOptionalVar(type.name() + SUFFIX_DISALLOW_REVERSE_COMPLEMENT, Boolean.TRUE.toString())));
       put(type, typeConfig);
     }
+  }
+
+  private static long toLong(String s) {
+    // support scentific notation for integer values that can fit in a Long
+    return new BigDecimal(s).longValueExact();
   }
 }
