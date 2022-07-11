@@ -33,13 +33,13 @@ public interface Feature {
 
   @JsonProperty(
       value = "strand",
-      defaultValue = "either"
+      defaultValue = "NONE"
   )
   Strand getStrand();
 
   @JsonProperty(
       value = "strand",
-      defaultValue = "either"
+      defaultValue = "NONE"
   )
   void setStrand(Strand strand);
 }

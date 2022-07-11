@@ -35,8 +35,8 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
   @Override
   public PostSequencesBySequenceTypeAndFileFormatResponse postSequencesBySequenceTypeAndFileFormat(
-      String fileFormatStr,
       String sequenceTypeStr,
+      String fileFormatStr,
       DeflineFormat deflineFormat,
       Boolean forceStrandedness,
       Integer basesPerLine,

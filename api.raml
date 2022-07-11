@@ -41,7 +41,7 @@ securitySchemes:
       queryParameters:
         deflineFormat?:
           type: lib.DeflineFormat
-          default: 'region_only'
+          default: 'REGIONONLY'
         forceStrandedness?:
           type: boolean
           default: false
@@ -50,7 +50,7 @@ securitySchemes:
           default: 60
         startOffset?:
           type: lib.StartOffset
-          default: 'one'
+          default: 'ONE'
       body:
         multipart/form-data:
           type: object

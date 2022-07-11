@@ -3,14 +3,14 @@ package org.veupathdb.service.sr.generated.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum DeflineFormat {
-  @JsonProperty("query_only")
-  QUERYONLY("query_only"),
+  @JsonProperty("QUERYONLY")
+  QUERYONLY("QUERYONLY"),
 
-  @JsonProperty("region_only")
-  REGIONONLY("region_only"),
+  @JsonProperty("REGIONONLY")
+  REGIONONLY("REGIONONLY"),
 
-  @JsonProperty("query_and_region")
-  QUERYANDREGION("query_and_region");
+  @JsonProperty("QUERYANDREGION")
+  QUERYANDREGION("QUERYANDREGION");
 
   private String name;
 

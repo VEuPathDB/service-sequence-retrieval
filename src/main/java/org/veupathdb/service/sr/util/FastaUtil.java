@@ -61,7 +61,7 @@ public class FastaUtil {
     return switch(strand) {
       case POSITIVE -> '+';
       case NEGATIVE -> '-';
-      case EITHER -> '.';
+      case NONE -> '.';
     };
   }
 

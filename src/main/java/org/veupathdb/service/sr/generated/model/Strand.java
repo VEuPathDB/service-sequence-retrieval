@@ -3,14 +3,14 @@ package org.veupathdb.service.sr.generated.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum Strand {
-  @JsonProperty("positive")
-  POSITIVE("positive"),
+  @JsonProperty("POSITIVE")
+  POSITIVE("POSITIVE"),
 
-  @JsonProperty("negative")
-  NEGATIVE("negative"),
+  @JsonProperty("NEGATIVE")
+  NEGATIVE("NEGATIVE"),
 
-  @JsonProperty("either")
-  EITHER("either");
+  @JsonProperty("NONE")
+  NONE("NONE");
 
   private String name;
 

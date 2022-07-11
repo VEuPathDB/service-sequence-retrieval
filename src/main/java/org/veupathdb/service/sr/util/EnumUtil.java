@@ -24,7 +24,7 @@ public class EnumUtil {
         .filter(val -> val.name().equalsIgnoreCase(str))
         .findFirst()
         .orElseThrow(() -> exceptionProvider.apply(
-            "Unsupported file format.  Only [ " +
+            "Unsupported value '" + str + "'.  Only [ " +
                  getSupportedValuesString(values) + " ] supported."));
   }
 

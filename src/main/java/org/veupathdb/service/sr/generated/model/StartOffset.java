@@ -3,11 +3,11 @@ package org.veupathdb.service.sr.generated.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum StartOffset {
-  @JsonProperty("zero")
-  ZERO("zero"),
+  @JsonProperty("ZERO")
+  ZERO("ZERO"),
 
-  @JsonProperty("one")
-  ONE("one");
+  @JsonProperty("ONE")
+  ONE("ONE");
 
   private String name;
 

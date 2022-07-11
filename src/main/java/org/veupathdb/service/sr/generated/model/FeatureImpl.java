@@ -27,7 +27,7 @@ public class FeatureImpl implements Feature {
 
   @JsonProperty(
       value = "strand",
-      defaultValue = "either"
+      defaultValue = "NONE"
   )
   private Strand strand;
 
@@ -73,7 +73,7 @@ public class FeatureImpl implements Feature {
 
   @JsonProperty(
       value = "strand",
-      defaultValue = "either"
+      defaultValue = "NONE"
   )
   public Strand getStrand() {
     return this.strand;
@@ -81,7 +81,7 @@ public class FeatureImpl implements Feature {
 
   @JsonProperty(
       value = "strand",
-      defaultValue = "either"
+      defaultValue = "NONE"
   )
   public void setStrand(Strand strand) {
     this.strand = strand;

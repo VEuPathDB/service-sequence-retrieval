@@ -16,13 +16,13 @@ public interface SequencePostRequest {
 
   @JsonProperty(
       value = "deflineFormat",
-      defaultValue = "region_only"
+      defaultValue = "REGIONONLY"
   )
   DeflineFormat getDeflineFormat();
 
   @JsonProperty(
       value = "deflineFormat",
-      defaultValue = "region_only"
+      defaultValue = "REGIONONLY"
   )
   void setDeflineFormat(DeflineFormat deflineFormat);
 

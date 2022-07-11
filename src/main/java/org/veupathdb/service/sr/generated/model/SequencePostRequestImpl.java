@@ -18,7 +18,7 @@ public class SequencePostRequestImpl implements SequencePostRequest {
 
   @JsonProperty(
       value = "deflineFormat",
-      defaultValue = "region_only"
+      defaultValue = "REGIONONLY"
   )
   private DeflineFormat deflineFormat;
 
@@ -46,7 +46,7 @@ public class SequencePostRequestImpl implements SequencePostRequest {
 
   @JsonProperty(
       value = "deflineFormat",
-      defaultValue = "region_only"
+      defaultValue = "REGIONONLY"
   )
   public DeflineFormat getDeflineFormat() {
     return this.deflineFormat;
@@ -54,7 +54,7 @@ public class SequencePostRequestImpl implements SequencePostRequest {
 
   @JsonProperty(
       value = "deflineFormat",
-      defaultValue = "region_only"
+      defaultValue = "REGIONONLY"
   )
   public void setDeflineFormat(DeflineFormat deflineFormat) {
     this.deflineFormat = deflineFormat;

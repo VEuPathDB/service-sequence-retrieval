@@ -11,20 +11,20 @@ types:
   DeflineFormat:
     type: string
     enum:
-      - query_only
-      - region_only
-      - query_and_region
+      - QUERYONLY
+      - REGIONONLY
+      - QUERYANDREGION
   Strand:
     type: string
     enum:
-      - positive
-      - negative
-      - either
+      - POSITIVE
+      - NEGATIVE
+      - NONE
   StartOffset:
     type: string
     enum:
-      - zero
-      - one
+      - ZERO
+      - ONE
   UploadMethod:
     type: string
     enum:
@@ -50,7 +50,7 @@ types:
       query?: string
       strand?:
         type: Strand
-        default: 'either'
+        default: 'NONE'
   SequencePostRequest:
     type: object
     additionalProperties: false
@@ -60,7 +60,7 @@ types:
         items: Feature
       deflineFormat?:
         type: DeflineFormat
-        default: 'region_only'
+        default: 'REGIONONLY'
       forceStrandedness?:
         type: boolean
         default: false

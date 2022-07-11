@@ -5,6 +5,7 @@ import htsjdk.tribble.gff.Gff3Codec;
 import org.veupathdb.service.sr.generated.model.Feature;
 import org.veupathdb.service.sr.generated.model.FeatureImpl;
 import org.veupathdb.service.sr.generated.model.StartOffset;
+import org.veupathdb.service.sr.generated.model.Strand;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +26,7 @@ public class ConvertFeatures {
         feature.setStart(htsjdkFeature.getStart());
         feature.setEnd(htsjdkFeature.getEnd());
         feature.setQuery(htsjdkFeature.getName());
-        feature.setStrand(ourStrand(htsjdkFeature.getStrand()));
+        feature.setStrand(translateStrandEnum(htsjdkFeature.getStrand()));
         result.add(feature);
       }
       return result;
@@ -46,22 +47,24 @@ public class ConvertFeatures {
     var lineIterator = codec.makeSourceFromStream(in);
     while(lineIterator.hasNext()){
       var htsjdkFeature = codec.decode(lineIterator);
-      Feature feature = new FeatureImpl();
-      feature.setContig(htsjdkFeature.getContig());
-      feature.setStart(htsjdkFeature.getStart());
-      feature.setEnd(htsjdkFeature.getEnd());
-      feature.setQuery(htsjdkFeature.getName());
-      feature.setStrand(ourStrand(htsjdkFeature.getStrand()));
-      result.add(feature);
+      if (htsjdkFeature != null) {
+        Feature feature = new FeatureImpl();
+        feature.setContig(htsjdkFeature.getContig());
+        feature.setStart(htsjdkFeature.getStart());
+        feature.setEnd(htsjdkFeature.getEnd());
+        feature.setQuery(htsjdkFeature.getName());
+        feature.setStrand(translateStrandEnum(htsjdkFeature.getStrand()));
+        result.add(feature);
+      }
     }
     return result;
   }
 
-  private static String ourStrand(htsjdk.tribble.annotation.Strand tribbleStrand){
+  private static Strand translateStrandEnum(htsjdk.tribble.annotation.Strand tribbleStrand){
     return switch (tribbleStrand) {
-      case NEGATIVE -> "-";
-      case POSITIVE -> "+";
-      case NONE -> ".";
+      case POSITIVE -> Strand.POSITIVE;
+      case NEGATIVE -> Strand.NEGATIVE;
+      case NONE -> Strand.NONE;
     };
   }
 
