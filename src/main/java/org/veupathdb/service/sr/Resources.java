@@ -1,5 +1,6 @@
 package org.veupathdb.service.sr;
 
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
 import org.veupathdb.service.sr.service.SequenceRetrievalService;
@@ -29,7 +30,8 @@ public class Resources extends ContainerResources {
   @Override
   protected Object[] resources() {
     return new Object[] {
-      SequenceRetrievalService.class
+      SequenceRetrievalService.class,
+      MultiPartFeature.class
     };
   }
 }
