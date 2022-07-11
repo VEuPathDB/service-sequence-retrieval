@@ -1,4 +1,4 @@
-package org.veupathdb.service.sr.model;
+package org.veupathdb.service.sr.config;
 
 public class ReferenceSequenceTypeSpec {
 

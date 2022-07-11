@@ -6,7 +6,7 @@ import jakarta.ws.rs.BadRequestException;
 import htsjdk.samtools.reference.FastaSequenceIndex;
 import org.veupathdb.service.sr.generated.model.Feature;
 import org.veupathdb.service.sr.generated.model.SequenceType;
-import org.veupathdb.service.sr.model.ReferenceSequenceTypeSpec;
+import org.veupathdb.service.sr.config.ReferenceSequenceTypeSpec;
 
 import java.util.List;
 import java.util.Map;

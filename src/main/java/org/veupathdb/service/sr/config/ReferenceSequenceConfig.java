@@ -1,4 +1,4 @@
-package org.veupathdb.service.sr.model;
+package org.veupathdb.service.sr.config;
 
 import org.gusdb.fgputil.runtime.Environment;
 import org.veupathdb.service.sr.generated.model.SequenceType;

@@ -8,9 +8,9 @@ import java.io.File;
 import java.util.Map;
 
 @JsonDeserialize(
-    as = SequencesForFileFormatSequenceTypePostMultipartFormDataImpl.class
+    as = SequencesSequenceTypeFileFormatPostMultipartFormDataImpl.class
 )
-public interface SequencesForFileFormatSequenceTypePostMultipartFormData {
+public interface SequencesSequenceTypeFileFormatPostMultipartFormData {
   @JsonProperty("uploadMethod")
   UploadMethod getUploadMethod();
 

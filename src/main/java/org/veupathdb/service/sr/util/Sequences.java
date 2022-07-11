@@ -1,11 +1,11 @@
-package org.veupathdb.service.sr.service;
+package org.veupathdb.service.sr.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.veupathdb.service.sr.generated.model.SequenceType;
-import org.veupathdb.service.sr.model.ReferenceSequenceConfig;
-import org.veupathdb.service.sr.model.ReferenceSequenceTypeSpec;
+import org.veupathdb.service.sr.config.ReferenceSequenceConfig;
+import org.veupathdb.service.sr.config.ReferenceSequenceTypeSpec;
 
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 import htsjdk.samtools.reference.FastaSequenceIndex;
@@ -37,8 +37,6 @@ public class Sequences {
       sequenceFiles.put(name, file);
     }
   }
-
-
 
   public static ReferenceSequenceTypeSpec getSequenceSpec(SequenceType sequenceType){
     return Objects.requireNonNull(sequenceSpecs.get(sequenceType), "Sequence spec not available for sequence type: " + sequenceType);

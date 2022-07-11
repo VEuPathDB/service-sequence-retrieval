@@ -15,7 +15,7 @@ import java.util.Map;
     "url",
     "file"
 })
-public class SequencesForFileFormatSequenceTypePostMultipartFormDataImpl implements SequencesForFileFormatSequenceTypePostMultipartFormData {
+public class SequencesSequenceTypeFileFormatPostMultipartFormDataImpl implements SequencesSequenceTypeFileFormatPostMultipartFormData {
   @JsonProperty("uploadMethod")
   private UploadMethod uploadMethod;
 

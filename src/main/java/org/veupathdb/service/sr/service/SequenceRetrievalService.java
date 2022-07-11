@@ -1,29 +1,40 @@
-package org.veupathdb.service.sr.controller;
+package org.veupathdb.service.sr.service;
 
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.core.Context;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.server.ContainerRequest;
 import org.veupathdb.service.sr.generated.model.*;
-import org.veupathdb.service.sr.generated.resources.SequencesForFileFormatSequenceType;
-import org.veupathdb.service.sr.service.Sequences;
-import org.veupathdb.service.sr.util.ConvertFeatures;
-import org.veupathdb.service.sr.util.EnumUtil;
-import org.veupathdb.service.sr.util.StreamSequences;
-import org.veupathdb.service.sr.util.Validate;
+import org.veupathdb.service.sr.generated.resources.SequencesSequenceType;
+import org.veupathdb.service.sr.util.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-public class SequencesFromFileController implements SequencesForFileFormatSequenceType {
-
-  @Context
-  private ContainerRequest req;
+public class SequenceRetrievalService implements SequencesSequenceType {
 
   @Override
-  public PostSequencesForByFileFormatAndSequenceTypeResponse postSequencesForByFileFormatAndSequenceType(
+  public PostSequencesBySequenceTypeResponse postSequencesBySequenceType(String sequenceTypeStr, SequencePostRequest entity) {
+    var forceStrandedness = entity.getForceStrandedness();
+    var deflineFormat = entity.getDeflineFormat();
+    var basesPerLine = entity.getBasesPerLine();
+    var requestedFeatures = entity.getFeatures();
+    var sequenceType = EnumUtil.validate(sequenceTypeStr, SequenceType.values(), NotFoundException::new);
+
+    var spec = Sequences.getSequenceSpec(sequenceType);
+    var index = Sequences.getSequenceIndex(sequenceType);
+    var sequences = Sequences.getSequenceFile(sequenceType);
+
+    var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
+
+    return PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(new PlainTextFastaResponseStream(
+        StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine)
+    ));
+
+  }
+
+  @Override
+  public PostSequencesBySequenceTypeAndFileFormatResponse postSequencesBySequenceTypeAndFileFormat(
       String fileFormatStr,
       String sequenceTypeStr,
       DeflineFormat deflineFormat,
@@ -58,7 +69,7 @@ public class SequencesFromFileController implements SequencesForFileFormatSequen
 
       var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
 
-      return PostSequencesForByFileFormatAndSequenceTypeResponse.respond200WithTextXFasta(new PlainTextFastaResponseStream(
+      return PostSequencesBySequenceTypeAndFileFormatResponse.respond200WithTextXFasta(new PlainTextFastaResponseStream(
           StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine)
       ));
 

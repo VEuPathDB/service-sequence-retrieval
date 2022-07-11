@@ -2,10 +2,9 @@ package org.veupathdb.service.sr;
 
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
-import org.veupathdb.service.sr.controller.SequencesController;
-import org.veupathdb.service.sr.controller.SequencesFromFileController;
-import org.veupathdb.service.sr.model.ReferenceSequenceConfig;
-import org.veupathdb.service.sr.service.Sequences;
+import org.veupathdb.service.sr.service.SequenceRetrievalService;
+import org.veupathdb.service.sr.config.ReferenceSequenceConfig;
+import org.veupathdb.service.sr.util.Sequences;
 
 /**
  * Service Resource Registration.
@@ -30,8 +29,7 @@ public class Resources extends ContainerResources {
   @Override
   protected Object[] resources() {
     return new Object[] {
-      SequencesController.class,
-      SequencesFromFileController.class
+      SequenceRetrievalService.class
     };
   }
 }

@@ -21,35 +21,8 @@ securitySchemes:
           description: Authorization header.
           type: string
 
-
-/sequences-for/{fileFormat}/{sequenceType}:
-  displayName: Retrieve sequences based on submitted file
-  post:
-    securedBy: header-auth
-    queryParameters:
-      deflineFormat?: lib.DeflineFormat
-      forceStrandedness?:
-        type: boolean
-        default: false
-      basesPerLine?:
-        type: integer
-        default: 60
-      startOffset?: lib.StartOffset
-    body:
-      multipart/form-data:
-        type: object
-        properties:
-          uploadMethod: lib.UploadMethod
-          url?: string
-          file?: file
-    responses:
-      200:
-        body:
-          text/x-fasta:
-            type: lib.PlainTextFastaResponse
-
 /sequences/{sequenceType}:
-  displayName: Retrieve sequence
+  displayName: Retrieve sequences
   post:
     securedBy: header-auth
     body:
@@ -61,3 +34,28 @@ securitySchemes:
           text/x-fasta:
             type: lib.PlainTextFastaResponse
 
+  /{fileFormat}:
+    displayName: Retrieve sequences based on submitted file
+    post:
+      securedBy: header-auth
+      queryParameters:
+        deflineFormat?: lib.DeflineFormat
+        forceStrandedness?:
+          type: boolean
+          default: false
+        basesPerLine?:
+          type: integer
+          default: 60
+        startOffset?: lib.StartOffset
+      body:
+        multipart/form-data:
+          type: object
+          properties:
+            uploadMethod: lib.UploadMethod
+            url?: string
+            file?: file
+      responses:
+        200:
+          body:
+            text/x-fasta:
+              type: lib.PlainTextFastaResponse
