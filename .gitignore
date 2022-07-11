@@ -7,7 +7,6 @@
 /.bin/
 /tmp/
 /.settings/
-generated/
 
 *.tmp
 *.bak
@@ -27,3 +26,4 @@ local.properties
 .settings
 *~
 .*~
+/local/run.sh

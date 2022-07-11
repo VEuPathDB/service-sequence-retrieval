@@ -1,0 +1,58 @@
+#%RAML 1.0 Library
+
+types:
+
+  PlainTextFastaResponse:
+    # making this an object triggers generation of Response and ResponseStream mechanisms
+    type: object
+
+  DeflineFormat:
+    type: string
+    enum: ['QUERYONLY', 'REGIONONLY', 'QUERYANDREGION']
+
+  Strand:
+    type: string
+    enum: ['POSITIVE', 'NEGATIVE', 'NONE']
+
+  StartOffset:
+    type: string
+    enum: ['ZERO', 'ONE']
+
+  UploadMethod:
+    type: string
+    enum: ['file', 'url']
+
+  SupportedFileFormat:
+    type: string
+    enum: ['bed', 'gff3']
+
+  SequenceType:
+    type: string
+    enum: ['genomic', 'protein']
+
+  Feature:
+    additionalProperties: false
+    properties:
+      contig: string
+      start: integer
+      end: integer
+      query?: string
+      strand?:
+        type: Strand
+        default: 'NONE'
+
+  SequencePostRequest:
+    additionalProperties: false
+    properties:
+      features:
+        type: array
+        items: Feature
+      deflineFormat?:
+        type: DeflineFormat
+        default: 'REGIONONLY'
+      forceStrandedness?:
+        type: boolean
+        default: false
+      basesPerLine?:
+        type: integer
+        default: 60

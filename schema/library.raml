@@ -7,31 +7,64 @@
 ################################################################################
 
 types:
-  HelloResponse:
+  PlainTextFastaResponse: object
+  DeflineFormat:
+    type: string
+    enum:
+      - QUERYONLY
+      - REGIONONLY
+      - QUERYANDREGION
+  Strand:
+    type: string
+    enum:
+      - POSITIVE
+      - NEGATIVE
+      - NONE
+  StartOffset:
+    type: string
+    enum:
+      - ZERO
+      - ONE
+  UploadMethod:
+    type: string
+    enum:
+      - file
+      - url
+  SupportedFileFormat:
+    type: string
+    enum:
+      - bed
+      - gff3
+  SequenceType:
+    type: string
+    enum:
+      - genomic
+      - protein
+  Feature:
     type: object
     additionalProperties: false
     properties:
-      greeting:
-        type: string
-        enum:
-          - Hello World
-      anotherType: AnotherType
-  HelloPostRequest:
+      contig: string
+      start: integer
+      end: integer
+      query?: string
+      strand?:
+        type: Strand
+        default: 'NONE'
+  SequencePostRequest:
     type: object
     additionalProperties: false
     properties:
-      greet:
-        description: Who do you want to say hello to?
-        type: string
-  HelloPostResponse:
-    type: object
-    additionalProperties: false
-    properties:
-      message:
-        description: Generated greeting
-        type: string
-  AnotherType:
-    type: object
-    properties:
-      something?: string
+      features:
+        type: array
+        items: Feature
+      deflineFormat?:
+        type: DeflineFormat
+        default: 'REGIONONLY'
+      forceStrandedness?:
+        type: boolean
+        default: false
+      basesPerLine?:
+        type: integer
+        default: 60
 

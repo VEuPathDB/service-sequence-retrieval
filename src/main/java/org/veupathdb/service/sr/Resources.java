@@ -1,8 +1,11 @@
-package org.veupathdb.service.demo;
+package org.veupathdb.service.sr;
 
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
-import org.veupathdb.service.demo.service.HelloWorld;
+import org.veupathdb.service.sr.service.SequenceRetrievalService;
+import org.veupathdb.service.sr.config.ReferenceSequenceConfig;
+import org.veupathdb.service.sr.util.Sequences;
 
 /**
  * Service Resource Registration.
@@ -11,8 +14,12 @@ import org.veupathdb.service.demo.service.HelloWorld;
  * should be registered.
  */
 public class Resources extends ContainerResources {
+
   public Resources(Options opts) {
     super(opts);
+
+    // read environment to create a configuration and initialize sequence processing
+    Sequences.initialize(ReferenceSequenceConfig.getInstance());
   }
 
   /**
@@ -23,7 +30,8 @@ public class Resources extends ContainerResources {
   @Override
   protected Object[] resources() {
     return new Object[] {
-      HelloWorld.class,
+      SequenceRetrievalService.class,
+      MultiPartFeature.class
     };
   }
 }
