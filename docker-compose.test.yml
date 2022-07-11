@@ -8,8 +8,9 @@ services:
 
     networks:
       external:
-      monitoring-ext:
-      traefik:
+
+    ports:
+      - 8080:8080
 
     volumes:
       - type: bind
@@ -32,20 +33,7 @@ services:
       PROTEIN_MAX_TOTAL_BASES_PER_REQUEST: ${PROTEIN_MAX_TOTAL_BASES_PER_REQUEST:-10e6}
       PROTEIN_DISALLOW_REVERSE_COMPLEMENT: ${PROTEIN_DISALLOW_REVERSE_COMPLEMENT:-true}
 
-    labels:
-      - "prometheus.scrape_enabled=true"
-      - "com.centurylinklabs.watchtower.enable=${DATA_WATCHTOWER:-false}"
-      - "traefik.http.services.${TRAEFIK_DATA_ROUTER:-sequenceretrieval-dev}.loadbalancer.server.port=${SR_SERVER_PORT:-8080}"
-      - "traefik.http.routers.${TRAEFIK_DATA_ROUTER:-sequenceretrieval-dev}.rule=Host(`${TRAEFIK_DATA_HOST:-sequenceretrieval-dev.local.apidb.org}`)"
-      - "traefik.http.routers.${TRAEFIK_DATA_ROUTER:-sequenceretrieval-dev}.tls=true"
-      - "traefik.http.routers.${TRAEFIK_DATA_ROUTER:-sequenceretrieval-dev}.entrypoints=${TRAEFIK_ENTRYPOINTS:-local}"
-      - "traefik.docker.network=traefik"
-
 networks:
   # external network used for containers that need to reach outside
   external:
-  traefik:
-    external: true
-  monitoring-ext:
-    external: true
 
