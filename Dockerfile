@@ -3,7 +3,7 @@
 #   Build Service & Dependencies
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM veupathdb/alpine-dev-base:jdk-17 AS prep
+FROM veupathdb/alpine-dev-base:jdk-18 AS prep
 
 LABEL service="demo-service"
 
@@ -31,7 +31,7 @@ RUN make install-dev-env
 RUN ./gradlew dependencies
 
 # copy remaining files
-COPY .. .
+COPY . .
 
 # build the project
 RUN make jar
