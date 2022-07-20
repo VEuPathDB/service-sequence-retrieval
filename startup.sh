@@ -1,16 +1,20 @@
 #!/usr/bin/env sh
 
+SLEEP_SECONDS=2
+MAX_WAIT_TIME=30
+
 function await() {
   sleeps=0
 
   echo "Waiting for $1 to become available"
   while ! nc -zv $1 $2; do
-    if [ $sleeps -gt 5 ]; then
+    if [ $sleeps -gt $MAX_WAIT_TIME ]; then
       echo "$1 took too long to become available, stopping now"
       exit 1
     fi
 
-    sleep 1
+    echo "$1 is not yet available, will test again in $SLEEP_SECONDS seconds"
+    sleep $SLEEP_SECONDS
 
     sleeps=$((sleeps+1))
   done
