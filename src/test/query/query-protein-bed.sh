@@ -1,6 +1,3 @@
-curl -X POST \
-  -v \
-  -H 'Content-Type: multipart/form-data' \
-  -F 'file=@local/protein.bed' \
-  "http://localhost:8080/sequenceForBed/protein?startOffset=ONE&deflineFormat=query_and_region" 
-
+curl --location --request POST 'localhost:8080/sequences/protein/bed?startOffset=ZERO&DeflineFormat=QUERYREGION&forceStrandedness=false' \
+--form 'uploadMethod="file"' \
+--form 'file=@"src/test/query/protein.bed"'
