@@ -6,7 +6,7 @@ public class ReferenceSequenceTypeSpec {
   private String indexFile;
   private long maxSequencesPerRequest;
   private long maxTotalBasesPerRequest;
-  private boolean disallowReverseComplement = true;
+  private boolean disallowReverseComplement;
 
   public String getFastaFile() {
     return fastaFile;

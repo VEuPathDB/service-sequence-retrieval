@@ -32,7 +32,7 @@ public class ReferenceSequenceConfig extends HashMap<SequenceType, ReferenceSequ
       typeConfig.setIndexFile(Environment.getRequiredVar(type.name() + SUFFIX_INDEX_FILE));
       typeConfig.setMaxSequencesPerRequest(toLong(Environment.getRequiredVar(type.name() + SUFFIX_MAX_SEQUENCES_PER_REQUEST)));
       typeConfig.setMaxTotalBasesPerRequest(toLong(Environment.getRequiredVar(type.name() + SUFFIX_MAX_TOTAL_BASES_PER_REQUEST)));
-      typeConfig.setDisallowReverseComplement(Boolean.parseBoolean(Environment.getOptionalVar(type.name() + SUFFIX_DISALLOW_REVERSE_COMPLEMENT, Boolean.TRUE.toString())));
+      typeConfig.setDisallowReverseComplement(Boolean.parseBoolean(Environment.getRequiredVar(type.name() + SUFFIX_DISALLOW_REVERSE_COMPLEMENT)));
       put(type, typeConfig);
     }
   }

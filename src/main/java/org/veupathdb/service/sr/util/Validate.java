@@ -17,7 +17,7 @@ public class Validate {
 
   public static List<Feature> getValidatedFeatures(SequenceType sequenceType, FastaSequenceIndex index, List<Feature> features, boolean forceStrandedness, ReferenceSequenceTypeSpec spec){
     if(forceStrandedness && spec.getDisallowReverseComplement()){
-      throw new BadRequestException("Reverse complement option not available for sequence type" + sequenceType);
+      throw new BadRequestException("Reverse complement option not available for sequence type " + sequenceType);
     }
 
     if(features.size() > spec.getMaxSequencesPerRequest()){
