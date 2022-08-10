@@ -45,9 +45,9 @@ public class ConvertFeatures {
     var codec = new Gff3Codec();
     var result = new ArrayList<Feature>();
     var lineIterator = codec.makeSourceFromStream(in);
-    while(lineIterator.hasNext()){
+    while(! codec.isDone(lineIterator)){
       var htsjdkFeature = codec.decode(lineIterator);
-      if (htsjdkFeature != null) {
+      if (htsjdkFeature != null && htsjdkFeature.isTopLevelFeature()) {
         Feature feature = new FeatureImpl();
         feature.setContig(htsjdkFeature.getContig());
         feature.setStart(htsjdkFeature.getStart());

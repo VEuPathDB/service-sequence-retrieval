@@ -20,12 +20,18 @@ public class ReferenceSequenceConfig extends HashMap<SequenceType, ReferenceSequ
   public static synchronized ReferenceSequenceConfig getInstance() {
     if (_instance == null) {
       _instance = new ReferenceSequenceConfig();
+      populate(_instance);
     }
     return _instance;
   }
 
+  // overrideable for unit tests
+  protected ReferenceSequenceConfig() {
+
+  }
+
   // loads config for each supported sequence type from environment vars
-  private ReferenceSequenceConfig() {
+  private static void populate(ReferenceSequenceConfig self) {
     for (SequenceType type : SequenceType.values()) {
       ReferenceSequenceTypeSpec typeConfig = new ReferenceSequenceTypeSpec();
       typeConfig.setFastaFile(Environment.getRequiredVar(type.name() + SUFFIX_FASTA_FILE));
@@ -33,7 +39,7 @@ public class ReferenceSequenceConfig extends HashMap<SequenceType, ReferenceSequ
       typeConfig.setMaxSequencesPerRequest(toLong(Environment.getRequiredVar(type.name() + SUFFIX_MAX_SEQUENCES_PER_REQUEST)));
       typeConfig.setMaxTotalBasesPerRequest(toLong(Environment.getRequiredVar(type.name() + SUFFIX_MAX_TOTAL_BASES_PER_REQUEST)));
       typeConfig.setDisallowReverseComplement(Boolean.parseBoolean(Environment.getRequiredVar(type.name() + SUFFIX_DISALLOW_REVERSE_COMPLEMENT)));
-      put(type, typeConfig);
+      self.put(type, typeConfig);
     }
   }
 
