@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.FileInputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,7 +16,7 @@ public class ConvertFeaturesTest {
   @Test
   public void testGff3() throws IOException {
 
-    var result = ConvertFeatures.featuresFromGff3(TestFiles.geneGff3());
+    var result = ConvertFeatures.featuresFromGff3(new FileInputStream(TestFiles.geneGff3()));
 
     // all top level features - for now
     assertEquals(2, result.size());

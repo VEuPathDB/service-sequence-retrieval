@@ -8,15 +8,12 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
 import org.veupathdb.service.sr.generated.model.PlainTextFastaResponse;
 import org.veupathdb.service.sr.generated.model.SequencePostRequest;
+import org.veupathdb.service.sr.generated.model.SequencesSequenceTypeFileFormatPostMultipartFormData;
 import org.veupathdb.service.sr.generated.model.StartOffset;
 import org.veupathdb.service.sr.generated.support.ResponseDelegate;
-
-import java.io.InputStream;
 
 @Path("/sequences/{sequenceType}")
 public interface SequencesSequenceType {
@@ -31,16 +28,12 @@ public interface SequencesSequenceType {
   @Produces("text/x-fasta")
   @Consumes("multipart/form-data")
   PostSequencesBySequenceTypeAndFileFormatResponse postSequencesBySequenceTypeAndFileFormat(
-      @PathParam("sequenceType") String sequenceType,
-      @PathParam("fileFormat") String fileFormat,
+      @PathParam("sequenceType") String sequenceType, @PathParam("fileFormat") String fileFormat,
       @QueryParam("deflineFormat") @DefaultValue("REGIONONLY") DeflineFormat deflineFormat,
       @QueryParam("forceStrandedness") @DefaultValue("false") Boolean forceStrandedness,
       @QueryParam("basesPerLine") @DefaultValue("60") Integer basesPerLine,
       @QueryParam("startOffset") @DefaultValue("ONE") StartOffset startOffset,
-      @FormDataParam("uploadMethod") String uploadMethod,
-      @FormDataParam("file") InputStream file,
-      @FormDataParam("file") FormDataContentDisposition meta,
-      @FormDataParam("url") String url);
+      SequencesSequenceTypeFileFormatPostMultipartFormData entity);
 
   class PostSequencesBySequenceTypeResponse extends ResponseDelegate {
     private PostSequencesBySequenceTypeResponse(Response response, Object entity) {

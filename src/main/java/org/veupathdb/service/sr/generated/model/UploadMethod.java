@@ -9,10 +9,14 @@ public enum UploadMethod {
   @JsonProperty("url")
   URL("url");
 
-  private String name;
+  public final String name;
 
   UploadMethod(String name) {
     this.name = name;
   }
-  public String getValue(){ return name; } 
+
+
+  public String getName() {
+    return this.name;
+  }
 }

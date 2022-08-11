@@ -20,6 +20,8 @@ import jakarta.ws.rs.core.Response;
 import org.veupathdb.service.sr.TestFiles;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
 import org.veupathdb.service.sr.generated.model.StartOffset;
+import org.veupathdb.service.sr.generated.model.SequencesSequenceTypeFileFormatPostMultipartFormDataImpl;
+import org.veupathdb.service.sr.generated.model.UploadMethod;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
@@ -68,11 +70,10 @@ MSLTDQI
     var forceStrandedness = false;
     var basesPerLine = 60;
     var startOffset = StartOffset.ZERO;
-    var uploadMethodStr = "FILE";
-    var file = TestFiles.proteinBed();
-    var meta = (FormDataContentDisposition) null;
-    var url = "";
-    var response = new SequenceRetrievalService().postSequencesBySequenceTypeAndFileFormat(sequenceTypeStr, fileFormatStr, deflineFormat, forceStrandedness, basesPerLine, startOffset, uploadMethodStr, file, meta, url);
+    var entity = new SequencesSequenceTypeFileFormatPostMultipartFormDataImpl();
+    entity.setUploadMethod(UploadMethod.FILE);
+    entity.setFile(TestFiles.proteinBed());
+    var response = new SequenceRetrievalService().postSequencesBySequenceTypeAndFileFormat(sequenceTypeStr, fileFormatStr, deflineFormat, forceStrandedness, basesPerLine, startOffset, entity);
     
     var expected = """
 > EHI7A_117830-t26_1-p1:1-7
@@ -90,11 +91,10 @@ MSLTDQI
     var forceStrandedness = false;
     var basesPerLine = 60;
     var startOffset = (StartOffset) null;
-    var uploadMethodStr = "FILE";
-    var file = TestFiles.geneGff3();
-    var meta = (FormDataContentDisposition) null;
-    var url = "";
-    var response = new SequenceRetrievalService().postSequencesBySequenceTypeAndFileFormat(sequenceTypeStr, fileFormatStr, deflineFormat, forceStrandedness, basesPerLine, startOffset, uploadMethodStr, file, meta, url);
+    var entity = new SequencesSequenceTypeFileFormatPostMultipartFormDataImpl();
+    entity.setUploadMethod(UploadMethod.FILE);
+    entity.setFile(TestFiles.geneGff3());
+    var response = new SequenceRetrievalService().postSequencesBySequenceTypeAndFileFormat(sequenceTypeStr, fileFormatStr, deflineFormat, forceStrandedness, basesPerLine, startOffset, entity);
     
     assertEquals(response.getStatus(), 200);
 

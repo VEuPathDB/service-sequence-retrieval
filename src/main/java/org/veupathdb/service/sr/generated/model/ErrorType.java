@@ -24,10 +24,14 @@ public enum ErrorType {
   @JsonProperty("server-error")
   SERVERERROR("server-error");
 
-  private String name;
+  public final String name;
 
   ErrorType(String name) {
     this.name = name;
   }
-  public String getValue(){ return name; } 
+
+
+  public String getName() {
+    return this.name;
+  }
 }

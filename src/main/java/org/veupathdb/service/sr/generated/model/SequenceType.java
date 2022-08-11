@@ -9,10 +9,14 @@ public enum SequenceType {
   @JsonProperty("protein")
   PROTEIN("protein");
 
-  private String name;
+  public final String name;
 
   SequenceType(String name) {
     this.name = name;
   }
-  public String getValue(){ return name; } 
+
+
+  public String getName() {
+    return this.name;
+  }
 }

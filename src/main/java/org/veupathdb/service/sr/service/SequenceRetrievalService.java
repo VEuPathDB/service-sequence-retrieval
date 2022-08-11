@@ -9,6 +9,7 @@ import org.veupathdb.service.sr.util.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileInputStream;
 import java.net.URL;
 
 public class SequenceRetrievalService implements SequencesSequenceType {
@@ -41,20 +42,18 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       Boolean forceStrandedness,
       Integer basesPerLine,
       StartOffset startOffset,
-      String uploadMethodStr,
-      InputStream file,
-      FormDataContentDisposition meta,
-      String url) {
+      SequencesSequenceTypeFileFormatPostMultipartFormData entity){
 
-    // throw not found since this is a path param
+      var uploadMethod = entity.getUploadMethod();
+      var file = entity.getFile();
+      var url = entity.getUrl();
+
+    // throw not found since these are path params
     var fileFormat = EnumUtil.validate(fileFormatStr, SupportedFileFormat.values(), NotFoundException::new);
-    // throw not found since this is a path param
     var sequenceType = EnumUtil.validate(sequenceTypeStr, SequenceType.values(), NotFoundException::new);
-    // throw bad request since this is in the request body
-    var uploadMethod = EnumUtil.validate(uploadMethodStr, UploadMethod.values(), BadRequestException::new);
 
     try (InputStream fileStream = switch (uploadMethod) {
-      case FILE -> file;
+      case FILE -> new FileInputStream(file);
       case URL -> new URL(url).openStream();
     }) {
 
