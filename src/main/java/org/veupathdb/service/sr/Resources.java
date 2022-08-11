@@ -6,6 +6,9 @@ import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
 import org.veupathdb.service.sr.service.SequenceRetrievalService;
 import org.veupathdb.service.sr.config.ReferenceSequenceConfig;
 import org.veupathdb.service.sr.util.Sequences;
+import org.veupathdb.service.demo.service.Controller;
+import org.veupathdb.service.demo.service.JobController;
+import org.veupathdb.service.demo.service.ReverseController;
 
 /**
  * Service Resource Registration.
@@ -31,7 +34,9 @@ public class Resources extends ContainerResources {
   protected Object[] resources() {
     return new Object[] {
       SequenceRetrievalService.class,
-      MultiPartFeature.class
+      MultiPartFeature.class,
+      JobController.class,
+      ReverseController.class
     };
   }
 }

@@ -14,7 +14,9 @@ make docker
 
 The service can be brought up via docker, using the sample docker-compose and env files, like this:
 ```
-docker compose -f docker-compose.test.yml --env-file ./.env.test up
+make docker-compose-clean
+make docker-compose-build
+make docker-compose-run
 ```
 
 == Configuration

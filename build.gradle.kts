@@ -81,6 +81,13 @@ repositories {
   }
 }
 
+configurations.all {
+  resolutionStrategy {
+    cacheChangingModulesFor(0, TimeUnit.SECONDS)
+    cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
+  }
+}
+
 dependencies {
 
   // Working with sequences
@@ -97,13 +104,36 @@ dependencies {
   implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.4")
   implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.4")
 
+  // Async platform core
+  implementation("org.veupathdb.lib:compute-platform:1.0.0")
+ 
+  // Job IDs
+  implementation("org.veupathdb.lib:hash-id:1.1.0")
+
+  // Logging
+  implementation("org.slf4j:slf4j-api:1.7.36")
+  implementation("org.apache.logging.log4j:log4j-core:2.17.2")
+  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
+
+  // Example Dependencies
+  //
+  // These dependencies were added for the demo/example project and may not be
+  // needed
+
+  // Pico CLI
+  // Only required if your project adds custom CLI/environment options, see
+  // the "MyOptions" class in the demo source code.
+  implementation("info.picocli:picocli:4.6.3")
+
+  // Multipart/Form-Data Jersey Plugin
+  // Only required if your project will be handling multipart/form-data HTTP
+  // requests.
+  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.4")
+
   // Jackson
+  implementation("org.veupathdb.lib:jackson-singleton:3.0.0")
   implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
   implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.3")
-
-  // Log4J
-  implementation("org.apache.logging.log4j:log4j-api:2.17.2")
-  implementation("org.apache.logging.log4j:log4j-core:2.17.2")
 
   // Metrics
   implementation("io.prometheus:simpleclient:0.15.0")

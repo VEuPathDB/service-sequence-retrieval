@@ -1,0 +1,3 @@
+*.html linguist-generated
+*.gradle.kts linguist-vendored
+schema/library.raml linguist-generated
