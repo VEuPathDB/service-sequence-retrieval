@@ -44,9 +44,6 @@ services:
 
     image: sequence-retrieval:${SEQUENCE_RETRIEVAL_TAG:-latest}
 
-    networks:
-      external:
-
     build:
       dockerfile: Dockerfile
       context: ..
@@ -103,6 +100,3 @@ services:
       # Job Settings
       JOB_CACHE_TIMEOUT_DAYS: 30
 
-networks:
-  # external network used for containers that need to reach outside
-  external:
