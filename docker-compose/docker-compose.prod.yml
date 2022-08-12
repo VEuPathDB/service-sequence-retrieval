@@ -1,71 +1,52 @@
 version: "3.5"
+
 services:
-  # Definition of a single container in this stack.
-  #
-  # The name "example" will be the address other containers in the stack use to
-  # connect to this service (http://example).
-  #
-  # Each new container in the Docker compose stack will need a service entry.
-  example:
-    # The "build" field tells docker compose how to build the Docker image that
-    # backs this individual service.
-    build:
-      # Context is the root for the docker image to be built, including the
-      # Dockerfile.
-      context: ..
-    # The "environment" field defines a map of environment variables that will
-    # be passed to the service container on startup.
-    #
-    # Fields here that do not have a value provided here will be required on
-    # docker-compose startup.
-    environment:
-      # The port this service will bind to in it's own container.
-      SERVER_PORT: 80
 
-      # A comma separated list of LDAP servers this service should hit to fetch
-      # connection details for the configured database(s).
-      #
-      # Each entry should include address and port (ldap.somehost.com:386).
-      LDAP_SERVER:
+  sequence-retrieval:
 
-      # Base context to use when attempting to resolve the given DB TNS.
-      #
-      # Example: ou=Something,dc=Domain,dc=Component
-      #
-      # The correct value for this can be found in the project wiki page titled
-      # LdapTnsNames.
-      ORACLE_BASE_DN:
+    image: veupathdb/sequence-retrieval:${SEQUENCE_RETRIEVAL_TAG:-latest}
 
-      # LDAP Net Service Name for the account database.
-      ACCT_DB_TNS_NAME:
-
-      # Account DB login username
-      ACCT_DB_USER:
-
-      # Account DB login password
-      ACCT_DB_PASS:
-
-    # Configure this service to be accessible via the external traefik network.
-    # See "networks" below.
     networks:
-      - traefik
+      external:
+      monitoring-ext:
+      traefik:
 
-    # The labels section defines additional metadata used by ops tooling to
-    # assist in managing this service.
-    #
-    # In these entries "example" would be replaced with a short name or
-    # abbreviation identifying your service.  For example, the dataset accesss
-    # service is "das".
+    volumes:
+      - type: bind
+        source: ${FASTA_FILES_DIR}
+        target: /sequenceFiles
+        read_only: true
+
+    environment:
+
+      # Genomic Sequence Config
+      GENOMIC_FASTA_FILE: ${GENOMIC_FASTA_FILE:-/sequenceFiles/Genome.fa}
+      GENOMIC_INDEX_FILE: ${GENOMIC_INDEX_FILE:-/sequenceFiles/Genome.fa.fai}
+      GENOMIC_MAX_SEQUENCES_PER_REQUEST: ${GENOMIC_MAX_SEQUENCES_PER_REQUEST:-10}
+      GENOMIC_MAX_TOTAL_BASES_PER_REQUEST: ${GENOMIC_MAX_TOTAL_BASES_PER_REQUEST:-1000}
+      GENOMIC_DISALLOW_REVERSE_COMPLEMENT: ${GENOMIC_DISALLOW_REVERSE_COMPLEMENT:-false}
+
+      # Protein Sequence Config
+      PROTEIN_FASTA_FILE: ${PROTEIN_FASTA_FILE:-/sequenceFiles/Protein.fa}
+      PROTEIN_INDEX_FILE: ${PROTEIN_INDEX_FILE:-/sequenceFiles/Protein.fa.fai}
+      PROTEIN_MAX_SEQUENCES_PER_REQUEST: ${PROTEIN_MAX_SEQUENCES_PER_REQUEST:-3}
+      PROTEIN_MAX_TOTAL_BASES_PER_REQUEST: ${PROTEIN_MAX_TOTAL_BASES_PER_REQUEST:-10e6}
+      PROTEIN_DISALLOW_REVERSE_COMPLEMENT: ${PROTEIN_DISALLOW_REVERSE_COMPLEMENT:-true}
+
     labels:
-      - "traefik.http.routers.${TRAEFIK_ROUTER:-example}.rule=Host(`${TRAEFIK_HOST:-example.local.apidb.org}`)"
-      - "traefik.http.routers.${TRAEFIK_ROUTER:-example}.tls=true"
-      - "traefik.http.routers.${TRAEFIK_ROUTER:-example}.entrypoints=local"
-      - "traefik.http.services.${TRAEFIK_ROUTER:-example}.loadbalancer.server.port=80"
-      - "com.centurylinklabs.watchtower.enable=${SERVICE_WATCHTOWER:-false}"
+      - "prometheus.scrape_enabled=true"
+      - "com.centurylinklabs.watchtower.enable=${DATA_WATCHTOWER:-false}"
+      - "traefik.http.services.${TRAEFIK_DATA_ROUTER:-sequenceretrieval-dev}.loadbalancer.server.port=${SR_SERVER_PORT:-8080}"
+      - "traefik.http.routers.${TRAEFIK_DATA_ROUTER:-sequenceretrieval-dev}.rule=Host(`${TRAEFIK_DATA_HOST:-sequenceretrieval-dev.local.apidb.org}`)"
+      - "traefik.http.routers.${TRAEFIK_DATA_ROUTER:-sequenceretrieval-dev}.tls=true"
+      - "traefik.http.routers.${TRAEFIK_DATA_ROUTER:-sequenceretrieval-dev}.entrypoints=${TRAEFIK_ENTRYPOINTS:-local}"
+      - "traefik.docker.network=traefik"
 
-
-# This defines the existence of the traefik network external to this
-# docker-compose stack.
 networks:
+  # external network used for containers that need to reach outside
+  external:
   traefik:
     external: true
+  monitoring-ext:
+    external: true
+

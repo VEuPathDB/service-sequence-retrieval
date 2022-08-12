@@ -122,8 +122,8 @@ docker-compose-build:
 		--build-arg=GITHUB_TOKEN=${GITHUB_TOKEN}
 
 .PHONY: docker-compose-run
-docker-compose-run:
-	@docker-compose -f docker-compose/docker-compose.dev.yml up
+docker-compose-run: build/.env.dev
+	@docker-compose -f docker-compose/docker-compose.dev.yml --env-file build/.env.dev up
 
 .PHONY: docker-compose-clean
 docker-compose-clean:
@@ -137,3 +137,7 @@ build/libs/service.jar: build.gradle.kts
 	@echo "$(C_BLUE)Building application jar$(C_NONE)"
 	@./gradlew clean test shadowJar
 
+# unwrap '$PWD' variable because docker doesn't want to
+build/.env.dev: .env.test
+	mkdir -pv build
+	eval echo $$(cat .env.test ) > build/.env.dev

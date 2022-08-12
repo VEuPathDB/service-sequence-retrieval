@@ -12,6 +12,11 @@ To build a runnable "test" docker image, run:
 make docker
 ```
 
+To execute unit tests, run:
+```
+make test
+```
+
 The service can be brought up via docker, using the sample docker-compose and env files, like this:
 ```
 make docker-compose-clean
@@ -23,7 +28,7 @@ make docker-compose-run
 
 Configuration is handled via docker-compose.yml, which reads values from environment (provided by default by .env or you may specify another file)
 
-Please see `docker-compose.test.yml` and `.evn.test` for test configuration.  The file `docker-compose.yml` is used for production configuration.
+Please see `docker-compose/docker-compose.test.yml` and `.env.test` for test configuration.  The file `docker-compose/docker-compose.prod.yml` will be used for production configuration.
 
 == Example queries
 
