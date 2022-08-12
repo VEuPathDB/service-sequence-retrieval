@@ -1,13 +1,13 @@
-package org.veupathdb.service.demo.service;
+package org.veupathdb.service.sr.service;
 
 import jakarta.ws.rs.NotFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.veupathdb.lib.compute.platform.job.AsyncJob;
 import org.veupathdb.lib.compute.platform.AsyncPlatform;
 import org.veupathdb.lib.hash_id.HashID;
-import org.veupathdb.service.demo.generated.model.JobResponse;
-import org.veupathdb.service.demo.generated.model.JobResponseImpl;
-import org.veupathdb.service.demo.generated.model.JobStatus;
+import org.veupathdb.service.sr.generated.model.JobResponse;
+import org.veupathdb.service.sr.generated.model.JobResponseImpl;
+import org.veupathdb.service.sr.generated.model.JobStatus;
 
 public class Controller {
 

@@ -1,10 +1,10 @@
-package org.veupathdb.service.demo.service;
+package org.veupathdb.service.sr.service;
 
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.StreamingOutput;
 import org.veupathdb.lib.compute.platform.AsyncPlatform;
-import org.veupathdb.service.demo.generated.resources.Jobs;
+import org.veupathdb.service.sr.generated.resources.Jobs;
 
 import java.util.ArrayList;
 

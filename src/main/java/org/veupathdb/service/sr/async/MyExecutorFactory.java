@@ -1,4 +1,4 @@
-package org.veupathdb.service.demo.async;
+package org.veupathdb.service.sr.async;
 
 import org.jetbrains.annotations.NotNull;
 import org.veupathdb.lib.compute.platform.job.JobExecutor;

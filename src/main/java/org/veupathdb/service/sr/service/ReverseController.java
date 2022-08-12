@@ -1,11 +1,11 @@
-package org.veupathdb.service.demo.service;
+package org.veupathdb.service.sr.service;
 
 import org.veupathdb.lib.compute.platform.AsyncPlatform;
 import org.veupathdb.lib.compute.platform.job.JobSubmission;
 import org.veupathdb.lib.hash_id.HashID;
 import org.veupathdb.lib.jackson.Json;
-import org.veupathdb.service.demo.generated.model.ReverseRequest;
-import org.veupathdb.service.demo.generated.resources.Reverse;
+import org.veupathdb.service.sr.generated.model.ReverseRequest;
+import org.veupathdb.service.sr.generated.resources.Reverse;
 
 public class ReverseController extends Controller implements Reverse {
 

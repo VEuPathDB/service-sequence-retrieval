@@ -1,11 +1,11 @@
-package org.veupathdb.service.demo.async;
+package org.veupathdb.service.sr.async;
 
 import org.jetbrains.annotations.NotNull;
 import org.veupathdb.lib.compute.platform.job.JobContext;
 import org.veupathdb.lib.compute.platform.job.JobExecutor;
 import org.veupathdb.lib.compute.platform.job.JobResult;
 import org.veupathdb.lib.jackson.Json;
-import org.veupathdb.service.demo.generated.model.ReverseRequest;
+import org.veupathdb.service.sr.generated.model.ReverseRequest;
 
 public class StringReverseJob implements JobExecutor {
   @NotNull

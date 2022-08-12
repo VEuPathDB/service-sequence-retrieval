@@ -7,7 +7,7 @@ import org.veupathdb.lib.compute.platform.config.*;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
 import org.veupathdb.lib.container.jaxrs.server.Server;
-import org.veupathdb.service.demo.async.MyExecutorFactory;
+import org.veupathdb.service.sr.async.MyExecutorFactory;
 
 public class Main extends Server {
 
