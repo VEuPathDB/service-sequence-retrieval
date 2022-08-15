@@ -4,6 +4,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
 import org.veupathdb.service.sr.service.SequenceRetrievalService;
+import org.veupathdb.service.sr.service.SequenceRetrievalAsyncService;
 import org.veupathdb.service.sr.config.ReferenceSequenceConfig;
 import org.veupathdb.service.sr.util.Sequences;
 import org.veupathdb.service.sr.service.Controller;
@@ -34,6 +35,7 @@ public class Resources extends ContainerResources {
   protected Object[] resources() {
     return new Object[] {
       SequenceRetrievalService.class,
+      SequenceRetrievalAsyncService.class,
       MultiPartFeature.class,
       JobController.class,
       ReverseController.class

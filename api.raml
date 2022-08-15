@@ -64,6 +64,129 @@ securitySchemes:
             text/x-fasta:
               type: lib.PlainTextFastaResponse
 
+/sequences-async/{sequenceType}:
+  displayName: Retrieve sequences (async)
+  post:
+    securedBy: header-auth
+    body:
+      application/json:
+        type: lib.SequencePostRequest
+    responses:
+      200:
+        description: |
+          Success
+          
+          Job was processed and queued successfully.
+        body:
+          application/json:
+            type: lib.JobResponse
+            examples:
+              queued:
+                strict: true
+                value:
+                  jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                  status: queued
+                  queuePosition: 3
+              in-progress:
+                strict: true
+                value:
+                  jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                  status: in-progress
+              complete:
+                strict: true
+                value:
+                  jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                  status: complete
+              failed:
+                strict: true
+                value:
+                  jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                  status: failed
+              expired:
+                strict: true
+                value:
+                  jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                  status: expired
+      500:
+        description: |
+          Internal Server Error
+          
+          An unexpected exception was thrown while attempting to process
+          the request.
+        body:
+          application/json:
+            type: error.ServerError
+
+  /{fileFormat}:
+    displayName: Retrieve sequences based on submitted file
+    post:
+      securedBy: header-auth
+      queryParameters:
+        deflineFormat?:
+          type: lib.DeflineFormat
+          default: 'REGIONONLY'
+        forceStrandedness?:
+          type: boolean
+          default: false
+        basesPerLine?:
+          type: integer
+          default: 60
+        startOffset?:
+          type: lib.StartOffset
+          default: 'ONE'
+      body:
+        multipart/form-data:
+          type: object
+          properties:
+            uploadMethod: lib.UploadMethod
+            url?: string
+            file?: file
+      responses:
+        200:
+          description: |
+            Success
+            
+            Job was processed and queued successfully.
+          body:
+            application/json:
+              type: lib.JobResponse
+              examples:
+                queued:
+                  strict: true
+                  value:
+                    jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                    status: queued
+                    queuePosition: 3
+                in-progress:
+                  strict: true
+                  value:
+                    jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                    status: in-progress
+                complete:
+                  strict: true
+                  value:
+                    jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                    status: complete
+                failed:
+                  strict: true
+                  value:
+                    jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                    status: failed
+                expired:
+                  strict: true
+                  value:
+                    jobID: 9ab9a5886d6abb9ebc82a40f770a1db3
+                    status: expired
+        500:
+          description: |
+            Internal Server Error
+            
+            An unexpected exception was thrown while attempting to process
+            the request.
+          body:
+            application/json:
+              type: error.ServerError
+
 #
 # Example Endpoints
 #

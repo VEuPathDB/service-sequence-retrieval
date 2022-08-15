@@ -56,3 +56,18 @@ types:
       basesPerLine?:
         type: integer
         default: 60
+      
+  SequenceRetrievalSpec:
+    additionalProperties: false
+    properties:
+      features:
+        type: array
+        items: Feature
+      deflineFormat:
+        type: DeflineFormat
+      forceStrandedness:
+        type: boolean
+      basesPerLine:
+        type: integer
+      sequenceType:
+        type: SequenceType
