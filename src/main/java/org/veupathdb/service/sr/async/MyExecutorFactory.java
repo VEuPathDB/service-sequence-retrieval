@@ -10,14 +10,6 @@ public class MyExecutorFactory implements JobExecutorFactory {
   @NotNull
   @Override
   public JobExecutor newJobExecutor(@NotNull JobExecutorContext jobExecutorContext) {
-
-    switch(jobExecutorContext.getQueue()) {
-      case "string-reverse-queue":
-        return new StringReverseJob();
-      case "sequence-retrieval-queue":
-        return new WriteFeaturesJob();
-      default:
-        throw new RuntimeException("Unknown queue, context: "+ jobExecutorContext.toString()); 
-    }
+    return new WriteFeaturesJob();
   }
 }

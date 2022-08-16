@@ -9,7 +9,6 @@ import org.veupathdb.service.sr.config.ReferenceSequenceConfig;
 import org.veupathdb.service.sr.util.Sequences;
 import org.veupathdb.service.sr.service.Controller;
 import org.veupathdb.service.sr.service.JobController;
-import org.veupathdb.service.sr.service.ReverseController;
 
 /**
  * Service Resource Registration.
@@ -37,8 +36,7 @@ public class Resources extends ContainerResources {
       SequenceRetrievalService.class,
       SequenceRetrievalAsyncService.class,
       MultiPartFeature.class,
-      JobController.class,
-      ReverseController.class
+      JobController.class
     };
   }
 }

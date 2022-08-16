@@ -7,6 +7,28 @@
 ################################################################################
 
 types:
+  JobResponse:
+    type: object
+    additionalProperties: false
+    properties:
+      jobID:
+        type: string
+        pattern: ^[\dA-Fa-f]{32}$
+        minLength: 32
+        maxLength: 32
+      status: JobStatus
+      queuePosition?:
+        type: integer
+        format: int32
+  JobDataResponse: any
+  JobStatus:
+    type: string
+    enum:
+      - queued
+      - in-progress
+      - complete
+      - failed
+      - expired
   PlainTextFastaResponse: object
   DeflineFormat:
     type: string
@@ -78,31 +100,4 @@ types:
       forceStrandedness: boolean
       basesPerLine: integer
       sequenceType: SequenceType
-  ReverseRequest:
-    type: object
-    additionalProperties: false
-    properties:
-      input: string
-  JobResponse:
-    type: object
-    additionalProperties: false
-    properties:
-      jobID:
-        type: string
-        pattern: ^[\dA-Fa-f]{32}$
-        minLength: 32
-        maxLength: 32
-      status: JobStatus
-      queuePosition?:
-        type: integer
-        format: int32
-  JobDataResponse: any
-  JobStatus:
-    type: string
-    enum:
-      - queued
-      - in-progress
-      - complete
-      - failed
-      - expired
 
