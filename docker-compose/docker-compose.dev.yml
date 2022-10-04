@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+
   minio:
     image: minio/minio
     command: server --console-address ':9001' /data
@@ -23,14 +24,16 @@ services:
       /usr/bin/mc policy set public minioc/demobucket;
       exit 0;
       "
+
   queue-db:
     image: postgres:14.3-alpine3.16
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: demouser
-      POSTGRES_PASSWORD: demopass
+#      POSTGRES_USER: demouser
+#      POSTGRES_PASSWORD: demopass
       POSTGRES_DB: demodb
+      POSTGRES_HOST_AUTH_METHOD: trust
 
   queue:
     image: rabbitmq:3.10.5-management-alpine
@@ -69,8 +72,8 @@ services:
       GENOMIC_DISALLOW_REVERSE_COMPLEMENT: ${GENOMIC_DISALLOW_REVERSE_COMPLEMENT:-false}
 
       # Protein Sequence Config
-      PROTEIN_FASTA_FILE: ${PROTEIN_FASTA_FILE:-/sequenceFiles/Protein.fa}
-      PROTEIN_INDEX_FILE: ${PROTEIN_INDEX_FILE:-/sequenceFiles/Protein.fa.fai}
+      PROTEIN_FASTA_FILE: ${PROTEIN_FASTA_FILE:-/sequenceFiles/AnnotatedProteins.fa}
+      PROTEIN_INDEX_FILE: ${PROTEIN_INDEX_FILE:-/sequenceFiles/AnnotatedProteins.fa.fai}
       PROTEIN_MAX_SEQUENCES_PER_REQUEST: ${PROTEIN_MAX_SEQUENCES_PER_REQUEST:-3}
       PROTEIN_MAX_TOTAL_BASES_PER_REQUEST: ${PROTEIN_MAX_TOTAL_BASES_PER_REQUEST:-10e6}
       PROTEIN_DISALLOW_REVERSE_COMPLEMENT: ${PROTEIN_DISALLOW_REVERSE_COMPLEMENT:-true}
@@ -79,8 +82,8 @@ services:
       QUEUE_DB_NAME: demodb
       QUEUE_DB_HOST: queue-db
       QUEUE_DB_PORT: 5432
-      QUEUE_DB_USERNAME: demouser
-      QUEUE_DB_PASSWORD: demopass
+      QUEUE_DB_USERNAME: postgres
+      QUEUE_DB_PASSWORD: postgres
       QUEUE_DB_POOL_SIZE: 10
 
       # Queue Platform RabbitMQ
@@ -99,4 +102,3 @@ services:
 
       # Job Settings
       JOB_CACHE_TIMEOUT_DAYS: 30
-
