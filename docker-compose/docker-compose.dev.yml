@@ -1,7 +1,5 @@
 version: '3.8'
 
-name: sequence-retrieval
-
 services:
 
   minio:
@@ -10,96 +8,27 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
+    networks:
+      - internal
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-demouser}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-demopass}
+      MINIO_ROOT_USER: ${S3_ACCESS_TOKEN}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
 
   minio-create-buckets:
     image: minio/mc
     depends_on:
       - minio
+    networks:
+      - internal
+    environment:
+      MINIO_USER: ${S3_ACCESS_TOKEN?required}
+      MINIO_PASS: ${S3_SECRET_KEY?required}
+      MINIO_BUCKET: ${S3_BUCKET?required}
     entrypoint: >
       /bin/sh -c "
       sleep 1;
-      /usr/bin/mc alias set minioc http://minio:9000 ${MINIO_ROOT_USER:?} ${MINIO_ROOT_PASSWORD:?};
-      /usr/bin/mc mb minioc/${MINIO_BUCKET_NAME:?};
-      /usr/bin/mc policy set public minioc/${MINIO_BUCKET_NAME:?};
+      /usr/bin/mc alias set minioc http://minio:9000 $$MINIO_USER $$MINIO_PASS;
+      /usr/bin/mc mb minioc/$$MINIO_BUCKET;
+      /usr/bin/mc policy set public minioc/$$MINIO_BUCKET;
       exit 0;
       "
-
-  queue-db:
-    image: postgres:14.3-alpine3.16
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-demouser}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-demopass}
-      POSTGRES_DB: ${POSTGRES_DB:-demodb}
-
-  queue:
-    image: rabbitmq:3.10.5-management-alpine
-    ports:
-      - "9002:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-demouser}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-demopass}
-
-  sequence-retrieval:
-
-    image: sequence-retrieval:${SEQUENCE_RETRIEVAL_TAG:-latest}
-
-    build:
-      dockerfile: Dockerfile
-      context: ..
-    ports:
-      - "8080:8080"
-    depends_on:
-      - minio
-      - queue
-      - queue-db
-
-    volumes:
-      - type: bind
-        source: ${FASTA_FILES_DIR:?}
-        target: /sequenceFiles
-        read_only: true
-
-    environment:
-      # Genomic Sequence Config
-      GENOMIC_FASTA_FILE: ${GENOMIC_FASTA_FILE:-/sequenceFiles/Genome.fa}
-      GENOMIC_INDEX_FILE: ${GENOMIC_INDEX_FILE:-/sequenceFiles/Genome.fa.fai}
-      GENOMIC_MAX_SEQUENCES_PER_REQUEST: ${GENOMIC_MAX_SEQUENCES_PER_REQUEST:-10}
-      GENOMIC_MAX_TOTAL_BASES_PER_REQUEST: ${GENOMIC_MAX_TOTAL_BASES_PER_REQUEST:-10000}
-      GENOMIC_DISALLOW_REVERSE_COMPLEMENT: ${GENOMIC_DISALLOW_REVERSE_COMPLEMENT:-false}
-
-      # Protein Sequence Config
-      PROTEIN_FASTA_FILE: ${PROTEIN_FASTA_FILE:-/sequenceFiles/AnnotatedProteins.fa}
-      PROTEIN_INDEX_FILE: ${PROTEIN_INDEX_FILE:-/sequenceFiles/AnnotatedProteins.fa.fai}
-      PROTEIN_MAX_SEQUENCES_PER_REQUEST: ${PROTEIN_MAX_SEQUENCES_PER_REQUEST:-3}
-      PROTEIN_MAX_TOTAL_BASES_PER_REQUEST: ${PROTEIN_MAX_TOTAL_BASES_PER_REQUEST:-10e6}
-      PROTEIN_DISALLOW_REVERSE_COMPLEMENT: ${PROTEIN_DISALLOW_REVERSE_COMPLEMENT:-true}
-
-      # Queue Platform Postgres
-      QUEUE_DB_NAME: ${POSTGRES_DB:-demodb}
-      QUEUE_DB_HOST: queue-db
-      QUEUE_DB_PORT: 5432
-      QUEUE_DB_USERNAME: ${POSTGRES_USER:-demouser}
-      QUEUE_DB_PASSWORD: ${POSTGRES_PASSWORD:-demopass}
-      QUEUE_DB_POOL_SIZE: 10
-
-      # Queue Platform RabbitMQ
-      JOB_QUEUE_USERNAME: ${RABBITMQ_DEFAULT_USER:-demouser}
-      JOB_QUEUE_PASSWORD: ${RABBITMQ_DEFAULT_PASS:-demopass}
-      JOB_QUEUE_HOST: queue
-      JOB_QUEUE_PORT: 5672
-      JOB_QUEUE_WORKERS: 5
-
-      # Queue Platform Minio
-      S3_HOST: minio
-      S3_BUCKET: ${MINIO_BUCKET_NAME:-demobucket}
-      S3_ACCESS_TOKEN: ${MINIO_ROOT_USER:-demouser}
-      S3_SECRET_KEY: ${MINIO_BUCKET_NAME:-demopass}
-      S3_PORT: 9000
-
-      # Job Settings
-      JOB_CACHE_TIMEOUT_DAYS: 30
