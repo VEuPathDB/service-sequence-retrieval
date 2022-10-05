@@ -10,9 +10,9 @@ services:
   queue-db:
     image: postgres:14.3-alpine3.16
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_USER: ${POSTGRES_USER:-postgresuser}
       POSTGRES_PASSWORD: ${POSTGRES_PASS}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_DB: ${POSTGRES_DB:-queuedb}
     volumes:
       - sequence-retrieval-db:/var/lib/postgresql/data
     networks:
@@ -24,7 +24,7 @@ services:
   queue:
     image: rabbitmq:3.10.5-management-alpine
     environment:
-      RABBITMQ_DEFAULT_USER: ${QUEUE_USER}
+      RABBITMQ_DEFAULT_USER: ${QUEUE_USER:-rabbituser}
       RABBITMQ_DEFAULT_PASS: ${QUEUE_PASS}
     networks:
       - internal
