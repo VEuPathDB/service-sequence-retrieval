@@ -13,8 +13,8 @@ public class TestReferenceSequenceConfig extends ReferenceSequenceConfig {
     genomicTypeConfig.setMaxTotalBasesPerRequest(10000);
     genomicTypeConfig.setDisallowReverseComplement(false);
     ReferenceSequenceTypeSpec proteinTypeConfig = new ReferenceSequenceTypeSpec();
-    proteinTypeConfig.setFastaFile(ref("Protein.fa"));
-    proteinTypeConfig.setIndexFile(ref("Protein.fa.fai"));
+    proteinTypeConfig.setFastaFile(ref("AnnotatedProteins.fa"));
+    proteinTypeConfig.setIndexFile(ref("AnnotatedProteins.fa.fai"));
     proteinTypeConfig.setMaxSequencesPerRequest(3);
     proteinTypeConfig.setMaxTotalBasesPerRequest(1_000_000);
     proteinTypeConfig.setDisallowReverseComplement(true);
