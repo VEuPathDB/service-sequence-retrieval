@@ -1,7 +1,5 @@
 version: "3.5"
 
-name: sequence-retrieval
-
 volumes:
   sequence-retrieval-db:
 
