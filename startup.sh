@@ -7,7 +7,10 @@ function await() {
   sleeps=0
 
   echo "Waiting for $1 to become available"
-  while ! nc -zv $1 $2; do
+
+  host="$(echo "${1}" | sed 's#https\?://##')"
+
+  while ! nc -zv $host $2; do
     if [ $sleeps -gt $MAX_WAIT_TIME ]; then
       echo "$1 took too long to become available, stopping now"
       exit 1
