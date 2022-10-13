@@ -14,6 +14,10 @@ Configuration:
       - ref: Console_Appender
     Logger:
     - name: com.zaxxer.hikari.pool
+      level: warn
+      AppenderRef:
+      - ref: Console_Appender
+    - name: org.veupathdb.lib
       level: debug
       AppenderRef:
       - ref: Console_Appender
