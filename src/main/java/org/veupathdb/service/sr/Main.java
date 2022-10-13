@@ -65,6 +65,7 @@ public class Main extends Server {
       .s3Config(AsyncS3Config.builder()
         .host(options.getS3Host())
         .bucket(options.getS3Bucket())
+        .https(true)
         .accessToken(options.getS3AccessToken())
         .secretKey(options.getS3SecretKey())
         .port(options.getS3Port())
