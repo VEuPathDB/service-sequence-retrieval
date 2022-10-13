@@ -100,20 +100,20 @@ dependencies {
   implementation("org.veupathdb.lib:jaxrs-container-core:6.8.0")
 
   // Jersey
-  implementation("org.glassfish.jersey.core:jersey-server:3.0.4")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.4")
-  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.4")
+  implementation("org.glassfish.jersey.core:jersey-server:3.0.8")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.8")
+  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.8")
 
   // Async platform core
-  implementation("org.veupathdb.lib:compute-platform:1.0.0")
- 
+  implementation("org.veupathdb.lib:compute-platform:1.2.2")
+
   // Job IDs
   implementation("org.veupathdb.lib:hash-id:1.1.0")
 
   // Logging
   implementation("org.slf4j:slf4j-api:1.7.36")
-  implementation("org.apache.logging.log4j:log4j-core:2.17.2")
-  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
+  implementation("org.apache.logging.log4j:log4j-core:2.19.0")
+  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.19.0")
 
   // Example Dependencies
   //
@@ -132,15 +132,15 @@ dependencies {
 
   // Jackson
   implementation("org.veupathdb.lib:jackson-singleton:3.0.0")
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.3")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.4")
 
   // Metrics
-  implementation("io.prometheus:simpleclient:0.15.0")
-  implementation("io.prometheus:simpleclient_common:0.15.0")
+  implementation("io.prometheus:simpleclient:0.16.0")
+  implementation("io.prometheus:simpleclient_common:0.16.0")
 
   // Unit Testing
-  testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-  testImplementation("org.mockito:mockito-core:4.6.1")
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+  testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+  testImplementation("org.mockito:mockito-core:4.8.0")
+  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 }
