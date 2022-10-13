@@ -13,11 +13,13 @@ Configuration:
       AppenderRef:
       - ref: Console_Appender
     Logger:
-    - name: com.zaxxer.hikari.pool
+    - name: com.zaxxer.hikari
+      additivity: false
       level: warn
       AppenderRef:
       - ref: Console_Appender
     - name: org.veupathdb.lib
+      additivity: false
       level: debug
       AppenderRef:
       - ref: Console_Appender
