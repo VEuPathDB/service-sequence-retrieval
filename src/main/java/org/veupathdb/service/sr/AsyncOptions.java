@@ -217,6 +217,15 @@ public class AsyncOptions extends Options {
   private Integer s3Port;
   private static final int DEFAULT_S3_PORT = 9000;
 
+  @Option(
+    names = "--s3-use-https",
+    defaultValue = "${env:S3_USE_HTTPS}",
+    description = "Whether the platform should use HTTPS when connecting to S3",
+    arity = "1"
+  )
+  private Boolean s3UseHttps;
+  private static final boolean DEFAULT_S3_USE_HTTPS = false;
+
   public String getS3Host() {
     return s3Host;
   }
@@ -235,6 +244,10 @@ public class AsyncOptions extends Options {
 
   public int getS3Port() {
     return s3Port == null ? DEFAULT_S3_PORT : s3Port;
+  }
+
+  public boolean getS3UseHttps() {
+    return s3UseHttps == null ? DEFAULT_S3_USE_HTTPS : s3UseHttps;
   }
 
   // endregion Minio (S3)
