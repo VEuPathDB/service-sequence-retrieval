@@ -46,7 +46,7 @@ RUN apk add --no-cache tzdata \
     && cp /usr/share/zoneinfo/America/New_York /etc/localtime \
     && echo "America/New_York" > /etc/timezone
 
-ENV JVM_MEM_ARGS="-Xms32M -Xmx256M" \
+ENV JVM_MEM_ARGS="-Xms256M -Xmx656M" \
     JVM_ARGS=""
 
 COPY --from=prep /workspace/build/libs/service.jar /service.jar
