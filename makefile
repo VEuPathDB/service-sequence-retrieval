@@ -137,7 +137,12 @@ build/libs/service.jar: build.gradle.kts
 	@echo "$(C_BLUE)Building application jar$(C_NONE)"
 	@./gradlew clean test shadowJar
 
-# unwrap '$PWD' variable because docker doesn't want to
-build/.env.dev: .env.test
+build/.env.dev: docker-compose/.env.sample /tmp/SequenceFiles
 	mkdir -pv build
-	eval echo $$(cat .env.test ) > build/.env.dev
+	cp docker-compose/.env.sample build/.env.dev
+
+# unwrap '$PWD' variable because docker doesn't want to
+# see 'docker-compose/.env.sample'
+/tmp/SequenceFiles:
+	rsync -av $$PWD/src/test/resources/veupathdb/service/sequence/reference/ /tmp/SequenceFiles/
+
