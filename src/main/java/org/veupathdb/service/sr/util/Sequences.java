@@ -29,13 +29,14 @@ public class Sequences {
     sequenceFiles = new HashMap<>();
     for (Map.Entry<SequenceType, ReferenceSequenceTypeSpec> spec: config.entrySet()) {
       SequenceType name = spec.getKey();
-      LOG.info("Initializing reference sequence: " + spec.getKey());
+      LOG.info("Initializing reference sequence: " + spec.getKey() + ". Heap status: "+heapStatus());
       sequenceSpecs.put(name, spec.getValue());
       var index = new FastaSequenceIndex(Paths.get(spec.getValue().getIndexFile()));
       sequenceIndexes.put(name, index);
       var file = new IndexedFastaSequenceFile(Paths.get(spec.getValue().getFastaFile()), index);
       sequenceFiles.put(name, file);
     }
+    LOG.info("Initialized reference sequences. Heap status: " + heapStatus());
   }
 
   public static ReferenceSequenceTypeSpec getSequenceSpec(SequenceType sequenceType){
@@ -50,4 +51,17 @@ public class Sequences {
     return Objects.requireNonNull(sequenceFiles.get(sequenceType), "Sequence file not available for sequence type: " + sequenceType);
   }
 
+  // https://stackoverflow.com/a/44603197
+  private static String heapStatus(){
+    long heapSize = Runtime.getRuntime().totalMemory();
+    long heapMaxSize = Runtime.getRuntime().maxMemory();
+    long heapFreeSize = Runtime.getRuntime().freeMemory();
+    return "heap size = " + formatSize(heapSize) + ", heap max size = " + formatSize(heapMaxSize) + ", current usage = " + formatSize(heapSize - heapFreeSize);
+  }
+
+  private static String formatSize(long v) {
+    if (v < 1024) return v + " B";
+    int z = (63 - Long.numberOfLeadingZeros(v)) / 10;
+    return String.format("%.1f %sB", (double)v / (1L << (z*10)), " KMGTPE".charAt(z));
+  }
 }
