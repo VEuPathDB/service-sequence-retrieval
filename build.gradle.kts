@@ -105,7 +105,7 @@ dependencies {
   implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.8")
 
   // Async platform core
-  implementation("org.veupathdb.lib:compute-platform:1.3.3")
+  implementation("org.veupathdb.lib:compute-platform:1.3.4")
 
   // Job IDs
   implementation("org.veupathdb.lib:hash-id:1.1.0")
