@@ -13,13 +13,14 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
 
+import htsjdk.samtools.util.Locatable;
+
 public class Validate {
 
-  public static List<Feature> getValidatedFeatures(SequenceType sequenceType, FastaSequenceIndex index, List<Feature> features, boolean forceStrandedness, ReferenceSequenceTypeSpec spec){
+  public static <T extends Locatable> List<T> getValidatedFeatures(SequenceType sequenceType, FastaSequenceIndex index, List<T> features, boolean forceStrandedness, ReferenceSequenceTypeSpec spec){
     if(forceStrandedness && spec.getDisallowReverseComplement()){
       throw new BadRequestException("Reverse complement option not available for sequence type " + sequenceType);
     }
-
     if(features.size() > spec.getMaxSequencesPerRequest()){
       throw new BadRequestException("Requested more features than per-request limit of " + spec.getMaxSequencesPerRequest());
     }
@@ -37,26 +38,24 @@ public class Validate {
       }
       var indexEntry = index.getIndexEntry(contig);
       if(feature.getStart() < 1){
-        totalErrors += addError(errors, "Requested start before contig start", feature.getQuery());
+        totalErrors += addError(errors, "Requested start before contig start", feature.toString());
         continue;
       }
       if(feature.getStart() >= feature.getEnd()){
-        totalErrors += addError(errors, "Requested start not before requested end", feature.getQuery());
+        totalErrors += addError(errors, "Requested start not before requested end", feature.toString());
         continue;
       }
       if(feature.getEnd() > indexEntry.getSize()){
-        totalErrors += addError(errors, "Requested end after contig end", feature.getQuery());
+        totalErrors += addError(errors, "Requested end after contig end", feature.toString());
         continue;
       }
-      numBasesRequested += (feature.getEnd() - feature.getStart() + 1);
+      numBasesRequested += feature.getLengthOnReference();
       if(numBasesRequested > spec.getMaxTotalBasesPerRequest()){
         throw new BadRequestException("Requested more total bases than per-request limit of " + spec.getMaxTotalBasesPerRequest());
       }
       if(totalErrors > 100 ){
         throw new BadRequestException(">100 errors: " + errors.toString());
       } 
-
-
     }
 
     if(totalErrors > 0){

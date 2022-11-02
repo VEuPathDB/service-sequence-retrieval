@@ -8,6 +8,11 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "features",
+    "featuresStr",
+    "featuresUrl",
+    "fileFormat",
+    "uploadMethod",
+    "startOffset",
     "deflineFormat",
     "forceStrandedness",
     "basesPerLine",
@@ -16,6 +21,21 @@ import java.util.List;
 public class SequenceRetrievalSpecImpl implements SequenceRetrievalSpec {
   @JsonProperty("features")
   private List<Feature> features;
+
+  @JsonProperty("featuresStr")
+  private String featuresStr;
+
+  @JsonProperty("featuresUrl")
+  private String featuresUrl;
+
+  @JsonProperty("fileFormat")
+  private SupportedFileFormat fileFormat;
+
+  @JsonProperty("uploadMethod")
+  private UploadMethod uploadMethod;
+
+  @JsonProperty("startOffset")
+  private StartOffset startOffset;
 
   @JsonProperty("deflineFormat")
   private DeflineFormat deflineFormat;
@@ -37,6 +57,56 @@ public class SequenceRetrievalSpecImpl implements SequenceRetrievalSpec {
   @JsonProperty("features")
   public void setFeatures(List<Feature> features) {
     this.features = features;
+  }
+
+  @JsonProperty("featuresStr")
+  public String getFeaturesStr() {
+    return this.featuresStr;
+  }
+
+  @JsonProperty("featuresStr")
+  public void setFeaturesStr(String featuresStr) {
+    this.featuresStr = featuresStr;
+  }
+
+  @JsonProperty("featuresUrl")
+  public String getFeaturesUrl() {
+    return this.featuresUrl;
+  }
+
+  @JsonProperty("featuresUrl")
+  public void setFeaturesUrl(String featuresUrl) {
+    this.featuresUrl = featuresUrl;
+  }
+
+  @JsonProperty("fileFormat")
+  public SupportedFileFormat getFileFormat() {
+    return this.fileFormat;
+  }
+
+  @JsonProperty("fileFormat")
+  public void setFileFormat(SupportedFileFormat fileFormat) {
+    this.fileFormat = fileFormat;
+  }
+
+  @JsonProperty("uploadMethod")
+  public UploadMethod getUploadMethod() {
+    return this.uploadMethod;
+  }
+
+  @JsonProperty("uploadMethod")
+  public void setUploadMethod(UploadMethod uploadMethod) {
+    this.uploadMethod = uploadMethod;
+  }
+
+  @JsonProperty("startOffset")
+  public StartOffset getStartOffset() {
+    return this.startOffset;
+  }
+
+  @JsonProperty("startOffset")
+  public void setStartOffset(StartOffset startOffset) {
+    this.startOffset = startOffset;
   }
 
   @JsonProperty("deflineFormat")

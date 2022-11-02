@@ -95,9 +95,30 @@ MSLTDQI
     entity.setUploadMethod(UploadMethod.FILE);
     entity.setFile(TestFiles.geneGff3());
     var response = new SequenceRetrievalService().postSequencesBySequenceTypeAndFileFormat(sequenceTypeStr, fileFormatStr, deflineFormat, forceStrandedness, basesPerLine, startOffset, entity);
-    
     assertEquals(response.getStatus(), 200);
+  }
 
+  @Test
+  public void testBedGene() throws Exception {
+    var sequenceTypeStr = "GENOMIC";
+    var fileFormatStr = "BED";
+    var deflineFormat = DeflineFormat.QUERYANDREGION;
+    var forceStrandedness = false;
+    var basesPerLine = 100;
+    var startOffset = StartOffset.ZERO;
+    var entity = new SequencesSequenceTypeFileFormatPostMultipartFormDataImpl();
+    entity.setUploadMethod(UploadMethod.FILE);
+    entity.setFile(TestFiles.firstThreeHundredBasesBed6());
+    var response = new SequenceRetrievalService().postSequencesBySequenceTypeAndFileFormat(sequenceTypeStr, fileFormatStr, deflineFormat, forceStrandedness, basesPerLine, startOffset, entity);
+    assertEquals(response.getStatus(), 200);
+    var expected = bodyText(response).split("\n");
+    assertEquals(expected[0], ">gene_id KB823016:1-300");
+    assertEquals(expected.length, 4);
+
+    entity.setFile(TestFiles.firstAndLastHundredFromFirstThreeHundredBasesBed12());
+    var secondResponse = new SequenceRetrievalService().postSequencesBySequenceTypeAndFileFormat(sequenceTypeStr, fileFormatStr, deflineFormat, forceStrandedness, basesPerLine, startOffset, entity);
+    assertEquals(secondResponse.getStatus(), 200);
+    assertEquals(bodyText(secondResponse), "TODO");
   }
 
   private void testJson(String json, String sequenceTypeStr, String expected) throws Exception {

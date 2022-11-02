@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.util.stream.Collectors;
 
 public class SequenceRetrievalService implements SequencesSequenceType {
 
@@ -19,7 +20,8 @@ public class SequenceRetrievalService implements SequencesSequenceType {
     var forceStrandedness = entity.getForceStrandedness();
     var deflineFormat = entity.getDeflineFormat();
     var basesPerLine = entity.getBasesPerLine();
-    var requestedFeatures = entity.getFeatures();
+
+    var requestedFeatures = FeatureAdapter.toBEDFeatures(entity.getFeatures());
     var sequenceType = EnumUtil.validate(sequenceTypeStr, SequenceType.values(), NotFoundException::new);
 
     var spec = Sequences.getSequenceSpec(sequenceType);
@@ -58,8 +60,8 @@ public class SequenceRetrievalService implements SequencesSequenceType {
     }) {
 
       var requestedFeatures = switch (fileFormat) {
-        case BED -> ConvertFeatures.featuresFromBed(fileStream, startOffset);
-        case GFF3 -> ConvertFeatures.featuresFromGff3(fileStream);
+        case BED -> FeatureAdapter.readBed(fileStream, startOffset);
+        case GFF3 -> FeatureAdapter.readGff3AndConvertToBed(fileStream);
       };
 
       var spec = Sequences.getSequenceSpec(sequenceType);
