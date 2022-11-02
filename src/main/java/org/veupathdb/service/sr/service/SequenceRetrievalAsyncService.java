@@ -10,7 +10,12 @@ import org.veupathdb.service.sr.util.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.lang.StringBuilder;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.net.URL;
 
 import org.veupathdb.service.sr.generated.model.JobResponse;
@@ -22,18 +27,7 @@ import org.veupathdb.service.sr.generated.model.JobResponse;
 
 public class SequenceRetrievalAsyncService extends Controller implements SequencesAsyncSequenceType {
 
-  private JobResponse asyncResponse(
-      List<Feature> features,
-      SequenceType sequenceType,
-      DeflineFormat deflineFormat,
-      Boolean forceStrandedness,
-      Integer basesPerLine){
-    var spec = new SequenceRetrievalSpecImpl();
-    spec.setFeatures(features);
-    spec.setDeflineFormat(deflineFormat);
-    spec.setForceStrandedness(forceStrandedness);
-    spec.setBasesPerLine(basesPerLine);
-    spec.setSequenceType(sequenceType);
+  private JobResponse asyncResponse(SequenceRetrievalSpec spec){
     var json  = Json.convert(spec);
     var jobID = HashID.ofMD5(json.toString());
 
@@ -58,16 +52,15 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
     var forceStrandedness = entity.getForceStrandedness();
     var deflineFormat = entity.getDeflineFormat();
     var basesPerLine = entity.getBasesPerLine();
-    var requestedFeatures = entity.getFeatures();
+    var features = entity.getFeatures();
+    var spec = new SequenceRetrievalSpecImpl();
     var sequenceType = EnumUtil.validate(sequenceTypeStr, SequenceType.values(), NotFoundException::new);
-
-    var spec = Sequences.getSequenceSpec(sequenceType);
-    var index = Sequences.getSequenceIndex(sequenceType);
-    var sequences = Sequences.getSequenceFile(sequenceType);
-
-    var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
-      return PostSequencesAsyncBySequenceTypeResponse.respond200WithApplicationJson(asyncResponse(features, sequenceType, deflineFormat, forceStrandedness, basesPerLine));
-
+    spec.setFeatures(features);
+    spec.setDeflineFormat(deflineFormat);
+    spec.setForceStrandedness(forceStrandedness);
+    spec.setBasesPerLine(basesPerLine);
+    spec.setSequenceType(sequenceType);
+    return PostSequencesAsyncBySequenceTypeResponse.respond200WithApplicationJson(asyncResponse(spec));
   }
 
   @Override
@@ -80,34 +73,52 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
       StartOffset startOffset,
       SequencesAsyncSequenceTypeFileFormatPostMultipartFormData entity){
 
-      var uploadMethod = entity.getUploadMethod();
-      var file = entity.getFile();
-      var url = entity.getUrl();
+    var file = entity.getFile();
+    var url = entity.getUrl();
 
-    // throw not found since these are path params
+    var spec = new SequenceRetrievalSpecImpl();
+
+    spec.setDeflineFormat(deflineFormat);
+    spec.setForceStrandedness(forceStrandedness);
+    spec.setBasesPerLine(basesPerLine);
     var fileFormat = EnumUtil.validate(fileFormatStr, SupportedFileFormat.values(), NotFoundException::new);
     var sequenceType = EnumUtil.validate(sequenceTypeStr, SequenceType.values(), NotFoundException::new);
+    spec.setSequenceType(sequenceType);
 
-    try (InputStream fileStream = switch (uploadMethod) {
-      case FILE -> new FileInputStream(file);
-      case URL -> new URL(url).openStream();
-    }) {
+    var uploadMethod = entity.getUploadMethod();
+    switch(uploadMethod){
+      case FILE:
+        spec.setFeaturesStr(slurp(file));
+        break;
+      case URL:
+        spec.setFeaturesUrl(url);
+        break;
+    }
+    spec.setFileFormat(fileFormat);
+    return PostSequencesAsyncBySequenceTypeAndFileFormatResponse.respond200WithApplicationJson(asyncResponse(spec));
+  }
 
-      var requestedFeatures = switch (fileFormat) {
-        case BED -> ConvertFeatures.featuresFromBed(fileStream, startOffset);
-        case GFF3 -> ConvertFeatures.featuresFromGff3(fileStream);
-      };
-
-      var spec = Sequences.getSequenceSpec(sequenceType);
-      var index = Sequences.getSequenceIndex(sequenceType);
-      var sequences = Sequences.getSequenceFile(sequenceType);
-
-      var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
-
-      return PostSequencesAsyncBySequenceTypeAndFileFormatResponse.respond200WithApplicationJson(asyncResponse(features, sequenceType, deflineFormat, forceStrandedness, basesPerLine));
-
-    } catch (IOException e) {
-      throw new RuntimeException("Unable to complete file processing", e);
+  private static String slurp(File file){
+    try {
+      return getFileContent(new FileInputStream(file), "UTF-8");
+    } catch (IOException e){
+      throw new RuntimeException(e);
     }
   }
+
+  //https://stackoverflow.com/a/15161590
+  private static String getFileContent(FileInputStream fis, String encoding ) throws IOException
+ {
+   try( BufferedReader br =
+           new BufferedReader( new InputStreamReader(fis, encoding )))
+   {
+      StringBuilder sb = new StringBuilder();
+      String line;
+      while(( line = br.readLine()) != null ) {
+         sb.append( line );
+         sb.append( '\n' );
+      }
+      return sb.toString();
+   }
+}
 }
