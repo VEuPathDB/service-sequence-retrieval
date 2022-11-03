@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.Optional;
 public class FeatureAdapter {
 
   public static List<BEDFeature> toBEDFeatures(List<org.veupathdb.service.sr.generated.model.Feature> features){
@@ -29,7 +30,7 @@ public class FeatureAdapter {
   }
 
   private static Strand toStrand(org.veupathdb.service.sr.generated.model.Strand s){
-    return switch(s){
+    return switch(Optional.ofNullable(s).orElse(org.veupathdb.service.sr.generated.model.Strand.NONE)){
       case POSITIVE -> Strand.POSITIVE;
       case NEGATIVE -> Strand.NEGATIVE;
       case NONE -> Strand.NONE;
