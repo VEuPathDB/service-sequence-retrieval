@@ -26,10 +26,13 @@ public class StreamSequences {
 
   private static byte[] sequenceForFeature(IndexedFastaSequenceFile sequences, BEDFeature feature, boolean forceStrandedness){
     var referenceSequence = sequences.getSubsequenceAt(feature.getContig(), feature.getStart(), feature.getEnd());
+
+
     var bases = referenceSequence.getBases();
-    if(feature instanceof FullBEDFeature){
-      var exons = ((FullBEDFeature) feature).getExons();
-      var length =  exons.stream().mapToInt(e -> e.getCodingLength()).sum();
+    var exons = feature.getExons();
+
+    var length =  exons.stream().mapToInt(e -> e.getCodingLength()).sum();
+    if(length > 0 ){
       var newBases = new byte[length];
       int newBasesOffset = 0;
       for (var e: exons){
@@ -47,6 +50,7 @@ public class StreamSequences {
   public static Consumer<OutputStream> responseStream(IndexedFastaSequenceFile sequences, List<BEDFeature> features, DeflineFormat deflineFormat, boolean forceStrandedness, int requestedBasesPerLine){
 
     int basesPerLine = requestedBasesPerLine > 0 ? requestedBasesPerLine : Integer.MAX_VALUE;
+
     return outputStream -> {
       try (var buf = new BufferedOutputStream(outputStream)) {
         var mentionStrand = forceStrandedness;
