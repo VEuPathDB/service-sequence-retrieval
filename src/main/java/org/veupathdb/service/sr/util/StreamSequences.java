@@ -24,39 +24,15 @@ public class StreamSequences {
 
   private static final byte[] LINE_SEPARATOR = String.valueOf("\n").getBytes(CHARSET);
 
-  private static byte[] sequenceForFeature(IndexedFastaSequenceFile sequences, BEDFeature feature, boolean forceStrandedness){
-    var referenceSequence = sequences.getSubsequenceAt(feature.getContig(), feature.getStart(), feature.getEnd());
-
-
-    var bases = referenceSequence.getBases();
-    var exons = feature.getExons();
-
-    var length =  exons.stream().mapToInt(e -> e.getCodingLength()).sum();
-    if(length > 0 ){
-      var newBases = new byte[length];
-      int newBasesOffset = 0;
-      for (var e: exons){
-        System.arraycopy(bases, e.getCdStart(), newBases, newBasesOffset, e.getCodingLength());
-        newBasesOffset += e.getCodingLength();
-      }
-      bases = newBases;
-    }
-    if(forceStrandedness && feature.getStrand().equals(Strand.NEGATIVE)){
-      SequenceUtil.reverseComplement(bases);
-    }
-    return bases;
-  }
-
-  public static Consumer<OutputStream> responseStream(IndexedFastaSequenceFile sequences, List<BEDFeature> features, DeflineFormat deflineFormat, boolean forceStrandedness, int requestedBasesPerLine){
+  public static Consumer<OutputStream> responseStream(IndexedFastaSequenceFile sequences, List<BEDFeature> features, DeflineFormat deflineFormat, int requestedBasesPerLine){
 
     int basesPerLine = requestedBasesPerLine > 0 ? requestedBasesPerLine : Integer.MAX_VALUE;
 
     return outputStream -> {
       try (var buf = new BufferedOutputStream(outputStream)) {
-        var mentionStrand = forceStrandedness;
         for (var feature : features) {
-          var bases = sequenceForFeature(sequences, feature, forceStrandedness);
-          var defline = Deflines.deflineForFeature(feature, deflineFormat, mentionStrand);
+          var defline = Deflines.deflineForFeature(feature, deflineFormat);
+          var bases = Bases.getBasesForBedFeature(sequences, feature);
 
           appendSequenceToStream(buf, defline, bases, basesPerLine);
           buf.flush();
@@ -72,7 +48,7 @@ public class StreamSequences {
    * appends sequence to stream
    * customized from htsjdk.samtools.reference.FastaReferenceWriter;
    */
-  public static void appendSequenceToStream(OutputStream outputStream, String defline, byte[] bases, int basesPerLine) throws IOException {
+  private static void appendSequenceToStream(OutputStream outputStream, String defline, byte[] bases, int basesPerLine) throws IOException {
     outputStream.write(defline.getBytes(CHARSET));
     outputStream.write(LINE_SEPARATOR);
 

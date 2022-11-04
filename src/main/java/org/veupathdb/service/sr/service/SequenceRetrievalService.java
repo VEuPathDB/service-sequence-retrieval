@@ -22,6 +22,9 @@ public class SequenceRetrievalService implements SequencesSequenceType {
     var basesPerLine = entity.getBasesPerLine();
 
     var requestedFeatures = FeatureAdapter.toBEDFeatures(entity.getFeatures());
+    if(! entity.getForceStrandedness()){
+      FeatureAdapter.setStrandToNone(requestedFeatures);
+    }
     var sequenceType = EnumUtil.validate(sequenceTypeStr, SequenceType.values(), NotFoundException::new);
 
     var spec = Sequences.getSequenceSpec(sequenceType);
@@ -31,7 +34,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
     var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
 
     return PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(new PlainTextFastaResponseStream(
-        StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine)
+        StreamSequences.responseStream(sequences, features, deflineFormat, basesPerLine)
     ));
 
   }
@@ -63,6 +66,9 @@ public class SequenceRetrievalService implements SequencesSequenceType {
         case BED -> FeatureAdapter.readBed(fileStream, startOffset);
         case GFF3 -> FeatureAdapter.readGff3AndConvertToBed(fileStream);
       };
+      if(! forceStrandedness){
+        FeatureAdapter.setStrandToNone(requestedFeatures);
+      }
 
       var spec = Sequences.getSequenceSpec(sequenceType);
       var index = Sequences.getSequenceIndex(sequenceType);
@@ -71,7 +77,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
 
       return PostSequencesBySequenceTypeAndFileFormatResponse.respond200WithTextXFasta(new PlainTextFastaResponseStream(
-          StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine)
+          StreamSequences.responseStream(sequences, features, deflineFormat, basesPerLine)
       ));
 
     } catch (IOException e) {

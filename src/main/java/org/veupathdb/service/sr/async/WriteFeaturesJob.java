@@ -55,9 +55,12 @@ public class WriteFeaturesJob implements JobExecutor {
       }
     }
 
+    if(!forceStrandedness){
+      FeatureAdapter.setStrandToNone(requestedFeatures);
+    }
     var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
 
-    var stream = StreamSequences.responseStream(sequences, features, jobSpec.getDeflineFormat(), jobSpec.getForceStrandedness(), jobSpec.getBasesPerLine());
+    var stream = StreamSequences.responseStream(sequences, features, jobSpec.getDeflineFormat(), jobSpec.getBasesPerLine());
 
     // https://stackoverflow.com/questions/216894/get-an-outputstream-into-a-string
     var os = new OutputStream() {

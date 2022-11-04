@@ -43,4 +43,15 @@ public class FeatureAdapterTest {
     assertEquals(features.get(0).getName(), "");
 
   }
+
+  @Test
+  public void testReadBedGenomic() throws Exception {
+    var features = FeatureAdapter.readBed(new FileInputStream(TestFiles.firstThreeHundredBasesBed6()), StartOffset.ZERO);
+    assertEquals(features.size(), 1);
+    assertEquals(features.get(0).getContig(), "KB823016");
+    assertEquals(features.get(0).getStart(), 1);
+    assertEquals(features.get(0).getEnd(), 300);
+    assertEquals(features.get(0).getName(), "gene_id");
+    assertEquals(features.get(0).getStrand().encodeAsChar(), '+');
+  }
 }

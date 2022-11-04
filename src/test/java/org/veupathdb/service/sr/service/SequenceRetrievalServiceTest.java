@@ -107,18 +107,34 @@ MSLTDQI
     var basesPerLine = 100;
     var startOffset = StartOffset.ZERO;
     var entity = new SequencesSequenceTypeFileFormatPostMultipartFormDataImpl();
+
+
     entity.setUploadMethod(UploadMethod.FILE);
     entity.setFile(TestFiles.firstThreeHundredBasesBed6());
     var response = new SequenceRetrievalService().postSequencesBySequenceTypeAndFileFormat(sequenceTypeStr, fileFormatStr, deflineFormat, forceStrandedness, basesPerLine, startOffset, entity);
     assertEquals(response.getStatus(), 200);
     var expected = bodyText(response).split("\n");
-    assertEquals(expected[0], ">gene_id KB823016:1-300");
     assertEquals(expected.length, 4);
+    assertEquals(expected[0], ">gene_id KB823016:1-300");
+    assertEquals(expected[1].length(), 100);
+    assertEquals(expected[1], "TATTGTATTTATTATAGCATTCCCTTATCCATTTCTAATTCAAATACATCATAATCAAATAATAACAAAGAGAGTCAATACTTGATTTGTACTAGGGTTT");
+    assertEquals(expected[2].length(), 100);
+    assertEquals(expected[3].length(), 100);
 
-    entity.setFile(TestFiles.firstAndLastHundredFromFirstThreeHundredBasesBed12());
-    var secondResponse = new SequenceRetrievalService().postSequencesBySequenceTypeAndFileFormat(sequenceTypeStr, fileFormatStr, deflineFormat, forceStrandedness, basesPerLine, startOffset, entity);
+    var secondEntity = new SequencesSequenceTypeFileFormatPostMultipartFormDataImpl();
+    secondEntity.setUploadMethod(UploadMethod.FILE);
+    secondEntity.setFile(TestFiles.firstAndLastHundredFromFirstThreeHundredBasesBed12());
+    var secondResponse = new SequenceRetrievalService().postSequencesBySequenceTypeAndFileFormat(sequenceTypeStr, fileFormatStr, deflineFormat, forceStrandedness, basesPerLine, startOffset, secondEntity);
     assertEquals(secondResponse.getStatus(), 200);
-    assertEquals(bodyText(secondResponse), "TODO");
+    var secondExpected = bodyText(secondResponse).split("\n");
+    assertEquals(secondExpected.length, 3);
+    assertEquals(secondExpected[1].length(), 100);
+    assertEquals(secondExpected[2].length(), 100);
+    assertEquals(secondExpected[0], expected[0]);
+
+    assertEquals(secondExpected[1], expected[1]);
+    assertEquals(secondExpected[2], expected[3]);
+
   }
 
   private void testJson(String json, String sequenceTypeStr, String expected) throws Exception {
@@ -126,7 +142,7 @@ MSLTDQI
     var sequencePostRequest = new ObjectMapper().readValue(json, SequencePostRequest.class);
 
     var response = new SequenceRetrievalService().postSequencesBySequenceType(sequenceTypeStr, sequencePostRequest);
-    assertEquals(bodyText(response), expected);
+    assertEquals(expected, bodyText(response));
   }
 
   private static String bodyText(Response response) throws Exception {
