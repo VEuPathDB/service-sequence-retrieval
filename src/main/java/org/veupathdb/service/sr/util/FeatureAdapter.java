@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Collection;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.Optional;
@@ -48,7 +49,8 @@ public class FeatureAdapter {
       var codec = getBedCodec(startOffset);
       var result = new ArrayList<BEDFeature>();
       while(scanner.hasNextLine()){
-        result.add(codec.decode(scanner.nextLine()));
+        // our .beds are tab-separated and can have spaces in fields
+        result.add(codec.decode(scanner.nextLine().split("\t")));
       }
       return result;
     } catch (Exception e){
@@ -81,6 +83,10 @@ public class FeatureAdapter {
     catch(IOException e){
       throw new RuntimeException(e);
     }
+  }
+
+  public static void setStrandToNone(Collection<BEDFeature> features){
+    features.stream().forEach(f -> ((SimpleBEDFeature) f).setStrand(Strand.NONE));
   }
 
 }
