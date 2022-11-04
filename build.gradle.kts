@@ -115,9 +115,6 @@ dependencies {
   implementation("org.apache.logging.log4j:log4j-core:2.19.0")
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.19.0")
 
-  // MapDB
-  implementation("org.mapdb:mapdb:3.0.8")
-
   // Pico CLI
   // Only required if your project adds custom CLI/environment options, see
   // the "MyOptions" class in the demo source code.
