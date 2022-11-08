@@ -24,6 +24,12 @@ make docker-compose-build
 make docker-compose-run
 ```
 
+You might need a traefik to run:
+```
+cp ~/dev/docker-traefik/docker-compose.yml docker-compose/traefik.yml
+docker compose -f  docker-compose/traefik.yml -f docker-compose/docker-compose.yml -f docker-compose/docker-compose.dev.yml up
+```
+
 == Configuration
 
 Configuration is handled via docker-compose.yml, which reads values from environment (provided by default by .env or you may specify another file)
