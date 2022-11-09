@@ -27,47 +27,10 @@ public class Validate {
     if(features.size() == 0){
       throw new BadRequestException("No features requested");
     }
-    var numBasesRequested = 0;
-    var errors = new LinkedHashMap<String, List<String>>();
-    var totalErrors = 0;
-    for (var feature: features){
-      var contig = feature.getContig();
-      if(!index.hasIndexEntry(contig)){
-        totalErrors += addError(errors, "Contig(s) not in index", contig);
-        continue;
-      }
-      var indexEntry = index.getIndexEntry(contig);
-      if(feature.getStart() < 1){
-        totalErrors += addError(errors, "Requested start before contig start", feature.toString());
-        continue;
-      }
-      if(feature.getStart() >= feature.getEnd()){
-        totalErrors += addError(errors, "Requested start not before requested end", feature.toString());
-        continue;
-      }
-      if(feature.getEnd() > indexEntry.getSize()){
-        totalErrors += addError(errors, "Requested end after contig end", feature.toString());
-        continue;
-      }
-      numBasesRequested += feature.getLengthOnReference();
-      if(numBasesRequested > spec.getMaxTotalBasesPerRequest()){
-        throw new BadRequestException("Requested more total bases than per-request limit of " + spec.getMaxTotalBasesPerRequest());
-      }
-      if(totalErrors > 100 ){
-        throw new BadRequestException(">100 errors: " + errors.toString());
-      } 
+    if( features.stream().mapToInt(f -> f.getLengthOnReference()).sum() > spec.getMaxTotalBasesPerRequest()){
+      throw new BadRequestException("Requested more total bases than per-request limit of " + spec.getMaxTotalBasesPerRequest());
     }
-
-    if(totalErrors > 0){
-      throw new BadRequestException(totalErrors + " errors: " + errors.toString());
-    } 
     return features;
-  }
-
-  private static int addError(Map<String, List<String>> m, String reason, String value){
-    m.putIfAbsent(reason, new ArrayList<>());
-    m.get(reason).add(value);
-    return 1;
   }
 
 }

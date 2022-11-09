@@ -110,6 +110,10 @@ dependencies {
   // Job IDs
   implementation("org.veupathdb.lib:hash-id:1.1.0")
 
+
+  // SQLite
+  implementation("org.xerial:sqlite-jdbc:3.39.4.0")
+
   // Logging
   implementation("org.slf4j:slf4j-api:1.7.36")
   implementation("org.apache.logging.log4j:log4j-core:2.19.0")
