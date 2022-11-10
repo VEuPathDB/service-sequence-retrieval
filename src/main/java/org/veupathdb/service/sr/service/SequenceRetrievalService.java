@@ -6,7 +6,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.veupathdb.service.sr.generated.model.*;
 import org.veupathdb.service.sr.generated.resources.SequencesSequenceType;
 
-import org.veupathdb.service.sr.reference.ReferenceSequencesDAOFactory;
+import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
 import org.veupathdb.service.sr.util.FeatureAdapter;
 import org.veupathdb.service.sr.util.EnumUtil;
 
@@ -26,7 +26,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
     var features = FeatureAdapter.toBEDFeatures(entity.getFeatures());
 
-    var stream = ReferenceSequencesDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
+    var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
 
     return PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(new PlainTextFastaResponseStream(stream));
 
@@ -58,7 +58,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
         case GFF3 -> FeatureAdapter.readGff3AndConvertToBed(fileStream);
       };
 
-      var stream = ReferenceSequencesDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
+      var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
       return PostSequencesBySequenceTypeAndFileFormatResponse.respond200WithTextXFasta(new PlainTextFastaResponseStream(stream));
 
     } catch (IOException e) {

@@ -15,18 +15,18 @@ import org.veupathdb.service.sr.reference.ReferenceSequenceSpec;
  * Provides data access to sequences 
  *
  * To validate and serve the request:
- * ReferenceSequencesDAOFactory.get(sequenceType).validateAndPrepareResponse(...)
+ * ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(...)
  *
  * To pre-validate, cheaply:
- * ReferenceSequencesDAOFactory.get(sequenceType).validate(...)
+ * ReferenceDAOFactory.get(sequenceType).validate(...)
  */
-public class ReferenceSequencesDAO {
+public class ReferenceDAO {
 
   private final ReferenceSequenceSpec spec;
   private final Path indexPath;
   private final Path sequencesPath;
 
-  public ReferenceSequencesDAO(ReferenceSequenceSpec spec, Path indexPath, Path sequencesPath){
+  public ReferenceDAO(ReferenceSequenceSpec spec, Path indexPath, Path sequencesPath){
     this.spec = spec;
     this.indexPath = indexPath;
     this.sequencesPath = sequencesPath;

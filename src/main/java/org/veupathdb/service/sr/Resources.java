@@ -7,7 +7,7 @@ import org.veupathdb.service.sr.service.SequenceRetrievalService;
 import org.veupathdb.service.sr.service.SequenceRetrievalAsyncService;
 import org.veupathdb.service.sr.service.Controller;
 import org.veupathdb.service.sr.service.JobController;
-import org.veupathdb.service.sr.reference.ReferenceSequencesDAOFactory;
+import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
 
 /**
  * Service Resource Registration.
@@ -21,7 +21,7 @@ public class Resources extends ContainerResources {
     super(opts);
 
     // read environment to create a configuration and initialize sequence processing
-    ReferenceSequencesDAOFactory.init();
+    ReferenceDAOFactory.init();
   }
 
   /**

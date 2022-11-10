@@ -6,7 +6,7 @@ import org.veupathdb.lib.compute.platform.job.JobExecutor;
 import org.veupathdb.lib.compute.platform.job.JobResult;
 import org.veupathdb.lib.jackson.Json;
 import org.veupathdb.service.sr.util.FeatureAdapter;
-import org.veupathdb.service.sr.reference.ReferenceSequencesDAOFactory;
+import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpec;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpecImpl;
 
@@ -50,7 +50,7 @@ public class WriteFeaturesJob implements JobExecutor {
       }
     }
 
-    var stream = ReferenceSequencesDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
+    var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
 
     // https://stackoverflow.com/questions/216894/get-an-outputstream-into-a-string
     var os = new OutputStream() {

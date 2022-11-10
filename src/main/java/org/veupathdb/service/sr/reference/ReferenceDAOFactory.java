@@ -16,7 +16,7 @@ import java.nio.file.Path;
 /*
  * TODO: should be a pool
  */
-public class ReferenceSequencesDAOFactory {
+public class ReferenceDAOFactory {
   
   private static final String ALL_REFERENCE_SEQUENCE_NAMES = "ALL_REFERENCE_SEQUENCE_NAMES";
 
@@ -28,15 +28,15 @@ public class ReferenceSequencesDAOFactory {
   private static final String SUFFIX_IS_STRANDED = "_IS_STRANDED";
 
   // populated in unit tests
-  protected static Map<String, ReferenceSequencesDAO> instances;
+  protected static Map<String, ReferenceDAO> instances;
 
   // use a resource pool?
-  public static ReferenceSequencesDAO get(String sequenceType) {
+  public static ReferenceDAO get(String sequenceType) {
     return Objects.requireNonNull(Objects.requireNonNull(instances, "Error: get called before init").get(sequenceType.toLowerCase()), "Sequence file not available for sequence type: " + sequenceType);
   }
 
   public static void init(){
-    instances = new HashMap<String, ReferenceSequencesDAO>();
+    instances = new HashMap<String, ReferenceDAO>();
     var specs = new HashMap<String, ReferenceSequenceSpec>();
     var sequenceFiles = new HashMap<String, IndexedFastaSequenceFile>();
     var sequenceNames = Arrays.asList(Environment.getRequiredVar(ALL_REFERENCE_SEQUENCE_NAMES).split(","));
@@ -48,8 +48,8 @@ public class ReferenceSequencesDAOFactory {
     }
   }
 
-  public static ReferenceSequencesDAO daoFromEnvVars(String sequenceName){
-    return new ReferenceSequencesDAO(
+  public static ReferenceDAO daoFromEnvVars(String sequenceName){
+    return new ReferenceDAO(
       new ReferenceSequenceSpec(
         sequenceName,  
         longVar(sequenceName + SUFFIX_MAX_SEQUENCES_PER_REQUEST),
