@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Properties;
 
 import htsjdk.samtools.reference.FastaSequenceIndex;
 import htsjdk.samtools.reference.FastaSequenceIndexEntry;
@@ -25,14 +26,21 @@ public class FastaSequenceIndexSqlite extends FastaSequenceIndex {
   public FastaSequenceIndexSqlite(Path indexSqlitePath){
     super();
     try {
-      connection = DriverManager.getConnection("jdbc:sqlite:" + indexSqlitePath.toString());
+      var properties = new Properties();
+
+      // expect a read-only filesystem
+      properties.setProperty("mode", "ro");
+      properties.setProperty("journal_mode", "OFF");
+      
+      connection = DriverManager.getConnection("jdbc:sqlite:" + indexSqlitePath.toString(), properties);
+
       /*
        * expecting a file with a table called 'faidx' with SQL columns mirroring text columns in .fai
        * spec at http://www.htslib.org/doc/faidx.html
        */
       statement = connection.prepareStatement("select length, offset, linebases, linewidth from faidx where name = ? limit 1");
     } catch (SQLException e){
-      throw new RuntimeException(e);
+      throw new RuntimeException("Can't open DB at " + indexSqlitePath.toString(), e);
     }
   }
 
