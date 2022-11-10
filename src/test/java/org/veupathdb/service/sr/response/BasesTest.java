@@ -34,36 +34,33 @@ import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 
 public class BasesTest {
 
+  String name = "CDFG01000062.1";
+  ReferenceSequence subsequence = new ReferenceSequence(name, -1, "GCTG".getBytes());
+
+  private void sequenceForFeatureIs(BEDFeature feature, String expected) throws Exception {
+    var baos = new ByteArrayOutputStream();
+    baos.write(Bases.getBasesForBedFeature(subsequence, feature));
+    assertEquals(expected, baos.toString());
+  }
+
   @Test
   public void testGetBases() throws Exception {
-    var sequences = TestReferences.genomeSequences;
-    var feature = new SimpleBEDFeature(1,4, "CDFG01000062.1");
-
-    var baos = new ByteArrayOutputStream();
-    baos.write(Bases.getBasesForBedFeature(sequences, feature));
-    assertEquals("GCTG", baos.toString());
+    var feature = new SimpleBEDFeature(1,4, name);
+    sequenceForFeatureIs(feature, "GCTG");
   }
 
   @Test
   public void testGetBasesRc() throws Exception {
-    var sequences = TestReferences.genomeSequences;
-    var feature = new SimpleBEDFeature(1,4, "CDFG01000062.1");
+    var feature = new SimpleBEDFeature(1,4, name);
     feature.setStrand(Strand.NEGATIVE);
-
-    var baos = new ByteArrayOutputStream();
-    baos.write(Bases.getBasesForBedFeature(sequences, feature));
-    assertEquals("CAGC", baos.toString());
+    sequenceForFeatureIs(feature, "CAGC");
   }
 
   @Test
   public void testGetBasesExons() throws Exception {
-    var sequences = TestReferences.genomeSequences;
-    var feature = new FullBEDFeature("CDFG01000062.1", 1,4);
+    var feature = new FullBEDFeature(name, 1,4);
     feature.addExon(feature.new Exon(1,2));
     feature.addExon(feature.new Exon(4,4));
-
-    var baos = new ByteArrayOutputStream();
-    baos.write(Bases.getBasesForBedFeature(sequences, feature));
-    assertEquals("GCG", baos.toString());
+    sequenceForFeatureIs(feature, "GCG");
   }
 }

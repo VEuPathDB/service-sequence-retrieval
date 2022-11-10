@@ -2,8 +2,6 @@ package org.veupathdb.service.sr.reference;
 
 import org.gusdb.fgputil.runtime.Environment;
 import org.veupathdb.service.sr.generated.model.SequenceType;
-import htsjdk.samtools.reference.IndexedFastaSequenceFile;
-import org.veupathdb.service.sr.reference.FastaSequenceIndexSqlite;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -14,7 +12,10 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 
 /*
- * TODO: should be a pool
+ * Create ReferenceDAOs as configured for the service
+ *
+ * On startup: ReferenceDAOFactory.init()
+ * In each web request: ReferenceDAOFactory.get(sequenceType)
  */
 public class ReferenceDAOFactory {
   
@@ -30,15 +31,12 @@ public class ReferenceDAOFactory {
   // populated in unit tests
   protected static Map<String, ReferenceDAO> instances;
 
-  // use a resource pool?
   public static ReferenceDAO get(String sequenceType) {
     return Objects.requireNonNull(Objects.requireNonNull(instances, "Error: get called before init").get(sequenceType.toLowerCase()), "Sequence file not available for sequence type: " + sequenceType);
   }
 
   public static void init(){
     instances = new HashMap<String, ReferenceDAO>();
-    var specs = new HashMap<String, ReferenceSequenceSpec>();
-    var sequenceFiles = new HashMap<String, IndexedFastaSequenceFile>();
     var sequenceNames = Arrays.asList(Environment.getRequiredVar(ALL_REFERENCE_SEQUENCE_NAMES).split(","));
     if (sequenceNames.size() == 0){
       throw new RuntimeException("Required list: ALL_REFERENCE_SEQUENCE_NAMES=<eg. genomic,protein>");

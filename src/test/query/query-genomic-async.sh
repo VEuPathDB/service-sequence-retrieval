@@ -7,5 +7,6 @@ doCurl() {
 
 jobId=$(doCurl | jq -r .jobID)
 
+sleep 1
 curl --silent "http://localhost:8080/jobs/$jobId/files/output"
 

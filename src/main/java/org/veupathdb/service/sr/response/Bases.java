@@ -10,10 +10,13 @@ public class Bases {
 
   public static byte[] getBasesForBedFeature(IndexedFastaSequenceFile sequences, BEDFeature feature){
 
-    var referenceSequence = sequences.getSubsequenceAt(feature.getContig(), feature.getStart(), feature.getEnd());
+    return getBasesForBedFeature(sequences.getSubsequenceAt(feature.getContig(), feature.getStart(), feature.getEnd()), feature);
+  }
 
+  // for unit test
+  static byte[] getBasesForBedFeature(ReferenceSequence subsequence, BEDFeature feature){
 
-    var bases = referenceSequence.getBases();
+    var bases = subsequence.getBases();
     var exons = feature.getExons();
 
     if(exons.size() > 0){
