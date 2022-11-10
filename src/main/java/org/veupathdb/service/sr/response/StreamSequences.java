@@ -1,4 +1,4 @@
-package org.veupathdb.service.sr.util;
+package org.veupathdb.service.sr.response;
 
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 import htsjdk.samtools.util.SequenceUtil;
@@ -24,24 +24,20 @@ public class StreamSequences {
 
   private static final byte[] LINE_SEPARATOR = String.valueOf("\n").getBytes(CHARSET);
 
-  public static Consumer<OutputStream> responseStream(IndexedFastaSequenceFile sequences, List<BEDFeature> features, DeflineFormat deflineFormat, int requestedBasesPerLine){
-
+  public static void write(OutputStream outputStream, IndexedFastaSequenceFile sequences, List<BEDFeature> features, DeflineFormat deflineFormat, int requestedBasesPerLine){
     int basesPerLine = requestedBasesPerLine > 0 ? requestedBasesPerLine : Integer.MAX_VALUE;
+    try (var buf = new BufferedOutputStream(outputStream)) {
+      for (var feature : features) {
+        var defline = Deflines.deflineForFeature(feature, deflineFormat);
+        var bases = Bases.getBasesForBedFeature(sequences, feature);
 
-    return outputStream -> {
-      try (var buf = new BufferedOutputStream(outputStream)) {
-        for (var feature : features) {
-          var defline = Deflines.deflineForFeature(feature, deflineFormat);
-          var bases = Bases.getBasesForBedFeature(sequences, feature);
-
-          appendSequenceToStream(buf, defline, bases, basesPerLine);
-          buf.flush();
-        }
+        appendSequenceToStream(buf, defline, bases, basesPerLine);
+        buf.flush();
       }
-      catch (IOException e) {
-        throw new RuntimeException("Unable to stream sequences response", e);
-      }
-    };
+    }
+    catch (IOException e) {
+      throw new RuntimeException("Unable to stream sequences response", e);
+    }
   }
 
   /*

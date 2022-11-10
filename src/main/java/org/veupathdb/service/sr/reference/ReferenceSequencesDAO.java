@@ -5,7 +5,7 @@ import java.util.Objects;
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 import htsjdk.tribble.bed.BEDFeature;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
-import org.veupathdb.service.sr.util.StreamSequences;
+import org.veupathdb.service.sr.response.StreamSequences;
 import java.util.function.Consumer;
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -23,14 +23,13 @@ import org.veupathdb.service.sr.reference.ReferenceSequenceSpec;
 public class ReferenceSequencesDAO {
 
   private final ReferenceSequenceSpec spec;
-  private final IndexedFastaSequenceFile sequenceFile;
+  private final Path indexPath;
+  private final Path sequencesPath;
 
-  public ReferenceSequencesDAO(ReferenceSequenceSpec spec, IndexedFastaSequenceFile sequenceFile){
-    this.spec = spec;
-    this.sequenceFile = sequenceFile;
-  }
   public ReferenceSequencesDAO(ReferenceSequenceSpec spec, Path indexPath, Path sequencesPath){
-    this(spec, new IndexedFastaSequenceFile(sequencesPath, new FastaSequenceIndexSqlite(indexPath)));
+    this.spec = spec;
+    this.indexPath = indexPath;
+    this.sequencesPath = sequencesPath;
   }
 
   public Consumer<OutputStream> validateAndPrepareResponse(
@@ -38,7 +37,11 @@ public class ReferenceSequencesDAO {
       DeflineFormat deflineFormat,
       int requestedBasesPerLine){
     this.spec.validateFeatures(features);
-    return StreamSequences.responseStream(this.sequenceFile, features, deflineFormat, requestedBasesPerLine);
+    return outputStream -> {
+      var index = new FastaSequenceIndexSqlite(this.indexPath);
+      var sequenceFile = new IndexedFastaSequenceFile(this.sequencesPath, index);
+      StreamSequences.write(outputStream, sequenceFile, features, deflineFormat, requestedBasesPerLine);
+    };
   }
 
   public void validateRequestedFeatures(List<BEDFeature> features){

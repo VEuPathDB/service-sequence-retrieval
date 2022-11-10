@@ -1,4 +1,4 @@
-package org.veupathdb.service.sr.util;
+package org.veupathdb.service.sr.response;
 
 import htsjdk.tribble.bed.BEDFeature;
 import htsjdk.tribble.annotation.Strand;

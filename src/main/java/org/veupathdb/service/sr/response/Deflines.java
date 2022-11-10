@@ -1,4 +1,4 @@
-package org.veupathdb.service.sr.util;
+package org.veupathdb.service.sr.response;
 
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
 import htsjdk.samtools.util.Locatable;
