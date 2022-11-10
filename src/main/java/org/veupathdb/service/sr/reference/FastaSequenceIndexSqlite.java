@@ -15,6 +15,9 @@ import java.util.Iterator;
 import htsjdk.samtools.reference.FastaSequenceIndex;
 import htsjdk.samtools.reference.FastaSequenceIndexEntry;
 
+/*
+ * TODO: not to be shared across threads
+ */
 public class FastaSequenceIndexSqlite extends FastaSequenceIndex {
 
   Connection connection;

@@ -5,10 +5,8 @@ import org.veupathdb.lib.compute.platform.job.JobContext;
 import org.veupathdb.lib.compute.platform.job.JobExecutor;
 import org.veupathdb.lib.compute.platform.job.JobResult;
 import org.veupathdb.lib.jackson.Json;
-import org.veupathdb.service.sr.util.Sequences;
-import org.veupathdb.service.sr.util.Validate;
-import org.veupathdb.service.sr.util.StreamSequences;
 import org.veupathdb.service.sr.util.FeatureAdapter;
+import org.veupathdb.service.sr.reference.ReferenceSequencesDAOFactory;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpec;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpecImpl;
 
@@ -29,24 +27,21 @@ public class WriteFeaturesJob implements JobExecutor {
   public JobResult execute(@NotNull JobContext jobContext) {
     var jobSpec = Json.parse(jobContext.getConfig(), SequenceRetrievalSpecImpl.class);
 
-    var forceStrandedness = jobSpec.getForceStrandedness();
     var sequenceType = jobSpec.getSequenceType();
     var fileFormat = jobSpec.getFileFormat();
+    var deflineFormat = jobSpec.getDeflineFormat();
+    var basesPerLine = jobSpec.getBasesPerLine();
 
-    var spec = Sequences.getSequenceSpec(sequenceType);
-    var index = Sequences.getSequenceIndex(sequenceType);
-    var sequences = Sequences.getSequenceFile(sequenceType);
-
-    List<BEDFeature> requestedFeatures;
+    List<BEDFeature> features;
 
     if(jobSpec.getFeatures()!= null){
-      requestedFeatures = FeatureAdapter.toBEDFeatures(jobSpec.getFeatures());
+      features = FeatureAdapter.toBEDFeatures(jobSpec.getFeatures());
     } else {
       try (InputStream fileStream = switch (jobSpec.getUploadMethod()) {
         case FILE -> new ByteArrayInputStream(jobSpec.getFeaturesStr().getBytes(StandardCharsets.UTF_8));
         case URL -> new URL(jobSpec.getFeaturesUrl()).openStream();
       }) {
-      requestedFeatures = switch (fileFormat) {
+      features = switch (fileFormat) {
         case BED -> FeatureAdapter.readBed(fileStream, jobSpec.getStartOffset());
         case GFF3 -> FeatureAdapter.readGff3AndConvertToBed(fileStream);
       };
@@ -55,12 +50,7 @@ public class WriteFeaturesJob implements JobExecutor {
       }
     }
 
-    if(!forceStrandedness){
-      FeatureAdapter.setStrandToNone(requestedFeatures);
-    }
-    var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
-
-    var stream = StreamSequences.responseStream(sequences, features, jobSpec.getDeflineFormat(), jobSpec.getBasesPerLine());
+    var stream = ReferenceSequencesDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
 
     // https://stackoverflow.com/questions/216894/get-an-outputstream-into-a-string
     var os = new OutputStream() {

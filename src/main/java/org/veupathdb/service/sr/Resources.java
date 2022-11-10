@@ -5,10 +5,9 @@ import org.veupathdb.lib.container.jaxrs.config.Options;
 import org.veupathdb.lib.container.jaxrs.server.ContainerResources;
 import org.veupathdb.service.sr.service.SequenceRetrievalService;
 import org.veupathdb.service.sr.service.SequenceRetrievalAsyncService;
-import org.veupathdb.service.sr.config.ReferenceSequenceConfig;
-import org.veupathdb.service.sr.util.Sequences;
 import org.veupathdb.service.sr.service.Controller;
 import org.veupathdb.service.sr.service.JobController;
+import org.veupathdb.service.sr.reference.ReferenceSequencesDAOFactory;
 
 /**
  * Service Resource Registration.
@@ -22,7 +21,7 @@ public class Resources extends ContainerResources {
     super(opts);
 
     // read environment to create a configuration and initialize sequence processing
-    Sequences.initialize(ReferenceSequenceConfig.getInstance());
+    ReferenceSequencesDAOFactory.init();
   }
 
   /**

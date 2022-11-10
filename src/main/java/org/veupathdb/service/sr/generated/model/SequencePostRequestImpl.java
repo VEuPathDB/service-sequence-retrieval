@@ -9,7 +9,6 @@ import java.util.List;
 @JsonPropertyOrder({
     "features",
     "deflineFormat",
-    "forceStrandedness",
     "basesPerLine"
 })
 public class SequencePostRequestImpl implements SequencePostRequest {
@@ -21,12 +20,6 @@ public class SequencePostRequestImpl implements SequencePostRequest {
       defaultValue = "REGIONONLY"
   )
   private DeflineFormat deflineFormat;
-
-  @JsonProperty(
-      value = "forceStrandedness",
-      defaultValue = "false"
-  )
-  private Boolean forceStrandedness;
 
   @JsonProperty(
       value = "basesPerLine",
@@ -58,22 +51,6 @@ public class SequencePostRequestImpl implements SequencePostRequest {
   )
   public void setDeflineFormat(DeflineFormat deflineFormat) {
     this.deflineFormat = deflineFormat;
-  }
-
-  @JsonProperty(
-      value = "forceStrandedness",
-      defaultValue = "false"
-  )
-  public Boolean getForceStrandedness() {
-    return this.forceStrandedness;
-  }
-
-  @JsonProperty(
-      value = "forceStrandedness",
-      defaultValue = "false"
-  )
-  public void setForceStrandedness(Boolean forceStrandedness) {
-    this.forceStrandedness = forceStrandedness;
   }
 
   @JsonProperty(

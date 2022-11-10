@@ -12,12 +12,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.veupathdb.service.sr.service.SequenceRetrievalService;
 import org.veupathdb.service.sr.generated.model.*;
 
-import org.veupathdb.service.sr.util.Sequences;
-import org.veupathdb.service.sr.config.TestReferenceSequenceConfig;
+import org.veupathdb.service.sr.TestReferences;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.Response;
 
-import org.veupathdb.service.sr.TestFiles;
+import org.veupathdb.service.sr.TestQueries;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
 import org.veupathdb.service.sr.generated.model.StartOffset;
 import org.veupathdb.service.sr.generated.model.SequencesSequenceTypeFileFormatPostMultipartFormDataImpl;
@@ -35,14 +34,9 @@ import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 
 public class BasesTest {
 
-  @BeforeEach
-  public void setUp(){
-    Sequences.initialize(new TestReferenceSequenceConfig());
-  }
-
   @Test
   public void testGetBases() throws Exception {
-    var sequences = Sequences.getSequenceFile(SequenceType.GENOMIC);
+    var sequences = TestReferences.genomeSequences;
     var feature = new SimpleBEDFeature(1,4, "CDFG01000062.1");
 
     var baos = new ByteArrayOutputStream();
@@ -52,7 +46,7 @@ public class BasesTest {
 
   @Test
   public void testGetBasesRc() throws Exception {
-    var sequences = Sequences.getSequenceFile(SequenceType.GENOMIC);
+    var sequences = TestReferences.genomeSequences;
     var feature = new SimpleBEDFeature(1,4, "CDFG01000062.1");
     feature.setStrand(Strand.NEGATIVE);
 
@@ -63,7 +57,7 @@ public class BasesTest {
 
   @Test
   public void testGetBasesExons() throws Exception {
-    var sequences = Sequences.getSequenceFile(SequenceType.GENOMIC);
+    var sequences = TestReferences.genomeSequences;
     var feature = new FullBEDFeature("CDFG01000062.1", 1,4);
     feature.addExon(feature.new Exon(1,2));
     feature.addExon(feature.new Exon(4,4));

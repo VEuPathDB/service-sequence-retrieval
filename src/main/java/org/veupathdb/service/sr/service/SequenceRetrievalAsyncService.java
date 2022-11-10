@@ -48,16 +48,13 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
 
   }
   @Override
-  public PostSequencesAsyncBySequenceTypeResponse postSequencesAsyncBySequenceType(String sequenceTypeStr, SequencePostRequest entity) {
-    var forceStrandedness = entity.getForceStrandedness();
+  public PostSequencesAsyncBySequenceTypeResponse postSequencesAsyncBySequenceType(String sequenceType, SequencePostRequest entity) {
     var deflineFormat = entity.getDeflineFormat();
     var basesPerLine = entity.getBasesPerLine();
     var features = entity.getFeatures();
     var spec = new SequenceRetrievalSpecImpl();
-    var sequenceType = EnumUtil.validate(sequenceTypeStr, SequenceType.values(), NotFoundException::new);
     spec.setFeatures(features);
     spec.setDeflineFormat(deflineFormat);
-    spec.setForceStrandedness(forceStrandedness);
     spec.setBasesPerLine(basesPerLine);
     spec.setSequenceType(sequenceType);
     return PostSequencesAsyncBySequenceTypeResponse.respond200WithApplicationJson(asyncResponse(spec));
@@ -65,10 +62,9 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
 
   @Override
   public PostSequencesAsyncBySequenceTypeAndFileFormatResponse postSequencesAsyncBySequenceTypeAndFileFormat(
-      String sequenceTypeStr,
+      String sequenceType,
       String fileFormatStr,
       DeflineFormat deflineFormat,
-      Boolean forceStrandedness,
       Integer basesPerLine,
       StartOffset startOffset,
       SequencesAsyncSequenceTypeFileFormatPostMultipartFormData entity){
@@ -79,10 +75,9 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
     var spec = new SequenceRetrievalSpecImpl();
 
     spec.setDeflineFormat(deflineFormat);
-    spec.setForceStrandedness(forceStrandedness);
     spec.setBasesPerLine(basesPerLine);
     var fileFormat = EnumUtil.validate(fileFormatStr, SupportedFileFormat.values(), NotFoundException::new);
-    var sequenceType = EnumUtil.validate(sequenceTypeStr, SequenceType.values(), NotFoundException::new);
+    spec.setFileFormat(fileFormat);
     spec.setSequenceType(sequenceType);
 
     var uploadMethod = entity.getUploadMethod();
@@ -94,7 +89,6 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
         spec.setFeaturesUrl(url);
         break;
     }
-    spec.setFileFormat(fileFormat);
     return PostSequencesAsyncBySequenceTypeAndFileFormatResponse.respond200WithApplicationJson(asyncResponse(spec));
   }
 

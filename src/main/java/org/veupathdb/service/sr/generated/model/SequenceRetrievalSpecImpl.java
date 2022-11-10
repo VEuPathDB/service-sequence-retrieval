@@ -14,7 +14,6 @@ import java.util.List;
     "uploadMethod",
     "startOffset",
     "deflineFormat",
-    "forceStrandedness",
     "basesPerLine",
     "sequenceType"
 })
@@ -40,14 +39,11 @@ public class SequenceRetrievalSpecImpl implements SequenceRetrievalSpec {
   @JsonProperty("deflineFormat")
   private DeflineFormat deflineFormat;
 
-  @JsonProperty("forceStrandedness")
-  private Boolean forceStrandedness;
-
   @JsonProperty("basesPerLine")
   private Integer basesPerLine;
 
   @JsonProperty("sequenceType")
-  private SequenceType sequenceType;
+  private String sequenceType;
 
   @JsonProperty("features")
   public List<Feature> getFeatures() {
@@ -119,16 +115,6 @@ public class SequenceRetrievalSpecImpl implements SequenceRetrievalSpec {
     this.deflineFormat = deflineFormat;
   }
 
-  @JsonProperty("forceStrandedness")
-  public Boolean getForceStrandedness() {
-    return this.forceStrandedness;
-  }
-
-  @JsonProperty("forceStrandedness")
-  public void setForceStrandedness(Boolean forceStrandedness) {
-    this.forceStrandedness = forceStrandedness;
-  }
-
   @JsonProperty("basesPerLine")
   public Integer getBasesPerLine() {
     return this.basesPerLine;
@@ -140,12 +126,12 @@ public class SequenceRetrievalSpecImpl implements SequenceRetrievalSpec {
   }
 
   @JsonProperty("sequenceType")
-  public SequenceType getSequenceType() {
+  public String getSequenceType() {
     return this.sequenceType;
   }
 
   @JsonProperty("sequenceType")
-  public void setSequenceType(SequenceType sequenceType) {
+  public void setSequenceType(String sequenceType) {
     this.sequenceType = sequenceType;
   }
 }

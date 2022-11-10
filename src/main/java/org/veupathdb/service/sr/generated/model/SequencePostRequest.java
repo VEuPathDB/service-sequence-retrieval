@@ -27,18 +27,6 @@ public interface SequencePostRequest {
   void setDeflineFormat(DeflineFormat deflineFormat);
 
   @JsonProperty(
-      value = "forceStrandedness",
-      defaultValue = "false"
-  )
-  Boolean getForceStrandedness();
-
-  @JsonProperty(
-      value = "forceStrandedness",
-      defaultValue = "false"
-  )
-  void setForceStrandedness(Boolean forceStrandedness);
-
-  @JsonProperty(
       value = "basesPerLine",
       defaultValue = "60"
   )

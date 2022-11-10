@@ -50,12 +50,6 @@ public interface SequenceRetrievalSpec {
   @JsonProperty("deflineFormat")
   void setDeflineFormat(DeflineFormat deflineFormat);
 
-  @JsonProperty("forceStrandedness")
-  Boolean getForceStrandedness();
-
-  @JsonProperty("forceStrandedness")
-  void setForceStrandedness(Boolean forceStrandedness);
-
   @JsonProperty("basesPerLine")
   Integer getBasesPerLine();
 
@@ -63,8 +57,8 @@ public interface SequenceRetrievalSpec {
   void setBasesPerLine(Integer basesPerLine);
 
   @JsonProperty("sequenceType")
-  SequenceType getSequenceType();
+  String getSequenceType();
 
   @JsonProperty("sequenceType")
-  void setSequenceType(SequenceType sequenceType);
+  void setSequenceType(String sequenceType);
 }

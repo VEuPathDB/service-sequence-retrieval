@@ -57,11 +57,6 @@ types:
     enum:
       - bed
       - gff3
-  SequenceType:
-    type: string
-    enum:
-      - genomic
-      - protein
   Feature:
     type: object
     additionalProperties: false
@@ -83,9 +78,6 @@ types:
       deflineFormat?:
         type: DeflineFormat
         default: 'REGIONONLY'
-      forceStrandedness?:
-        type: boolean
-        default: false
       basesPerLine?:
         type: integer
         default: 60
@@ -102,7 +94,6 @@ types:
       uploadMethod: UploadMethod
       startOffset: StartOffset
       deflineFormat: DeflineFormat
-      forceStrandedness: boolean
       basesPerLine: integer
-      sequenceType: SequenceType
+      sequenceType: string
 
