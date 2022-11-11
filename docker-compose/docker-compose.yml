@@ -48,7 +48,6 @@ services:
       resources:
         limits:
           memory: ${PHYSICAL_MEMORY:-1gb}
-    memswap_limit: ${TOTAL_MEMORY:-5gb}
 
     environment:
 
