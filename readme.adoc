@@ -39,3 +39,15 @@ Please see `docker-compose/docker-compose.test.yml` and `.env.test` for test con
 == Example queries
 
 See `cURL` scripts in the `src/test/query` folder.  Note: some of these may no longer work.
+
+= Possible upgrades to this README
+Here are some things to describe (you can probably think of others... in general orient a person who doesn't know what is going on)
+the purpose of the service
+
+* mention that it is async (but that u also have sync endpoints, right?)
+* a link to the api docs (here is an example)
+* what .bed files and other input look like
+* that you are using samtools, and how they help
+* how samtools natively reads fasta index into memory, and that got too big
+* why u r using SQLite.  mention that it is serverless, and designed to be embedded.  also mention that an upstream process (workflow) will produce SQLite ready file
+* how u trick samtools to use SQLite, and, if there is a fork, link to that
