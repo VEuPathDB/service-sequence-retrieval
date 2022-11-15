@@ -106,8 +106,6 @@ services:
 networks:
   internal:
     internal: true
-  # external network used for containers that need to reach outside
-  external:
   traefik:
     external: true
   monitoring-ext:
