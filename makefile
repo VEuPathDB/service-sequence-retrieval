@@ -117,17 +117,17 @@ merge-raml:
 
 .PHONY: docker-compose-build
 docker-compose-build: build/.env.dev
-	@docker-compose -f docker-compose/docker-compose.dev.yml --env-file build/.env.dev build \
+	@docker-compose -f docker-compose/docker-compose.yml -f docker-compose/docker-compose.dev.yml --env-file build/.env.dev build \
 		--build-arg=GITHUB_USERNAME=${GITHUB_USERNAME} \
 		--build-arg=GITHUB_TOKEN=${GITHUB_TOKEN}
 
 .PHONY: docker-compose-run
 docker-compose-run: build/.env.dev
-	@docker-compose -f docker-compose/docker-compose.dev.yml --env-file build/.env.dev up
+	@docker-compose -f docker-compose/docker-compose.yml -f docker-compose/docker-compose.dev.yml --env-file build/.env.dev up
 
 .PHONY: docker-compose-clean
 docker-compose-clean: build/.env.dev
-	@docker-compose -f docker-compose/docker-compose.dev.yml --env-file build/.env.dev down
+	@docker-compose -f docker-compose/docker-compose.yml -f docker-compose/docker-compose.dev.yml --env-file build/.env.dev down
 
 #
 # File based targets
