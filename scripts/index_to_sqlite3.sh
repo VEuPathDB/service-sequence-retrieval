@@ -1,4 +1,8 @@
 #!/bin/bash
+# Open a new .sqlite database, and create a table named `faidx`
+# Then import contents of a .fai file
+# Column names follow documentation here: http://www.htslib.org/doc/faidx.html
+# Table name and columns are expected by the service
 
 if ! ( [ "$1" -a "$2" ] ) ; then
   echo "Usage: $0 input.fai output.fai.sqlite"

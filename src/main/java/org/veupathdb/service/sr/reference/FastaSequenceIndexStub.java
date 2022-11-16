@@ -12,11 +12,11 @@ import htsjdk.samtools.reference.FastaSequenceIndexEntry;
 /*
  * An adapter converting a contig -> entry function to an index object
  */
-public class FakeFastaSequenceIndex extends FastaSequenceIndex {
+public class FastaSequenceIndexStub extends FastaSequenceIndex {
 
   private final Function<String, FastaSequenceIndexEntry> f;
 
-  public FakeFastaSequenceIndex(Function<String, FastaSequenceIndexEntry> f){
+  public FastaSequenceIndexStub(Function<String, FastaSequenceIndexEntry> f){
     this.f = f;
   }
 

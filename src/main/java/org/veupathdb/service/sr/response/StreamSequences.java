@@ -32,7 +32,6 @@ public class StreamSequences {
         var bases = Bases.getBasesForBedFeature(sequences, feature);
 
         appendSequenceToStream(buf, defline, bases, basesPerLine);
-        buf.flush();
       }
     }
     catch (IOException e) {
@@ -48,18 +47,18 @@ public class StreamSequences {
     outputStream.write(defline.getBytes(CHARSET));
     outputStream.write(LINE_SEPARATOR);
 
-    final int to = bases.length;
-    int next = 0;
+    final int totalBasesCount = bases.length;
+    int writtenBasesCount = 0;
     int currentLineBasesCount = 0;
-    while( next < to ){
+    while( writtenBasesCount < totalBasesCount ){
       if (currentLineBasesCount == basesPerLine) {
         outputStream.write(LINE_SEPARATOR);
         currentLineBasesCount = 0;
       }
-      final int nextLength = Math.min(to - next, basesPerLine - currentLineBasesCount);
-      outputStream.write(bases, next, nextLength);
+      final int nextLength = Math.min(totalBasesCount - writtenBasesCount, basesPerLine - currentLineBasesCount);
+      outputStream.write(bases, writtenBasesCount, nextLength);
       currentLineBasesCount += nextLength;
-      next += nextLength;
+      writtenBasesCount += nextLength;
     }
     outputStream.write(LINE_SEPARATOR);
   }

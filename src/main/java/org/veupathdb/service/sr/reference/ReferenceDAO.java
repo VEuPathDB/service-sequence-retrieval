@@ -69,11 +69,14 @@ public class ReferenceDAO {
       }
     };
   }
-  private FakeFastaSequenceIndex transientIndex(PreparedStatement statement){
+  private FastaSequenceIndexStub transientIndex(PreparedStatement statement){
      Function<String, FastaSequenceIndexEntry> f = contigName -> {
       try {
         statement.setString(1, contigName);
-        ResultSet rs = statement.executeQuery();
+      } catch (SQLException e){
+        throw new RuntimeException(e);
+      }
+      try(ResultSet rs = statement.executeQuery()) {
         if(rs.next()){
           // see htsjdk.samtools.reference.FastaSequenceIndex.parseIndexFile
           var size = rs.getLong("length");
@@ -88,7 +91,7 @@ public class ReferenceDAO {
         throw new RuntimeException(e);
       }
     };
-    return new FakeFastaSequenceIndex(f);
+    return new FastaSequenceIndexStub(f);
   }
 
   public void validateRequestedFeatures(List<BEDFeature> features){
