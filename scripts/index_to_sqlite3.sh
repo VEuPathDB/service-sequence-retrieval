@@ -20,6 +20,6 @@ create table faidx (
   linewidth number
 );
 create unique index faidx_name on faidx (name);
-.separator '	'
+.mode tabs
 .import $1 faidx
 EOF
