@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,5 +47,12 @@ public class FeatureAdapterTest {
     assertEquals(features.get(0).getEnd(), 300);
     assertEquals(features.get(0).getName(), "gene_id");
     assertEquals(features.get(0).getStrand().encodeAsChar(), '+');
+  }
+
+  @Test
+  public void testReadBadJawn() {
+    Throwable exception = assertThrows(Exception.class, () -> FeatureAdapter.readBed(new ByteArrayInputStream("\tBad jawn\n".getBytes("UTF-8")), StartOffset.ZERO));
+    assertEquals("Error when parsing line: \tBad jawn", exception.getMessage());
+
   }
 }

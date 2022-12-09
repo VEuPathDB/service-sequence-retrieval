@@ -45,17 +45,19 @@ public class FeatureAdapter {
   }
 
   public static List<BEDFeature> readBed(InputStream in, org.veupathdb.service.sr.generated.model.StartOffset startOffset){
-    try (var scanner = new Scanner(in)) {
-      var codec = getBedCodec(startOffset);
-      var result = new ArrayList<BEDFeature>();
-      while(scanner.hasNextLine()){
-        // our .beds are tab-separated and can have spaces in fields
-        result.add(codec.decode(scanner.nextLine().split("\t")));
+    var scanner = new Scanner(in);
+    var codec = getBedCodec(startOffset);
+    var result = new ArrayList<BEDFeature>();
+    while(scanner.hasNextLine()){
+      var line = scanner.nextLine();
+      // our .beds are tab-separated and can have spaces in fields
+      try {
+        result.add(codec.decode(line.split("\t")));
+      } catch (Exception e){
+        throw new RuntimeException("Error when parsing line: " + line, e);
       }
-      return result;
-    } catch (Exception e){
-      throw new RuntimeException(e);
     }
+    return result;
   }
 
   /* 
