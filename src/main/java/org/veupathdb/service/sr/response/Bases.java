@@ -17,6 +17,7 @@ public class Bases {
   static byte[] getBasesForBedFeature(ReferenceSequence subsequence, BEDFeature feature){
 
     var bases = subsequence.getBases();
+    var basesStart = feature.getStart();
     var exons = feature.getExons();
 
     if(exons.size() > 0){
@@ -25,7 +26,7 @@ public class Bases {
       int newBasesOffset = 0;
       for (var e: exons){
         var src = bases;
-        var srcPos = e.getCdStart() - 1; // tribble is 1-based but Java arrays are 0-based
+        var srcPos = e.getCdStart() - basesStart;
         var dest = newBases;
         var destPos = newBasesOffset;
         var length = e.getCodingLength();

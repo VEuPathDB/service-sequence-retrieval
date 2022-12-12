@@ -57,6 +57,13 @@ public class BasesTest {
   }
 
   @Test
+  public void testGetBasesNotStartingAtOneWithOneExon() throws Exception {
+    var feature = new FullBEDFeature(name, 1001,1004);
+    feature.addExon(feature.new Exon(1001,1004));
+    sequenceForFeatureIs(feature, "GCTG");
+  }
+
+  @Test
   public void testGetBasesExons() throws Exception {
     var feature = new FullBEDFeature(name, 1,4);
     feature.addExon(feature.new Exon(1,2));
