@@ -49,7 +49,7 @@ services:
 
       # Alpha version has two sequence types
       # Coming next ESTs and popsets
-      ALL_REFERENCE_SEQUENCE_NAMES: GENOMIC,PROTEIN
+      ALL_REFERENCE_SEQUENCE_NAMES: GENOMIC,PROTEIN,EST,POPSET
 
       # Genomic Sequence Config
       GENOMIC_FASTA_FILE: ${GENOMIC_FASTA_FILE:-/sequenceFiles/Genome.fa}
@@ -64,6 +64,20 @@ services:
       PROTEIN_MAX_SEQUENCES_PER_REQUEST: ${PROTEIN_MAX_SEQUENCES_PER_REQUEST:-10e4}
       PROTEIN_MAX_TOTAL_BASES_PER_REQUEST: ${PROTEIN_MAX_TOTAL_BASES_PER_REQUEST:-10e6}
       PROTEIN_IS_STRANDED: ${PROTEIN_IS_STRANDED:-false}
+
+      # EST Sequence Config
+      EST_FASTA_FILE: ${EST_FASTA_FILE:-/sequenceFiles/ESTs.fa}
+      EST_INDEX_FILE: ${EST_INDEX_FILE:-/sequenceFiles/ESTs.fa.fai.sqlite}
+      EST_MAX_SEQUENCES_PER_REQUEST: ${EST_MAX_SEQUENCES_PER_REQUEST:-10e4}
+      EST_MAX_TOTAL_BASES_PER_REQUEST: ${EST_MAX_TOTAL_BASES_PER_REQUEST:-10e6}
+      EST_IS_STRANDED: ${EST_IS_STRANDED:-true}
+
+      # Popset Sequence Config
+      POPSET_FASTA_FILE: ${POPSET_FASTA_FILE:-/sequenceFiles/Isolates.fa}
+      POPSET_INDEX_FILE: ${POPSET_INDEX_FILE:-/sequenceFiles/Isolates.fa.fai.sqlite}
+      POPSET_MAX_SEQUENCES_PER_REQUEST: ${POPSET_MAX_SEQUENCES_PER_REQUEST:-10e4}
+      POPSET_MAX_TOTAL_BASES_PER_REQUEST: ${POPSET_MAX_TOTAL_BASES_PER_REQUEST:-10e6}
+      POPSET_IS_STRANDED: ${POPSET_IS_STRANDED:-true}
 
       # Queue Platform Postgres
       QUEUE_DB_NAME: ${POSTGRES_DB:-queuedb}
