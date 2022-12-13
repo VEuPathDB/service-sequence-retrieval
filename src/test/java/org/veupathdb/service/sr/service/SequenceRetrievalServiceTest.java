@@ -61,6 +61,32 @@ CTCGCCC
   }
 
   @Test
+  public void testJsonEst() throws Exception {
+    var json = """
+{"features": [{"contig": "BE636532" , "start": 1, "end": 7, "query": "Q1", "strand": "POSITIVE"}], "deflineFormat": "QUERYANDREGION", "basesPerLine": 60}';
+""";
+    var sequenceTypeStr = "EST";
+    var expected = """
+>Q1 BE636532:1-7(+)
+CTGCAGG
+""";
+    testJson(json, sequenceTypeStr, expected);
+  }
+
+  @Test
+  public void testJsonPopset() throws Exception {
+    var json = """
+{"features": [{"contig": "KF927025" , "start": 1, "end": 7, "query": "Q1", "strand": "POSITIVE"}], "deflineFormat": "QUERYANDREGION", "basesPerLine": 60}';
+""";
+    var sequenceTypeStr = "POPSET";
+    var expected = """
+>Q1 KF927025:1-7(+)
+ATGCTAC
+""";
+    testJson(json, sequenceTypeStr, expected);
+  }
+
+  @Test
   public void testJsonProtein() throws Exception {
   var json = """
 {"features": [{"contig": "EHI7A_117830-t26_1-p1" , "start": 1, "end": 7, "query": "QUERY" }], "deflineFormat": "QUERYANDREGION", "basesPerLine": 60}'
