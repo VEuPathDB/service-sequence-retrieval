@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,6 +31,16 @@ public class SequenceRetrievalServiceTest {
   @BeforeEach
   public void setUp(){
     TestReferences.setUp();
+  }
+
+  @Test
+  public void testJsonNoFeatures() throws Exception {
+    var json = """
+{"features": [], "deflineFormat": "QUERYANDREGION", "basesPerLine": 60}';
+""";
+    for(var sequenceTypeStr: List.of("GENOMIC", "PROTEIN")){
+      testJson(json, sequenceTypeStr, "");
+    }
   }
 
   @Test

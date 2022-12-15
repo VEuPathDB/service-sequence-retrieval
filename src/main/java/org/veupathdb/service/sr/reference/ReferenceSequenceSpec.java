@@ -21,9 +21,6 @@ public class ReferenceSequenceSpec {
   }
   
   public <T extends BEDFeature> void validateFeatures(Collection<T> features){
-    if(features.size() == 0){
-      throw new BadRequestException("No features requested");
-    }
     if(! isStranded && features.stream().anyMatch(f -> ! f.getStrand().equals(Strand.NONE))){
       throw new BadRequestException("Requested stranded feature on an unstranded reference sequence " + name );
     }
