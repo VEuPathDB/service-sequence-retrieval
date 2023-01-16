@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Arrays;
 import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.nio.file.Files;
 
 /*
  * Create ReferenceDAOs as configured for the service
@@ -60,7 +61,11 @@ public class ReferenceDAOFactory {
   }
 
   private static Path pathVar(String k){
-    return Paths.get(Environment.getRequiredVar(k));
+    Path result = Paths.get(Environment.getRequiredVar(k));
+    if( ! Files.exists(result)){
+      throw new RuntimeException("Resource corresponding to var " + k + " does not exist: " + result.toString());
+    }
+    return result;
   }
   private static long longVar(String k) {
     var s = Environment.getRequiredVar(k);
