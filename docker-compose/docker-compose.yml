@@ -46,6 +46,7 @@ services:
         read_only: true
 
     environment:
+      MOUNTED_FASTA_FILES_DIR: ${FASTA_FILES_DIR}
 
       ALL_REFERENCE_SEQUENCE_NAMES: GENOMIC,PROTEIN,EST,POPSET
 
