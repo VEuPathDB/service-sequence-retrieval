@@ -114,20 +114,18 @@ raml-gen-docs: api.raml merge-raml
 merge-raml:
 	@$(BIN_DIR)/merge-raml schema > schema/library.raml
 
+#
+# Startup/shutdown scripts
+#  (for development, copy docker-compose/.env.sample to docker-compose/.env and (if necessary) edit
+#
 
-.PHONY: docker-compose-build
-docker-compose-build: build/.env.dev
-	@docker-compose -f docker-compose/docker-compose.dev.yml --env-file build/.env.dev build \
-		--build-arg=GITHUB_USERNAME=${GITHUB_USERNAME} \
-		--build-arg=GITHUB_TOKEN=${GITHUB_TOKEN}
+.PHONY: docker-compose-up
+docker-compose-up: docker-compose/.env
+	docker compose -f docker-compose/docker-compose.yml -f docker-compose/docker-compose.dev.yml up
 
-.PHONY: docker-compose-run
-docker-compose-run: build/.env.dev
-	@docker-compose -f docker-compose/docker-compose.dev.yml --env-file build/.env.dev up
-
-.PHONY: docker-compose-clean
-docker-compose-clean: build/.env.dev
-	@docker-compose -f docker-compose/docker-compose.dev.yml --env-file build/.env.dev down
+.PHONY: docker-compose-down
+docker-compose-down: docker-compose/.env
+	docker compose -f docker-compose/docker-compose.yml -f docker-compose/docker-compose.dev.yml down
 
 #
 # File based targets
