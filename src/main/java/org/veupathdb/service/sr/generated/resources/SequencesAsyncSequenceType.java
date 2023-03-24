@@ -31,7 +31,6 @@ public interface SequencesAsyncSequenceType {
   PostSequencesAsyncBySequenceTypeAndFileFormatResponse postSequencesAsyncBySequenceTypeAndFileFormat(
       @PathParam("sequenceType") String sequenceType, @PathParam("fileFormat") String fileFormat,
       @QueryParam("deflineFormat") @DefaultValue("REGIONONLY") DeflineFormat deflineFormat,
-      @QueryParam("forceStrandedness") @DefaultValue("false") Boolean forceStrandedness,
       @QueryParam("basesPerLine") @DefaultValue("60") Integer basesPerLine,
       @QueryParam("startOffset") @DefaultValue("ONE") StartOffset startOffset,
       SequencesAsyncSequenceTypeFileFormatPostMultipartFormData entity);

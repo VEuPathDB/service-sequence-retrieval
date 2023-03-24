@@ -5,41 +5,38 @@ import jakarta.ws.rs.NotFoundException;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.veupathdb.service.sr.generated.model.*;
 import org.veupathdb.service.sr.generated.resources.SequencesSequenceType;
-import org.veupathdb.service.sr.util.*;
+
+import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
+import org.veupathdb.service.sr.util.FeatureAdapter;
+import org.veupathdb.service.sr.util.EnumUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.util.stream.Collectors;
 
 public class SequenceRetrievalService implements SequencesSequenceType {
 
   @Override
-  public PostSequencesBySequenceTypeResponse postSequencesBySequenceType(String sequenceTypeStr, SequencePostRequest entity) {
-    var forceStrandedness = entity.getForceStrandedness();
+  public PostSequencesBySequenceTypeResponse postSequencesBySequenceType(String sequenceType, SequencePostRequest entity) {
+
     var deflineFormat = entity.getDeflineFormat();
     var basesPerLine = entity.getBasesPerLine();
-    var requestedFeatures = entity.getFeatures();
-    var sequenceType = EnumUtil.validate(sequenceTypeStr, SequenceType.values(), NotFoundException::new);
 
-    var spec = Sequences.getSequenceSpec(sequenceType);
-    var index = Sequences.getSequenceIndex(sequenceType);
-    var sequences = Sequences.getSequenceFile(sequenceType);
+    var features = FeatureAdapter.toBEDFeatures(entity.getFeatures());
 
-    var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
+    var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
 
-    return PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(new PlainTextFastaResponseStream(
-        StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine)
-    ));
+    return PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(new PlainTextFastaResponseStream(stream));
 
   }
 
   @Override
   public PostSequencesBySequenceTypeAndFileFormatResponse postSequencesBySequenceTypeAndFileFormat(
-      String sequenceTypeStr,
+      String sequenceType,
       String fileFormatStr,
       DeflineFormat deflineFormat,
-      Boolean forceStrandedness,
       Integer basesPerLine,
       StartOffset startOffset,
       SequencesSequenceTypeFileFormatPostMultipartFormData entity){
@@ -50,27 +47,19 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
     // throw not found since these are path params
     var fileFormat = EnumUtil.validate(fileFormatStr, SupportedFileFormat.values(), NotFoundException::new);
-    var sequenceType = EnumUtil.validate(sequenceTypeStr, SequenceType.values(), NotFoundException::new);
 
     try (InputStream fileStream = switch (uploadMethod) {
       case FILE -> new FileInputStream(file);
       case URL -> new URL(url).openStream();
     }) {
 
-      var requestedFeatures = switch (fileFormat) {
-        case BED -> ConvertFeatures.featuresFromBed(fileStream, startOffset);
-        case GFF3 -> ConvertFeatures.featuresFromGff3(fileStream);
+      var features = switch (fileFormat) {
+        case BED -> FeatureAdapter.readBed(fileStream, startOffset);
+        case GFF3 -> FeatureAdapter.readGff3AndConvertToBed(fileStream);
       };
 
-      var spec = Sequences.getSequenceSpec(sequenceType);
-      var index = Sequences.getSequenceIndex(sequenceType);
-      var sequences = Sequences.getSequenceFile(sequenceType);
-
-      var features = Validate.getValidatedFeatures(sequenceType, index, requestedFeatures, forceStrandedness, spec);
-
-      return PostSequencesBySequenceTypeAndFileFormatResponse.respond200WithTextXFasta(new PlainTextFastaResponseStream(
-          StreamSequences.responseStream(sequences, features, deflineFormat, forceStrandedness, basesPerLine)
-      ));
+      var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
+      return PostSequencesBySequenceTypeAndFileFormatResponse.respond200WithTextXFasta(new PlainTextFastaResponseStream(stream));
 
     } catch (IOException e) {
       throw new RuntimeException("Unable to complete file processing", e);

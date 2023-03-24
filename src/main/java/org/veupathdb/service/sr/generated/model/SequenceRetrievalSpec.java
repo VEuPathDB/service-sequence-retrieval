@@ -14,17 +14,41 @@ public interface SequenceRetrievalSpec {
   @JsonProperty("features")
   void setFeatures(List<Feature> features);
 
+  @JsonProperty("featuresStr")
+  String getFeaturesStr();
+
+  @JsonProperty("featuresStr")
+  void setFeaturesStr(String featuresStr);
+
+  @JsonProperty("featuresUrl")
+  String getFeaturesUrl();
+
+  @JsonProperty("featuresUrl")
+  void setFeaturesUrl(String featuresUrl);
+
+  @JsonProperty("fileFormat")
+  SupportedFileFormat getFileFormat();
+
+  @JsonProperty("fileFormat")
+  void setFileFormat(SupportedFileFormat fileFormat);
+
+  @JsonProperty("uploadMethod")
+  UploadMethod getUploadMethod();
+
+  @JsonProperty("uploadMethod")
+  void setUploadMethod(UploadMethod uploadMethod);
+
+  @JsonProperty("startOffset")
+  StartOffset getStartOffset();
+
+  @JsonProperty("startOffset")
+  void setStartOffset(StartOffset startOffset);
+
   @JsonProperty("deflineFormat")
   DeflineFormat getDeflineFormat();
 
   @JsonProperty("deflineFormat")
   void setDeflineFormat(DeflineFormat deflineFormat);
-
-  @JsonProperty("forceStrandedness")
-  Boolean getForceStrandedness();
-
-  @JsonProperty("forceStrandedness")
-  void setForceStrandedness(Boolean forceStrandedness);
 
   @JsonProperty("basesPerLine")
   Integer getBasesPerLine();
@@ -33,8 +57,8 @@ public interface SequenceRetrievalSpec {
   void setBasesPerLine(Integer basesPerLine);
 
   @JsonProperty("sequenceType")
-  SequenceType getSequenceType();
+  String getSequenceType();
 
   @JsonProperty("sequenceType")
-  void setSequenceType(SequenceType sequenceType);
+  void setSequenceType(String sequenceType);
 }

@@ -1,20 +1,18 @@
 = Service for sequence retrieval
 
+== About this service
+
+This service is configured with a directory of reference sequences. It then receives requests containing coordinates of sequences, and replies with a .fasta.
+
 == Running locally
 
-To build the service in place (produce a jar), run:
+You need to create an .env file in `docker-compose` directory. See `.env.sample` for details.
+
+Some good commands are:
 ```
 make jar
-```
-
-To build a runnable "test" docker image, run:
-```
-make docker
-```
-
-To execute unit tests, run:
-```
-make test
+./gradlew jar
+./gradlew test
 ```
 
 The service can be brought up via docker, using the sample docker-compose and env files, like this:
@@ -24,12 +22,49 @@ make docker-compose-build
 make docker-compose-run
 ```
 
+You might need to extend these with traefik to run:
+```
+cp ~/dev/docker-traefik/docker-compose.yml docker-compose/traefik.yml
+docker compose -f  docker-compose/traefik.yml -f docker-compose/docker-compose.yml -f docker-compose/docker-compose.dev.yml up
+```
+
+== Testing
+
+If the service is up, talk to it with one of the `cURL` scripts in the `src/test/query` folder.  
+```
+bash src/test/query/query-genomic.sh
+```
+
+and make sure it replies with a sequence.
+
 == Configuration
 
 Configuration is handled via docker-compose.yml, which reads values from environment (provided by default by .env or you may specify another file)
 
 Please see `docker-compose/docker-compose.test.yml` and `.env.test` for test configuration.  The file `docker-compose/docker-compose.prod.yml` will be used for production configuration.
 
-== Example queries
 
-See `cURL` scripts in the `src/test/query` folder.  Note: some of these may no longer work.
+= Architecture overview
+== Reference files
+For each reference, we provide a file with the sequences, as well as an index file describing where each sequence is in the file.
+
+To index a fasta with the sequences called `x.fa`:
+
+```
+samtools faidx x.fa
+scripts/index_to_sqlite3.sh x.fa.fai x.fa.fai.sqlite
+```
+We use SQLite because we may have so many sequences that the index is too large to keep in memory.
+
+== Query format
+The main query format is .bed. See [Wikipedia page](https://en.wikipedia.org/wiki/BED_(file_format)) for an overview.
+
+Name column of .bed files should describe the sequences as they make sense to the user - for example, feature description.
+You can ask for exon sequence of a gene by using all 12 columns.
+
+== Dependencies
+The main library used is [htsjdk](https://github.com/samtools/htsjdk), and does a lot of work on the references and .bed features. It's just a plain Java dependency, and a few more methods are copied and adapted.
+
+== Endpoints
+We currently have a streaming endpoint, and an async platform.
+

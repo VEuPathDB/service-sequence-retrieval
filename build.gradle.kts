@@ -97,7 +97,7 @@ dependencies {
   implementation("org.gusdb:fgputil-core:2.7.1-jakarta")
 
   // Core lib
-  implementation("org.veupathdb.lib:jaxrs-container-core:6.8.0")
+  implementation("org.veupathdb.lib:jaxrs-container-core:6.11.0")
 
   // Jersey
   implementation("org.glassfish.jersey.core:jersey-server:3.0.8")
@@ -110,13 +110,14 @@ dependencies {
   // Job IDs
   implementation("org.veupathdb.lib:hash-id:1.1.0")
 
+
+  // SQLite
+  implementation("org.xerial:sqlite-jdbc:3.39.4.0")
+
   // Logging
   implementation("org.slf4j:slf4j-api:1.7.36")
   implementation("org.apache.logging.log4j:log4j-core:2.19.0")
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.19.0")
-
-  // MapDB
-  implementation("org.mapdb:mapdb:3.0.8")
 
   // Pico CLI
   // Only required if your project adds custom CLI/environment options, see
