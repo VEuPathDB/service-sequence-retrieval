@@ -1,13 +1,13 @@
 #!groovy
 
-@Library('pipelib@github-creds')
+@Library('pipelib')
 import org.veupathdb.lib.Builder
 
 node('centos8') {
 
   def builder = new Builder(this)
 
-  builder.gitCline()
+  builder.gitClone()
   builder.buildContainers([[ name: 'sequence-retrieval' ]])
 
 }
