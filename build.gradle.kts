@@ -2,7 +2,7 @@ import org.veupathdb.lib.gradle.container.util.Logger.Level
 
 plugins {
   java
-  id("org.veupathdb.lib.gradle.container.container-utils") version "4.0.0"
+  id("org.veupathdb.lib.gradle.container.container-utils") version "4.8.9"
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -45,16 +45,6 @@ containerBuild {
 
   }
 
-  generateJaxRS {
-    // List of custom arguments to use in the jax-rs code generation command
-    // execution.
-    arguments = listOf(/*arg1, arg2, arg3*/)
-
-    // Map of custom environment variables to set for the jax-rs code generation
-    // command execution.
-    environment = mapOf(/*Pair("env-key", "env-val"), Pair("env-key", "env-val")*/)
-  }
-
 }
 
 java {
@@ -94,15 +84,15 @@ dependencies {
   implementation("com.github.samtools:htsjdk:2.24.1")
 
   // FgpUtil
-  implementation("org.gusdb:fgputil-core:2.7.1-jakarta")
+  implementation("org.gusdb:fgputil-core:2.12.9-jakarta")
 
   // Core lib
-  implementation("org.veupathdb.lib:jaxrs-container-core:6.11.0")
+  implementation("org.veupathdb.lib:jaxrs-container-core:6.16.0")
 
   // Jersey
-  implementation("org.glassfish.jersey.core:jersey-server:3.0.8")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.0.8")
-  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.8")
+  implementation("org.glassfish.jersey.core:jersey-server:3.1.1")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.1.1")
+  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.1.1")
 
   // Async platform core
   implementation("org.veupathdb.lib:compute-platform:1.3.4")
@@ -112,34 +102,34 @@ dependencies {
 
 
   // SQLite
-  implementation("org.xerial:sqlite-jdbc:3.39.4.0")
+  implementation("org.xerial:sqlite-jdbc:3.40.1.0")
 
   // Logging
   implementation("org.slf4j:slf4j-api:1.7.36")
-  implementation("org.apache.logging.log4j:log4j-core:2.19.0")
-  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.19.0")
+  implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.20.0")
 
   // Pico CLI
   // Only required if your project adds custom CLI/environment options, see
   // the "MyOptions" class in the demo source code.
-  implementation("info.picocli:picocli:4.6.3")
+  implementation("info.picocli:picocli:4.7.3")
 
   // Multipart/Form-Data Jersey Plugin
   // Only required if your project will be handling multipart/form-data HTTP
   // requests.
-  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.0.4")
+  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.1.1")
 
   // Jackson
   implementation("org.veupathdb.lib:jackson-singleton:3.0.0")
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.4")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.15.1")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.1")
 
   // Metrics
   implementation("io.prometheus:simpleclient:0.16.0")
   implementation("io.prometheus:simpleclient_common:0.16.0")
 
   // Unit Testing
-  testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
-  testImplementation("org.mockito:mockito-core:4.8.0")
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
+  testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+  testImplementation("org.mockito:mockito-core:5.2.0")
+  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
 }
