@@ -1,7 +1,6 @@
 package org.veupathdb.service.sr.reference;
 
 import org.gusdb.fgputil.runtime.Environment;
-import org.veupathdb.service.sr.generated.model.SequenceType;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
