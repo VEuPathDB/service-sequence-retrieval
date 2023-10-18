@@ -12,14 +12,13 @@ public enum Strand {
   @JsonProperty("NONE")
   NONE("NONE");
 
-  public final String name;
+  public final String value;
 
-  Strand(String name) {
-    this.name = name;
+  public String getValue() {
+    return this.value;
   }
 
-
-  public String getName() {
-    return this.name;
+  Strand(String name) {
+    this.value = name;
   }
 }

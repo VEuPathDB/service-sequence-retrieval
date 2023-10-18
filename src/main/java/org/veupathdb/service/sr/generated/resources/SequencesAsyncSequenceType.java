@@ -32,7 +32,7 @@ public interface SequencesAsyncSequenceType {
       @PathParam("sequenceType") String sequenceType, @PathParam("fileFormat") String fileFormat,
       @QueryParam("deflineFormat") @DefaultValue("REGIONONLY") DeflineFormat deflineFormat,
       @QueryParam("basesPerLine") @DefaultValue("60") Integer basesPerLine,
-      @QueryParam("startOffset") @DefaultValue("ZERO") StartOffset startOffset,
+      @QueryParam("startOffset") @DefaultValue("ONE") StartOffset startOffset,
       SequencesAsyncSequenceTypeFileFormatPostMultipartFormData entity);
 
   class PostSequencesAsyncBySequenceTypeResponse extends ResponseDelegate {

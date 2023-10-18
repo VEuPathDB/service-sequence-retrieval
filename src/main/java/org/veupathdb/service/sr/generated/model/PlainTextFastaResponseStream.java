@@ -20,6 +20,4 @@ public class PlainTextFastaResponseStream extends PlainTextFastaResponseImpl imp
   public void write(OutputStream output) throws IOException, WebApplicationException {
     _streamer.accept(output);
   }
-
 }
-

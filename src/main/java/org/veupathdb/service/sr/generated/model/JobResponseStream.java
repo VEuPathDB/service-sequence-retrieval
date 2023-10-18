@@ -20,6 +20,4 @@ public class JobResponseStream extends JobResponseImpl implements StreamingOutpu
   public void write(OutputStream output) throws IOException, WebApplicationException {
     _streamer.accept(output);
   }
-
 }
-

@@ -20,6 +20,4 @@ public class HealthResponseStream extends HealthResponseImpl implements Streamin
   public void write(OutputStream output) throws IOException, WebApplicationException {
     _streamer.accept(output);
   }
-
 }
-

@@ -35,11 +35,14 @@ public interface DependencyStatus {
     @JsonProperty("no")
     NO("no");
 
-    private String name;
+    public final String value;
+
+    public String getValue() {
+      return this.value;
+    }
 
     OnlineType(String name) {
-      this.name = name;
+      this.value = name;
     }
-    public String getValue(){ return name; } 
-}
+  }
 }

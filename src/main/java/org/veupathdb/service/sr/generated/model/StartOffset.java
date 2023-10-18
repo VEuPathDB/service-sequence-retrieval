@@ -9,14 +9,13 @@ public enum StartOffset {
   @JsonProperty("ONE")
   ONE("ONE");
 
-  public final String name;
+  public final String value;
 
-  StartOffset(String name) {
-    this.name = name;
+  public String getValue() {
+    return this.value;
   }
 
-
-  public String getName() {
-    return this.name;
+  StartOffset(String name) {
+    this.value = name;
   }
 }

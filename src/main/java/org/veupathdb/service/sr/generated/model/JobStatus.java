@@ -18,14 +18,13 @@ public enum JobStatus {
   @JsonProperty("expired")
   EXPIRED("expired");
 
-  public final String name;
+  public final String value;
 
-  JobStatus(String name) {
-    this.name = name;
+  public String getValue() {
+    return this.value;
   }
 
-
-  public String getName() {
-    return this.name;
+  JobStatus(String name) {
+    this.value = name;
   }
 }

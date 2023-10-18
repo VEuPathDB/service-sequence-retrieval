@@ -12,14 +12,13 @@ public enum DeflineFormat {
   @JsonProperty("QUERYANDREGION")
   QUERYANDREGION("QUERYANDREGION");
 
-  public final String name;
+  public final String value;
 
-  DeflineFormat(String name) {
-    this.name = name;
+  public String getValue() {
+    return this.value;
   }
 
-
-  public String getName() {
-    return this.name;
+  DeflineFormat(String name) {
+    this.value = name;
   }
 }

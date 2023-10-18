@@ -9,14 +9,13 @@ public enum SupportedFileFormat {
   @JsonProperty("gff3")
   GFF3("gff3");
 
-  public final String name;
+  public final String value;
 
-  SupportedFileFormat(String name) {
-    this.name = name;
+  public String getValue() {
+    return this.value;
   }
 
-
-  public String getName() {
-    return this.name;
+  SupportedFileFormat(String name) {
+    this.value = name;
   }
 }
