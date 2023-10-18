@@ -74,7 +74,11 @@ public class FeatureAdapter {
       while(! codec.isDone(lineIterator)){
         var gff3Feature = codec.decode(lineIterator);
         if (gff3Feature != null && gff3Feature.isTopLevelFeature()) {
-          var bedFeature = new SimpleBEDFeature(gff3Feature.getStart(), gff3Feature.getEnd(), gff3Feature.getContig());
+
+          // bed format is zero based half open;  need to adjust the start coord (not end) as gff will be 1 based closed
+          int zeroBasedStart = gff3Feature.getStart() - 1;
+
+          var bedFeature = new SimpleBEDFeature(zeroBasedStart, gff3Feature.getEnd(), gff3Feature.getContig());
           bedFeature.setStrand(gff3Feature.getStrand());
           bedFeature.setName(gff3Feature.getName());
           result.add(bedFeature);
