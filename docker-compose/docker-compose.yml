@@ -31,7 +31,7 @@ services:
       - "traefik.enable=false"
 
   sequence-retrieval:
-    image: veupathdb/sequence-retrieval:${SEQUENCE_RETRIEVAL_TAG:-latest}
+    image: ${SEQUENCE_RETRIEVAL_IMAGE:-veupathdb/sequence-retrieval}:${SEQUENCE_RETRIEVAL_TAG:-latest}
     depends_on:
       - queue-db
       - queue
