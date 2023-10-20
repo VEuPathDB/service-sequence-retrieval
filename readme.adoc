@@ -1,70 +1,74 @@
-= Service for sequence retrieval
+= Sequence Retrieval Service =
 
-== About this service
+== About This Service ==
 
 This service is configured with a directory of reference sequences. It then receives requests containing coordinates of sequences, and replies with a .fasta.
 
-== Running locally
+== Running Locally ==
 
-You need to create an .env file in `docker-compose` directory. See `.env.sample` for details.
+The best (easiest) way to run locally is with docker compose.  If you have a relatively recent version of Docker installed, this should work "out of the box" with a short wrapper script by using the following commands:
+```
+> cd docker-compose
+> cp .env.sample .env
+> ./runLocal.sh
+```
+This configuration will download and run the `latest` (tagged) image on docker hub and use the sample `.fa` and `.fai` files included in the repo.
 
-Some good commands are:
-```
-make jar
-./gradlew jar
-./gradlew test
-```
+Once up, you should be able to access the service locally on port 8080, e.g. GET http://localhost:8080/health
 
-The service can be brought up via docker, using the sample docker-compose and env files, like this:
-```
-make docker-compose-clean
-make docker-compose-build
-make docker-compose-run
-```
+To point the service at your own files, change the `FASTA_FILES_DIR` environment variable in `.env`.
 
-You might need to extend these with traefik to run:
+== Example Queries ==
+
+A number of queries, valid against the sample data, are provided and codified as curl commands wrapped in bash scripts.  So view them and run one, execute (in a new terminal) e.g.
 ```
-cp ~/dev/docker-traefik/docker-compose.yml docker-compose/traefik.yml
-docker compose -f  docker-compose/traefik.yml -f docker-compose/docker-compose.yml -f docker-compose/docker-compose.dev.yml up
+> ls -1 src/test/query
+> bash src/test/query/query-genomic-bed.sh 
 ```
 
-== Testing
+== Building Locally ==
 
-If the service is up, talk to it with one of the `cURL` scripts in the `src/test/query` folder.  
+To make and test changes to the service code, first try to build and run the service as-is.  To do so, perform the following steps:
+
+1. https://veupathdb.atlassian.net/wiki/spaces/TECH/pages/47841323/Create+a+Github+user+token[Add your Github credentials into your environment].
+2. Build the code (note Java 17+ is required):
++
 ```
-bash src/test/query/query-genomic.sh
+> ./gradlew clean generate-jaxrs jar test
 ```
++
+3. If this succeeds, build a local docker image
++
+```
+> ./gradlew build-docker
+```
++
+4. Uncomment the line `SEQUENCE_RETRIEVAL_IMAGE=sequence-retrieval` in your `.env` file
+5. Run the service as above, i.e. `cd docker-compose && ./runLocal.sh`
 
-and make sure it replies with a sequence.
+= Architecture Overview =
 
-== Configuration
+== Reference Files ==
 
-Configuration is handled via docker-compose.yml, which reads values from environment (provided by default by .env or you may specify another file)
-
-Please see `docker-compose/docker-compose.test.yml` and `.env.test` for test configuration.  The file `docker-compose/docker-compose.prod.yml` will be used for production configuration.
-
-
-= Architecture overview
-== Reference files
 For each reference, we provide a file with the sequences, as well as an index file describing where each sequence is in the file.
 
 To index a fasta with the sequences called `x.fa`:
-
 ```
 samtools faidx x.fa
 scripts/index_to_sqlite3.sh x.fa.fai x.fa.fai.sqlite
 ```
+
 We use SQLite because we may have so many sequences that the index is too large to keep in memory.
 
-== Query format
-The main query format is .bed. See [Wikipedia page](https://en.wikipedia.org/wiki/BED_(file_format)) for an overview.
+== Query Format ==
+
+The main query format is .bed. See the https://en.wikipedia.org/wiki/BED_(file_format)[BED Wikipedia page] for an overview.
 
 Name column of .bed files should describe the sequences as they make sense to the user - for example, feature description.
 You can ask for exon sequence of a gene by using all 12 columns.
 
-== Dependencies
-The main library used is [htsjdk](https://github.com/samtools/htsjdk), and does a lot of work on the references and .bed features. It's just a plain Java dependency, and a few more methods are copied and adapted.
+== Dependencies ==
 
-== Endpoints
-We currently have a streaming endpoint, and an async platform.
+This service requires Java 17+ and Docker for local development.
 
+The main library used for sequence lookups is https://github.com/samtools/htsjdk[htsjdk], which does a lot of work on the references and .bed features.  It's just a plain Java dependency; a few more methods have been copied and adapted.
