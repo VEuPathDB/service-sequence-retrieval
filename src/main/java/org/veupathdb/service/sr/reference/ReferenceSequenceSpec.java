@@ -19,17 +19,17 @@ public class ReferenceSequenceSpec {
     this.maxTotalBasesPerRequest = maxTotalBasesPerRequest;
     this.isStranded = isStranded;
   }
-  
+
   public <T extends BEDFeature> void validateFeatures(Collection<T> features){
     if(! isStranded && features.stream().anyMatch(f -> ! f.getStrand().equals(Strand.NONE))){
       throw new BadRequestException("Requested stranded feature on an unstranded reference sequence " + name );
     }
     if(features.size() > maxSequencesPerRequest){
-      throw new BadRequestException("Requested " + features.size() + "features but reference sequence " + name + "has a per-request limit of " + maxSequencesPerRequest);
+      throw new BadRequestException("Requested " + features.size() + " features but reference sequence " + name + " has a per-request limit of " + maxSequencesPerRequest);
     }
     var totalRequestedBases = features.stream().mapToInt(f -> f.getLengthOnReference()).sum();
     if(totalRequestedBases > maxTotalBasesPerRequest){
-      throw new BadRequestException("Requested " + totalRequestedBases + "total bases but reference sequence " + name + " has a per-request limit of " + maxTotalBasesPerRequest);
+      throw new BadRequestException("Requested " + totalRequestedBases + " total bases but reference sequence " + name + " has a per-request limit of " + maxTotalBasesPerRequest);
     }
   }
 
