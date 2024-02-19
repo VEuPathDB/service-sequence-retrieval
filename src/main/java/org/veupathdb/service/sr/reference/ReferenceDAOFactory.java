@@ -32,13 +32,14 @@ public class ReferenceDAOFactory {
   protected static Map<String, ReferenceDAO> instances;
 
   public static ReferenceDAO get(String sequenceType) {
-    return Objects.requireNonNull(Objects.requireNonNull(instances, "Error: get called before init").get(sequenceType.toLowerCase()), "Sequence file not available for sequence type: " + sequenceType);
+    final Map<String, ReferenceDAO> nonNullInstances = Objects.requireNonNull(instances, "Error: get called before init");
+    return Objects.requireNonNull(nonNullInstances.get(sequenceType.toLowerCase()), "Sequence file not available for sequence type: " + sequenceType);
   }
 
-  public static void init(){
-    instances = new HashMap<String, ReferenceDAO>();
+  public static void init() {
+    instances = new HashMap<>();
     var sequenceNames = Arrays.asList(Environment.getRequiredVar(ALL_REFERENCE_SEQUENCE_NAMES).split(","));
-    if (sequenceNames.size() == 0){
+    if (sequenceNames.size() == 0) {
       throw new RuntimeException("Required list: ALL_REFERENCE_SEQUENCE_NAMES=<eg. genomic,protein>");
     }
     for (var sequenceName: sequenceNames){
@@ -46,7 +47,7 @@ public class ReferenceDAOFactory {
     }
   }
 
-  public static ReferenceDAO daoFromEnvVars(String sequenceName){
+  public static ReferenceDAO daoFromEnvVars(String sequenceName) {
     return new ReferenceDAO(
       new ReferenceSequenceSpec(
         sequenceName,  
@@ -66,17 +67,18 @@ public class ReferenceDAOFactory {
     }
     return result;
   }
+
   private static long longVar(String k) {
     var s = Environment.getRequiredVar(k);
-    // support scentific notation for integer values that can fit in a Long
+    // support scientific notation for integer values that can fit in a Long
     return new BigDecimal(s).longValueExact();
   }
 
-  private static boolean booleanVar(String k){
+  private static boolean booleanVar(String k) {
     var s = Environment.getRequiredVar(k);
-    if("true".equals(s.toLowerCase())){
+    if ("true".equalsIgnoreCase(s)) {
       return true;
-    } else if ("false".equals(s.toLowerCase())){
+    } else if ("false".equalsIgnoreCase(s)) {
       return false;
     } else {
       throw new RuntimeException("Value for property " + k + " should be true/false, got: " + s);

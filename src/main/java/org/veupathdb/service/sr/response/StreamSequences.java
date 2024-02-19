@@ -1,36 +1,39 @@
 package org.veupathdb.service.sr.response;
 
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
-import htsjdk.samtools.util.SequenceUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
-import org.veupathdb.service.sr.generated.model.Feature;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.function.Consumer;
 
-import htsjdk.tribble.bed.FullBEDFeature;
 import htsjdk.tribble.bed.BEDFeature;
-import htsjdk.tribble.annotation.Strand;
-import htsjdk.samtools.util.Locatable;
-import htsjdk.samtools.util.Interval;
+
 import java.nio.charset.Charset;
 
 public class StreamSequences {
+  private static final Logger LOG = LogManager.getLogger(StreamSequences.class);
 
-  private static final Charset CHARSET = Charset.forName("UTF-8");
+  private static final Charset CHARSET = StandardCharsets.UTF_8;
 
-  private static final byte[] LINE_SEPARATOR = String.valueOf("\n").getBytes(CHARSET);
+  private static final byte[] LINE_SEPARATOR = "\n".getBytes(CHARSET);
 
-  public static void write(OutputStream outputStream, IndexedFastaSequenceFile sequences, List<BEDFeature> features, DeflineFormat deflineFormat, int requestedBasesPerLine){
+  public static void write(OutputStream outputStream,
+                           IndexedFastaSequenceFile sequences,
+                           List<BEDFeature> features,
+                           DeflineFormat deflineFormat,
+                           int requestedBasesPerLine) {
     int basesPerLine = requestedBasesPerLine > 0 ? requestedBasesPerLine : Integer.MAX_VALUE;
     try (var buf = new BufferedOutputStream(outputStream)) {
       for (var feature : features) {
         var defline = Deflines.deflineForFeature(feature, deflineFormat);
         var bases = Bases.getBasesForBedFeature(sequences, feature);
 
+        LOG.debug("Writing sequence for feature {} to OutputStream.", feature.getName());
         appendSequenceToStream(buf, defline, bases, basesPerLine);
       }
     }

@@ -1,19 +1,17 @@
 package org.veupathdb.service.sr.reference;
-import java.util.Map;
 import java.util.List;
-import java.util.Objects;
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 import htsjdk.tribble.bed.BEDFeature;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
 import org.veupathdb.service.sr.response.StreamSequences;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import org.veupathdb.service.sr.reference.ReferenceSequenceSpec;
 import org.sqlite.SQLiteDataSource;
 import org.sqlite.SQLiteConfig;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
@@ -31,18 +29,20 @@ import java.io.IOException;
  * ReferenceDAOFactory.get(sequenceType).validate(...)
  */
 public class ReferenceDAO {
+  private static final Logger LOG = LogManager.getLogger(ReferenceDAO.class);
 
   private final ReferenceSequenceSpec spec;
   private final SQLiteDataSource indexDataSource;
   private final Path sequencesPath;
 
-  public ReferenceDAO(ReferenceSequenceSpec spec, Path indexPath, Path sequencesPath){
+  public ReferenceDAO(ReferenceSequenceSpec spec, Path indexPath, Path sequencesPath) {
     this.spec = spec;
     this.sequencesPath = sequencesPath;
     this.indexDataSource = readIndexDataSource(indexPath);
   }
 
-  private SQLiteDataSource readIndexDataSource(Path indexPath){
+  private SQLiteDataSource readIndexDataSource(Path indexPath) {
+    LOG.info("Indexing data source at indexPath: " + indexPath);
     var properties = new Properties();
     // only allow reading
     properties.setProperty("mode", "ro");
@@ -56,14 +56,15 @@ public class ReferenceDAO {
   public Consumer<OutputStream> validateAndPrepareResponse(
       List<BEDFeature> features,
       DeflineFormat deflineFormat,
-      int requestedBasesPerLine){
+      int requestedBasesPerLine) {
     this.spec.validateFeatures(features);
     return outputStream -> {
-      try(var connection = this.indexDataSource.getConnection();
+      try (
+          var connection = this.indexDataSource.getConnection();
           var statement = connection.prepareStatement("select length, offset, linebases, linewidth from faidx where name = ? limit 1");
-          var sequenceFile = new IndexedFastaSequenceFile(this.sequencesPath, transientIndex(statement));
-          ){
-      StreamSequences.write(outputStream, sequenceFile, features, deflineFormat, requestedBasesPerLine);
+          var sequenceFile = new IndexedFastaSequenceFile(this.sequencesPath, transientIndex(statement))
+      ) {
+        StreamSequences.write(outputStream, sequenceFile, features, deflineFormat, requestedBasesPerLine);
       } catch (SQLException | IOException e){
         throw new RuntimeException(e);
       }

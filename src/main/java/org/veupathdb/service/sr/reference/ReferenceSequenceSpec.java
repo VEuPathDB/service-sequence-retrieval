@@ -3,6 +3,7 @@ package org.veupathdb.service.sr.reference;
 import htsjdk.tribble.bed.BEDFeature;
 import jakarta.ws.rs.BadRequestException;
 import java.util.Collection;
+import java.util.Optional;
 
 import htsjdk.tribble.annotation.Strand;
 
@@ -28,8 +29,17 @@ public class ReferenceSequenceSpec {
       throw new BadRequestException("Requested " + features.size() + " features but reference sequence " + name + " has a per-request limit of " + maxSequencesPerRequest);
     }
     var totalRequestedBases = features.stream().mapToInt(f -> f.getLengthOnReference()).sum();
-    if(totalRequestedBases > maxTotalBasesPerRequest){
+    if (totalRequestedBases > maxTotalBasesPerRequest){
       throw new BadRequestException("Requested " + totalRequestedBases + " total bases but reference sequence " + name + " has a per-request limit of " + maxTotalBasesPerRequest);
+    }
+
+    Optional<T> featureWithEndBeforeStart = features.stream()
+        .filter(feature -> feature.getEnd() < feature.getStart())
+        .findFirst();
+    if (featureWithEndBeforeStart.isPresent()) {
+      throw new BadRequestException(String.format("Malformed feature; start point %d lies after end point %d",
+          featureWithEndBeforeStart.get().getStart(),
+          featureWithEndBeforeStart.get().getEnd()));
     }
   }
 
