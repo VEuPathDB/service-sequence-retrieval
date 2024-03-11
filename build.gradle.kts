@@ -84,10 +84,10 @@ dependencies {
   implementation("com.github.samtools:htsjdk:2.24.1")
 
   // FgpUtil
-  implementation("org.gusdb:fgputil-core:2.12.9-jakarta")
+  implementation("org.gusdb:fgputil-core:2.13.1-jakarta")
 
   // Core lib
-  implementation("org.veupathdb.lib:jaxrs-container-core:6.16.0")
+  implementation("org.veupathdb.lib:jaxrs-container-core:7.0.1")
 
   // Jersey
   implementation("org.glassfish.jersey.core:jersey-server:3.1.1")
@@ -95,11 +95,10 @@ dependencies {
   implementation("org.glassfish.jersey.media:jersey-media-multipart:3.1.1")
 
   // Async platform core
-  implementation("org.veupathdb.lib:compute-platform:1.3.4")
+  implementation("org.veupathdb.lib:compute-platform:1.7.2")
 
   // Job IDs
   implementation("org.veupathdb.lib:hash-id:1.1.0")
-
 
   // SQLite
   implementation("org.xerial:sqlite-jdbc:3.40.1.0")
@@ -121,8 +120,8 @@ dependencies {
 
   // Jackson
   implementation("org.veupathdb.lib:jackson-singleton:3.0.0")
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.15.1")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.1")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.15.3")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.15.3")
 
   // Metrics
   implementation("io.prometheus:simpleclient:0.16.0")
