@@ -35,7 +35,7 @@ public class FastaSequenceIndexStub extends FastaSequenceIndex {
 
   @Override
   public int size() {
-    throw new UnsupportedOperationException();
+    return 100000;
   }
 
   @Override

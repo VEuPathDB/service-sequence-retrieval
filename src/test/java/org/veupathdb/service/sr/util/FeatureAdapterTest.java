@@ -1,28 +1,14 @@
 package org.veupathdb.service.sr.util;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
+import org.veupathdb.service.sr.TestQueries;
+import org.veupathdb.service.sr.generated.model.StartOffset;
 
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.veupathdb.service.sr.service.SequenceRetrievalService;
-import org.veupathdb.service.sr.generated.model.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.ws.rs.core.Response;
-
-import org.veupathdb.service.sr.TestQueries;
-import org.veupathdb.service.sr.generated.model.DeflineFormat;
-import org.veupathdb.service.sr.generated.model.StartOffset;
-import org.veupathdb.service.sr.generated.model.SequencesSequenceTypeFileFormatPostMultipartFormDataImpl;
-import org.veupathdb.service.sr.generated.model.UploadMethod;
-
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class FeatureAdapterTest {
@@ -35,7 +21,6 @@ public class FeatureAdapterTest {
     assertEquals(features.get(0).getStart(), 1);
     assertEquals(features.get(0).getEnd(), 7);
     assertEquals(features.get(0).getName(), "");
-
   }
 
   @Test
@@ -53,6 +38,5 @@ public class FeatureAdapterTest {
   public void testReadBadJawn() {
     Throwable exception = assertThrows(Exception.class, () -> FeatureAdapter.readBed(new ByteArrayInputStream("\tBad jawn\n".getBytes("UTF-8")), StartOffset.ZERO));
     assertEquals("Error when parsing line: \tBad jawn", exception.getMessage());
-
   }
 }

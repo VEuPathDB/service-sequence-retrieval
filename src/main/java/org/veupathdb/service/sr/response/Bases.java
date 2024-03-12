@@ -12,9 +12,16 @@ import org.apache.logging.log4j.Logger;
 public class Bases {
   private static final Logger LOG = LogManager.getLogger(Bases.class);
 
-  public static byte[] getBasesForBedFeature(IndexedFastaSequenceFile sequences, BEDFeature feature){
+  public static byte[] getBasesForBedFeature(IndexedFastaSequenceFile sequences, BEDFeature feature) {
+    // Don't ask SAMTools for a feature whose end exceeds the length of the sequence.
+    int sequenceEnd = Math.min(sequences.getIndex().size(), feature.getEnd());
 
-    return getBasesForBedFeature(sequences.getSubsequenceAt(feature.getContig(), feature.getStart(), feature.getEnd()), feature);
+    // Don't ask SAMTools for a negative-length sequence. These are truncated and an empty sequence is returned.
+    if (feature.getStart() > feature.getEnd()) {
+      return new byte[0];
+    }
+
+    return getBasesForBedFeature(sequences.getSubsequenceAt(feature.getContig(), feature.getStart(), sequenceEnd), feature);
   }
 
   // for unit test
