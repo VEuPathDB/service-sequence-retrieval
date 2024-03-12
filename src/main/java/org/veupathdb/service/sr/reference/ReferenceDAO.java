@@ -1,26 +1,33 @@
 package org.veupathdb.service.sr.reference;
+
 import java.util.List;
+
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
 import htsjdk.tribble.bed.BEDFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
 import org.veupathdb.service.sr.response.StreamSequences;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.io.OutputStream;
 import java.nio.file.Path;
+
 import org.sqlite.SQLiteDataSource;
 import org.sqlite.SQLiteConfig;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
+
 import htsjdk.samtools.reference.FastaSequenceIndexEntry;
+
 import java.util.Properties;
 import java.io.IOException;
 
 /*
- * Provides data access to sequences 
+ * Provides data access to sequences
  *
  * To validate and serve the request:
  * ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(...)
@@ -65,20 +72,21 @@ public class ReferenceDAO {
           var sequenceFile = new IndexedFastaSequenceFile(this.sequencesPath, transientIndex(statement))
       ) {
         StreamSequences.write(outputStream, sequenceFile, features, deflineFormat, requestedBasesPerLine);
-      } catch (SQLException | IOException e){
+      } catch (SQLException | IOException e) {
         throw new RuntimeException(e);
       }
     };
   }
-  private FastaSequenceIndexStub transientIndex(PreparedStatement statement){
-     Function<String, FastaSequenceIndexEntry> f = contigName -> {
+
+  private FastaSequenceIndexStub transientIndex(PreparedStatement statement) {
+    Function<String, FastaSequenceIndexEntry> f = contigName -> {
       try {
         statement.setString(1, contigName);
-      } catch (SQLException e){
+      } catch (SQLException e) {
         throw new RuntimeException(e);
       }
-      try(ResultSet rs = statement.executeQuery()) {
-        if(rs.next()){
+      try (ResultSet rs = statement.executeQuery()) {
+        if (rs.next()) {
           // see htsjdk.samtools.reference.FastaSequenceIndex.parseIndexFile
           var size = rs.getLong("length");
           var location = rs.getLong("offset");
@@ -88,14 +96,14 @@ public class ReferenceDAO {
         } else {
           throw new RuntimeException("Contig not found in the index: " + contigName);
         }
-      } catch (SQLException e){
+      } catch (SQLException e) {
         throw new RuntimeException(e);
       }
     };
     return new FastaSequenceIndexStub(f);
   }
 
-  public void validateRequestedFeatures(List<BEDFeature> features){
+  public void validateRequestedFeatures(List<BEDFeature> features) {
     this.spec.validateFeatures(features);
   }
 

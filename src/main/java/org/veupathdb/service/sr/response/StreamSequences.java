@@ -30,7 +30,8 @@ public class StreamSequences {
     int basesPerLine = requestedBasesPerLine > 0 ? requestedBasesPerLine : Integer.MAX_VALUE;
     try (var buf = new BufferedOutputStream(outputStream)) {
       for (var feature : features) {
-        var defline = Deflines.deflineForFeature(feature, deflineFormat, sequences.getIndex().size());
+        long sequenceLength = sequences.getIndex().getIndexEntry(feature.getContig()).getSize();
+        var defline = Deflines.deflineForFeature(feature, deflineFormat, sequenceLength);
         var bases = Bases.getBasesForBedFeature(sequences, feature);
 
         LOG.debug("Writing sequence for feature {} to OutputStream.", feature.getName());

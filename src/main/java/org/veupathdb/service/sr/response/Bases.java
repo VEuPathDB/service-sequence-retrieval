@@ -14,7 +14,7 @@ public class Bases {
 
   public static byte[] getBasesForBedFeature(IndexedFastaSequenceFile sequences, BEDFeature feature) {
     // Don't ask SAMTools for a feature whose end exceeds the length of the sequence.
-    int sequenceEnd = Math.min(sequences.getIndex().size(), feature.getEnd());
+    long sequenceEnd = Math.min(sequences.getIndex().getIndexEntry(feature.getContig()).getSize(), feature.getEnd());
 
     // Don't ask SAMTools for a negative-length sequence. These are truncated and an empty sequence is returned.
     if (feature.getStart() > feature.getEnd()) {

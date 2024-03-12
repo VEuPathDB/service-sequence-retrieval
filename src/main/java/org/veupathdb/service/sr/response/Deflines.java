@@ -38,7 +38,7 @@ public class Deflines {
    * @param indexLength The length of the sequence, used to validate the feature.
    * @return A defline constructed from the incoming BEDFeature given the defline format spec.
    */
-  public static String deflineForFeature(BEDFeature feature, DeflineFormat deflineFormat, int indexLength) {
+  public static String deflineForFeature(BEDFeature feature, DeflineFormat deflineFormat, long indexLength) {
     var result = new StringBuilder(200);
     result.append(HEADER_START_CHAR);
     switch(deflineFormat) {
