@@ -30,14 +30,14 @@ public class StreamSequences {
     int basesPerLine = requestedBasesPerLine > 0 ? requestedBasesPerLine : Integer.MAX_VALUE;
     try (var buf = new BufferedOutputStream(outputStream)) {
       for (var feature : features) {
-        var defline = Deflines.deflineForFeature(feature, deflineFormat);
+        long sequenceLength = sequences.getIndex().getIndexEntry(feature.getContig()).getSize();
+        var defline = Deflines.deflineForFeature(feature, deflineFormat, sequenceLength);
         var bases = Bases.getBasesForBedFeature(sequences, feature);
 
         LOG.debug("Writing sequence for feature {} to OutputStream.", feature.getName());
         appendSequenceToStream(buf, defline, bases, basesPerLine);
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new RuntimeException("Unable to stream sequences response", e);
     }
   }
@@ -53,7 +53,7 @@ public class StreamSequences {
     final int totalBasesCount = bases.length;
     int writtenBasesCount = 0;
     int currentLineBasesCount = 0;
-    while( writtenBasesCount < totalBasesCount ){
+    while (writtenBasesCount < totalBasesCount) {
       if (currentLineBasesCount == basesPerLine) {
         outputStream.write(LINE_SEPARATOR);
         currentLineBasesCount = 0;
