@@ -17,7 +17,7 @@ public class Bases {
     long sequenceEnd = Math.min(sequences.getIndex().getIndexEntry(feature.getContig()).getSize(), feature.getEnd());
 
     // Don't ask SAMTools for a negative-length sequence. These are truncated and an empty sequence is returned.
-    if (feature.getStart() > feature.getEnd()) {
+    if (feature.getStart() > sequenceEnd) {
       return new byte[0];
     }
 

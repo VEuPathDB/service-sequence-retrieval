@@ -32,7 +32,7 @@ public class ReferenceSequenceSpec {
     }
     var totalRequestedBases = features.stream().mapToInt(Locatable::getLengthOnReference).sum();
     if (totalRequestedBases > maxTotalBasesPerRequest) {
-      throw new BadRequestException("You requested a sequence of length " + totalRequestedBases + ". The limit for " + name + " is " + maxTotalBasesPerRequest + " each.");
+      throw new BadRequestException("The feature requested is of length " + totalRequestedBases + ". The limit for sequence type " + name + " is " + maxTotalBasesPerRequest + " per feature.");
     }
   }
 }
