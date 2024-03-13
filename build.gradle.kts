@@ -2,7 +2,7 @@ import org.veupathdb.lib.gradle.container.util.Logger.Level
 
 plugins {
   java
-  id("org.veupathdb.lib.gradle.container.container-utils") version "4.8.9"
+  id("org.veupathdb.lib.gradle.container.container-utils") version "4.8.10"
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
