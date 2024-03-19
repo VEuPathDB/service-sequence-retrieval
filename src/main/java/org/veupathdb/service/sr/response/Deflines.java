@@ -1,13 +1,8 @@
 package org.veupathdb.service.sr.response;
 
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
-import htsjdk.samtools.util.Locatable;
 
-import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.lang.StringBuilder;
-import java.io.IOException;
-import java.util.Optional;
 
 import htsjdk.tribble.annotation.Strand;
 import htsjdk.tribble.bed.BEDFeature;
@@ -26,9 +21,9 @@ public class Deflines {
 
   public static final char AFTER_STRAND_CHAR = ')';
 
-  public static final String TRUNCATED_NEGATIVE_LENGTH_MESSAGE = " | error_code=TRUNCATED_NEGATIVE_LENGTH";
+  public static final String NEGATIVE_LENGTH_MESSAGE = " | error_code=NEGATIVE_LENGTH";
 
-  public static final String TRUNCATED_END_OF_SEQUENCE_MESSAGE = " | error_code=TRUNCATED_END_OF_SEQUENCE";
+  public static final String NOT_REQUESTED_LENGTH_MESSAGE = " | error_code=NOT_REQUESTED_LENGTH";
 
   /**
    *
@@ -66,9 +61,9 @@ public class Deflines {
     // This is included in the defline instead of erroring out, as we prefer to fail open to provide
     // what sequence we can to clients.
     if (feature.getEnd() < feature.getStart()) {
-      result.append(TRUNCATED_NEGATIVE_LENGTH_MESSAGE);
+      result.append(NEGATIVE_LENGTH_MESSAGE);
     } else if (feature.getEnd() > indexLength) {
-      result.append(TRUNCATED_END_OF_SEQUENCE_MESSAGE);
+      result.append(NOT_REQUESTED_LENGTH_MESSAGE);
     }
     return result.toString();
   }
