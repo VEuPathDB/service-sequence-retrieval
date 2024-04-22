@@ -87,7 +87,7 @@ dependencies {
   implementation("org.gusdb:fgputil-core:2.13.1-jakarta")
 
   // Core lib
-  implementation("org.veupathdb.lib:jaxrs-container-core:7.0.1")
+  implementation("org.veupathdb.lib:jaxrs-container-core:7.0.7")
 
   // Jersey
   implementation("org.glassfish.jersey.core:jersey-server:3.1.1")
