@@ -49,7 +49,7 @@ containerBuild {
 
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
+    languageVersion.set(JavaLanguageVersion.of(21))
   }
 }
 
@@ -84,18 +84,18 @@ dependencies {
   implementation("com.github.samtools:htsjdk:2.24.1")
 
   // FgpUtil
-  implementation("org.gusdb:fgputil-core:2.13.1-jakarta")
+  implementation("org.gusdb:fgputil-core:3.1.0-jakarta")
 
   // Core lib
-  implementation("org.veupathdb.lib:jaxrs-container-core:7.0.7")
+  implementation("org.veupathdb.lib:jaxrs-container-core:10.0.3")
 
   // Jersey
-  implementation("org.glassfish.jersey.core:jersey-server:3.1.1")
-  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:3.1.1")
-  implementation("org.glassfish.jersey.media:jersey-media-multipart:3.1.1")
+  implementation("org.glassfish.jersey.core:jersey-server:4.0.2")
+  implementation("org.glassfish.jersey.media:jersey-media-json-jackson:4.0.2")
+  implementation("org.glassfish.jersey.media:jersey-media-multipart:4.0.2")
 
   // Async platform core
-  implementation("org.veupathdb.lib:compute-platform:1.7.2")
+  implementation("org.veupathdb.lib:compute-platform:1.8.6")
 
   // Job IDs
   implementation("org.veupathdb.lib:hash-id:1.1.0")
@@ -104,9 +104,9 @@ dependencies {
   implementation("org.xerial:sqlite-jdbc:3.40.1.0")
 
   // Logging
-  implementation("org.slf4j:slf4j-api:1.7.36")
-  implementation("org.apache.logging.log4j:log4j-core:2.20.0")
-  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.20.0")
+  implementation("org.slf4j:slf4j-api:2.0.17")
+  implementation("org.apache.logging.log4j:log4j-core:2.25.3")
+  runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.25.3")
 
   // Pico CLI
   // Only required if your project adds custom CLI/environment options, see

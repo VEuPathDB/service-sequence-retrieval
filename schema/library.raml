@@ -7,6 +7,24 @@
 ################################################################################
 
 types:
+  DeflineFormat:
+    type: string
+    enum:
+      - QUERYONLY
+      - REGIONONLY
+      - QUERYANDREGION
+  Feature:
+    type: object
+    additionalProperties: false
+    properties:
+      contig: string
+      start: integer
+      end: integer
+      query?: string
+      strand?:
+        type: Strand
+        default: 'NONE'
+  JobDataResponse: any
   JobResponse:
     type: object
     additionalProperties: false
@@ -20,7 +38,6 @@ types:
       queuePosition?:
         type: integer
         format: int32
-  JobDataResponse: any
   JobStatus:
     type: string
     enum:
@@ -30,44 +47,6 @@ types:
       - failed
       - expired
   PlainTextFastaResponse: object
-  DeflineFormat:
-    type: string
-    enum:
-      - QUERYONLY
-      - REGIONONLY
-      - QUERYANDREGION
-  Strand:
-    type: string
-    enum:
-      - POSITIVE
-      - NEGATIVE
-      - NONE
-  StartOffset:
-    type: string
-    enum:
-      - ZERO
-      - ONE
-  UploadMethod:
-    type: string
-    enum:
-      - file
-      - url
-  SupportedFileFormat:
-    type: string
-    enum:
-      - bed
-      - gff3
-  Feature:
-    type: object
-    additionalProperties: false
-    properties:
-      contig: string
-      start: integer
-      end: integer
-      query?: string
-      strand?:
-        type: Strand
-        default: 'NONE'
   SequencePostRequest:
     type: object
     additionalProperties: false
@@ -96,4 +75,25 @@ types:
       deflineFormat: DeflineFormat
       basesPerLine: integer
       sequenceType: string
+  StartOffset:
+    type: string
+    enum:
+      - ZERO
+      - ONE
+  Strand:
+    type: string
+    enum:
+      - POSITIVE
+      - NEGATIVE
+      - NONE
+  SupportedFileFormat:
+    type: string
+    enum:
+      - bed
+      - gff3
+  UploadMethod:
+    type: string
+    enum:
+      - file
+      - url
 

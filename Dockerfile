@@ -3,7 +3,7 @@
 #   Build Service & Dependencies
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM veupathdb/alpine-dev-base:jdk-18 AS prep
+FROM veupathdb/alpine-dev-base:jdk-21-gradle-8.7 AS prep
 
 LABEL service="sequence-retrieval-build"
 
@@ -47,7 +47,7 @@ RUN ./gradlew clean test shadowJar
 #   Run the service
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM amazoncorretto:18-alpine3.16
+FROM amazoncorretto:21-alpine3.16
 
 LABEL service="sequence-retrieval"
 
