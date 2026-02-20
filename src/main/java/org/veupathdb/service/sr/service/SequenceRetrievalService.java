@@ -4,6 +4,7 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gusdb.fgputil.IoUtil;
 import org.gusdb.fgputil.Timer;
 import org.veupathdb.service.sr.generated.model.*;
 import org.veupathdb.service.sr.generated.resources.SequencesSequenceType;
@@ -11,11 +12,9 @@ import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
 import org.veupathdb.service.sr.util.EnumUtil;
 import org.veupathdb.service.sr.util.FeatureAdapter;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 public class SequenceRetrievalService implements SequencesSequenceType {
@@ -75,6 +74,10 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       case FILE -> new FileInputStream(file);
       case URL -> new URL(url).openStream();
     }) {
+      // want to see the whole file; dump to log for now and then exit
+      String entireFile = IoUtil.readAllChars(new InputStreamReader(fileStream, StandardCharsets.UTF_8));
+      LOG.info("Here's the whole file!\n" + entireFile);
+      throw new RuntimeException("Temporarily broken.  Sorry!!!");/*
       LOG.info("Took " + timer.getElapsedStringAndRestart() + " to open stream to input data.");
       var features = switch (fileFormat) {
         case BED -> FeatureAdapter.readBed(fileStream, startOffset);
@@ -86,7 +89,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
       LOG.info("Took " + timer.getElapsedStringAndRestart() + " to prepare to stream response.");
       return PostSequencesBySequenceTypeAndFileFormatResponse.respond200WithTextXFasta(new StreamerWithLogging(stream));
-
+*/
     } catch (IOException e) {
       throw new RuntimeException("Unable to complete file processing", e);
     }
