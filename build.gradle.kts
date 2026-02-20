@@ -96,12 +96,13 @@ dependencies {
 
   // Async platform core
   implementation("org.veupathdb.lib:compute-platform:1.8.6")
+  implementation("org.veupathdb.lib.s3:s34k-minio:0.7.2+s34k-0.11.0")
 
   // Job IDs
   implementation("org.veupathdb.lib:hash-id:1.1.0")
 
   // SQLite
-  implementation("org.xerial:sqlite-jdbc:3.40.1.0")
+  implementation("org.xerial:sqlite-jdbc:3.41.2.2")
 
   // Logging
   implementation("org.slf4j:slf4j-api:2.0.17")
