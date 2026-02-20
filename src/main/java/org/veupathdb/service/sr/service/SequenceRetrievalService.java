@@ -74,10 +74,6 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       case FILE -> new FileInputStream(file);
       case URL -> new URL(url).openStream();
     }) {
-      // want to see the whole file; dump to log for now and then exit
-      String entireFile = IoUtil.readAllChars(new InputStreamReader(fileStream, StandardCharsets.UTF_8));
-      LOG.info("Here's the whole file!\n" + entireFile);
-      throw new RuntimeException("Temporarily broken.  Sorry!!!");/*
       LOG.info("Took " + timer.getElapsedStringAndRestart() + " to open stream to input data.");
       var features = switch (fileFormat) {
         case BED -> FeatureAdapter.readBed(fileStream, startOffset);
@@ -89,7 +85,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
       LOG.info("Took " + timer.getElapsedStringAndRestart() + " to prepare to stream response.");
       return PostSequencesBySequenceTypeAndFileFormatResponse.respond200WithTextXFasta(new StreamerWithLogging(stream));
-*/
+
     } catch (IOException e) {
       throw new RuntimeException("Unable to complete file processing", e);
     }
