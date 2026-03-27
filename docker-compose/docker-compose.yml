@@ -106,6 +106,10 @@ services:
       # Job Settings
       JOB_CACHE_TIMEOUT_DAYS: 30
 
+      # github creds
+      GITHUB_USERNAME: ${GITHUB_USERNAME}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+
     labels:
       - "prometheus.scrape_enabled=true"
       - "com.centurylinklabs.watchtower.enable=${DATA_WATCHTOWER:-false}"

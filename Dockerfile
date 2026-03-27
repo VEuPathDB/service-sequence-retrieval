@@ -10,6 +10,10 @@ LABEL service="sequence-retrieval-build"
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
 
+# make available for build
+ENV GITHUB_USERNAME=${GITHUB_USERNAME}
+ENV GITHUB_TOKEN=${GITHUB_TOKEN}
+
 WORKDIR /workspace
 
 RUN apk add --no-cache git sed findutils coreutils make npm curl gawk jq \
