@@ -61,4 +61,28 @@ public interface SequenceRetrievalSpec {
 
   @JsonProperty("sequenceType")
   void setSequenceType(String sequenceType);
+
+  @JsonProperty("postProcess")
+  PostProcessType getPostProcess();
+
+  @JsonProperty("postProcess")
+  void setPostProcess(PostProcessType postProcess);
+
+  @JsonProperty("orthomclMsaOptions")
+  OrthomclMsaOptions getOrthomclMsaOptions();
+
+  @JsonProperty("orthomclMsaOptions")
+  void setOrthomclMsaOptions(OrthomclMsaOptions orthomclMsaOptions);
+
+  @JsonProperty("isolatesMsaOptions")
+  IsolatesMsaOptions getIsolatesMsaOptions();
+
+  @JsonProperty("isolatesMsaOptions")
+  void setIsolatesMsaOptions(IsolatesMsaOptions isolatesMsaOptions);
+
+  @JsonProperty("geneTreeOptions")
+  GeneTreeOptions getGeneTreeOptions();
+
+  @JsonProperty("geneTreeOptions")
+  void setGeneTreeOptions(GeneTreeOptions geneTreeOptions);
 }

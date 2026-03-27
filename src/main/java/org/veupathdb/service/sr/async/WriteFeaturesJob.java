@@ -5,18 +5,21 @@ import org.veupathdb.lib.compute.platform.job.JobContext;
 import org.veupathdb.lib.compute.platform.job.JobExecutor;
 import org.veupathdb.lib.compute.platform.job.JobResult;
 import org.veupathdb.lib.jackson.Json;
+import org.veupathdb.service.sr.AsyncOptions;
+import org.veupathdb.service.sr.postprocess.PostProcessResult;
+import org.veupathdb.service.sr.postprocess.PostProcessor;
+import org.veupathdb.service.sr.postprocess.PostProcessorFactory;
 import org.veupathdb.service.sr.util.FeatureAdapter;
 import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpec;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpecImpl;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
+import java.util.Map;
 import java.lang.StringBuilder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.net.URL;
 
 import htsjdk.tribble.bed.BEDFeature;
@@ -52,22 +55,76 @@ public class WriteFeaturesJob implements JobExecutor {
 
     var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
 
-    // https://stackoverflow.com/questions/216894/get-an-outputstream-into-a-string
-    var os = new OutputStream() {
-        private StringBuilder string = new StringBuilder();
+    // Write FASTA to temp file for post-processing
+    File tempFasta;
+    try {
+      tempFasta = File.createTempFile("job-fasta-", ".fasta");
+    } catch (IOException e) {
+      return JobResult.failure("Failed to create temp file: " + e.getMessage());
+    }
 
-        @Override
-        public void write(int b) throws IOException {
-            this.string.append((char) b );
+    try {
+      try (FileOutputStream fos = new FileOutputStream(tempFasta)) {
+        stream.accept(fos);
+      } catch (IOException e) {
+        return JobResult.failure("Failed to write FASTA to temp file: " + e.getMessage());
+      }
+
+      // Check if post-processing is requested
+      if (jobSpec.getPostProcess() != null) {
+        return executeWithPostProcessing(jobContext, jobSpec, tempFasta);
+      } else {
+        // No post-processing - write FASTA directly
+        byte[] fastaContent;
+        try {
+          fastaContent = Files.readAllBytes(tempFasta.toPath());
+        } catch (IOException e) {
+          return JobResult.failure("Failed to read FASTA from temp file: " + e.getMessage());
         }
+        jobContext.getWorkspace().write("output", new String(fastaContent, StandardCharsets.UTF_8));
+        return JobResult.success("output");
+      }
+    } finally {
+      tempFasta.delete();
+    }
+  }
 
-        public String toString() {
-            return this.string.toString();
-        }
-    };
-    stream.accept(os);
-    jobContext.getWorkspace().write("output", os.toString());
+  /**
+   * Execute job with post-processing.
+   */
+  private JobResult executeWithPostProcessing(
+      JobContext jobContext,
+      SequenceRetrievalSpec jobSpec,
+      File tempFasta) {
 
-    return JobResult.success("output");
+    try {
+      // Create post-processor
+      AsyncOptions options = org.veupathdb.service.sr.Main.getOptions();
+      PostProcessor processor = PostProcessorFactory.create(
+        jobSpec.getPostProcess(),
+        jobSpec.getOrthomclMsaOptions(),
+        jobSpec.getIsolatesMsaOptions(),
+        jobSpec.getGeneTreeOptions(),
+        options
+      );
+
+      // Process
+      PostProcessResult result = processor.process(tempFasta);
+
+      // Write primary output
+      jobContext.getWorkspace().write("output", new String(result.getContent(), StandardCharsets.UTF_8));
+
+      // Write additional files (e.g., guide tree)
+      for (Map.Entry<String, byte[]> entry : result.getAdditionalFiles().entrySet()) {
+        jobContext.getWorkspace().write(entry.getKey(),
+          new String(entry.getValue(), StandardCharsets.UTF_8));
+      }
+
+      return JobResult.success("output");
+    } catch (IOException e) {
+      return JobResult.failure("Post-processing failed: " + e.getMessage());
+    } catch (Exception e) {
+      return JobResult.failure("Unexpected error during post-processing: " + e.getMessage());
+    }
   }
 }

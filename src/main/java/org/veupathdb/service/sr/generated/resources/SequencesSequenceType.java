@@ -18,14 +18,20 @@ import org.veupathdb.service.sr.generated.support.ResponseDelegate;
 @Path("/sequences/{sequenceType}")
 public interface SequencesSequenceType {
   @POST
-  @Produces("text/x-fasta")
+  @Produces({
+      "text/html",
+      "text/x-fasta"
+  })
   @Consumes("application/json")
   PostSequencesBySequenceTypeResponse postSequencesBySequenceType(
       @PathParam("sequenceType") String sequenceType, SequencePostRequest entity);
 
   @POST
   @Path("/{fileFormat}")
-  @Produces("text/x-fasta")
+  @Produces({
+      "text/html",
+      "text/x-fasta"
+  })
   @Consumes("multipart/form-data")
   PostSequencesBySequenceTypeAndFileFormatResponse postSequencesBySequenceTypeAndFileFormat(
       @PathParam("sequenceType") String sequenceType, @PathParam("fileFormat") String fileFormat,
@@ -49,6 +55,12 @@ public interface SequencesSequenceType {
       responseBuilder.entity(entity);
       return new PostSequencesBySequenceTypeResponse(responseBuilder.build(), entity);
     }
+
+    public static PostSequencesBySequenceTypeResponse respond200WithTextHtml(Object entity) {
+      Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "text/html");
+      responseBuilder.entity(entity);
+      return new PostSequencesBySequenceTypeResponse(responseBuilder.build(), entity);
+    }
   }
 
   class PostSequencesBySequenceTypeAndFileFormatResponse extends ResponseDelegate {
@@ -63,6 +75,13 @@ public interface SequencesSequenceType {
     public static PostSequencesBySequenceTypeAndFileFormatResponse respond200WithTextXFasta(
         PlainTextFastaResponse entity) {
       Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "text/x-fasta");
+      responseBuilder.entity(entity);
+      return new PostSequencesBySequenceTypeAndFileFormatResponse(responseBuilder.build(), entity);
+    }
+
+    public static PostSequencesBySequenceTypeAndFileFormatResponse respond200WithTextHtml(
+        Object entity) {
+      Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "text/html");
       responseBuilder.entity(entity);
       return new PostSequencesBySequenceTypeAndFileFormatResponse(responseBuilder.build(), entity);
     }

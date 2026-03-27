@@ -9,7 +9,11 @@ import java.util.List;
 @JsonPropertyOrder({
     "features",
     "deflineFormat",
-    "basesPerLine"
+    "basesPerLine",
+    "postProcess",
+    "orthomclMsaOptions",
+    "isolatesMsaOptions",
+    "geneTreeOptions"
 })
 public class SequencePostRequestImpl implements SequencePostRequest {
   @JsonProperty("features")
@@ -26,6 +30,18 @@ public class SequencePostRequestImpl implements SequencePostRequest {
       defaultValue = "60"
   )
   private Integer basesPerLine;
+
+  @JsonProperty("postProcess")
+  private PostProcessType postProcess;
+
+  @JsonProperty("orthomclMsaOptions")
+  private OrthomclMsaOptions orthomclMsaOptions;
+
+  @JsonProperty("isolatesMsaOptions")
+  private IsolatesMsaOptions isolatesMsaOptions;
+
+  @JsonProperty("geneTreeOptions")
+  private GeneTreeOptions geneTreeOptions;
 
   @JsonProperty("features")
   public List<Feature> getFeatures() {
@@ -67,5 +83,45 @@ public class SequencePostRequestImpl implements SequencePostRequest {
   )
   public void setBasesPerLine(Integer basesPerLine) {
     this.basesPerLine = basesPerLine;
+  }
+
+  @JsonProperty("postProcess")
+  public PostProcessType getPostProcess() {
+    return this.postProcess;
+  }
+
+  @JsonProperty("postProcess")
+  public void setPostProcess(PostProcessType postProcess) {
+    this.postProcess = postProcess;
+  }
+
+  @JsonProperty("orthomclMsaOptions")
+  public OrthomclMsaOptions getOrthomclMsaOptions() {
+    return this.orthomclMsaOptions;
+  }
+
+  @JsonProperty("orthomclMsaOptions")
+  public void setOrthomclMsaOptions(OrthomclMsaOptions orthomclMsaOptions) {
+    this.orthomclMsaOptions = orthomclMsaOptions;
+  }
+
+  @JsonProperty("isolatesMsaOptions")
+  public IsolatesMsaOptions getIsolatesMsaOptions() {
+    return this.isolatesMsaOptions;
+  }
+
+  @JsonProperty("isolatesMsaOptions")
+  public void setIsolatesMsaOptions(IsolatesMsaOptions isolatesMsaOptions) {
+    this.isolatesMsaOptions = isolatesMsaOptions;
+  }
+
+  @JsonProperty("geneTreeOptions")
+  public GeneTreeOptions getGeneTreeOptions() {
+    return this.geneTreeOptions;
+  }
+
+  @JsonProperty("geneTreeOptions")
+  public void setGeneTreeOptions(GeneTreeOptions geneTreeOptions) {
+    this.geneTreeOptions = geneTreeOptions;
   }
 }

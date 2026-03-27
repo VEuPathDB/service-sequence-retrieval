@@ -59,6 +59,13 @@ RUN apk add --no-cache tzdata \
     && cp /usr/share/zoneinfo/America/New_York /etc/localtime \
     && echo "America/New_York" > /etc/timezone
 
+# Install clustal-omega from tar file
+COPY resources/clustalo-runtime.tar /tmp/clustalo-runtime.tar
+RUN cd / \
+    && tar -xf /tmp/clustalo-runtime.tar \
+    && rm -f /tmp/clustalo-runtime.tar \
+    && chmod +x /usr/bin/clustalo
+
 ENV JVM_MEM_ARGS="-Xms256M -Xmx5G" \
     JVM_ARGS=""
 

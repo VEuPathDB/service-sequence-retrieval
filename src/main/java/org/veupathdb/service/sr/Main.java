@@ -15,11 +15,21 @@ public class Main extends Server {
 
   private final AsyncOptions options = new AsyncOptions();
 
+  private static AsyncOptions staticOptions;
+
   public static void main(String[] args) {
     var server = new Main();
 
 
     server.start(args);
+  }
+
+  /**
+   * Get the AsyncOptions instance.
+   * Available after server initialization.
+   */
+  public static AsyncOptions getOptions() {
+    return staticOptions;
   }
 
   @Override
@@ -41,6 +51,7 @@ public class Main extends Server {
 
   @Override
   protected void postCliParse(Options opts) {
+    staticOptions = options;
     initializeAsyncPlatform();
   }
 

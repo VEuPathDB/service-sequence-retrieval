@@ -24,6 +24,28 @@ types:
       strand?:
         type: Strand
         default: 'NONE'
+  GeneTreeFormat:
+    type: string
+    enum:
+      - tbd
+  GeneTreeOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      format:
+        type: GeneTreeFormat
+        default: 'tbd'
+  IsolatesMsaFormat:
+    type: string
+    enum:
+      - tbd
+  IsolatesMsaOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      format:
+        type: IsolatesMsaFormat
+        default: 'tbd'
   JobDataResponse: any
   JobResponse:
     type: object
@@ -46,7 +68,30 @@ types:
       - complete
       - failed
       - expired
+  OrthomclMsaFormat:
+    type: string
+    enum:
+      - fasta
+      - clustal
+      - msf
+      - phylip
+      - selex
+      - stockholm
+      - vienna
+  OrthomclMsaOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      format:
+        type: OrthomclMsaFormat
+        default: 'clustal'
   PlainTextFastaResponse: object
+  PostProcessType:
+    type: string
+    enum:
+      - orthomclMSA
+      - isolatesMSA
+      - geneTree
   SequencePostRequest:
     type: object
     additionalProperties: false
@@ -60,6 +105,10 @@ types:
       basesPerLine?:
         type: integer
         default: 60
+      postProcess?: PostProcessType
+      orthomclMsaOptions?: OrthomclMsaOptions
+      isolatesMsaOptions?: IsolatesMsaOptions
+      geneTreeOptions?: GeneTreeOptions
   SequenceRetrievalSpec:
     type: object
     additionalProperties: false
@@ -75,6 +124,10 @@ types:
       deflineFormat: DeflineFormat
       basesPerLine: integer
       sequenceType: string
+      postProcess: PostProcessType
+      orthomclMsaOptions: OrthomclMsaOptions
+      isolatesMsaOptions: IsolatesMsaOptions
+      geneTreeOptions: GeneTreeOptions
   StartOffset:
     type: string
     enum:

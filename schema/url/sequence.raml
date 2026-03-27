@@ -26,6 +26,43 @@ types:
     type: string
     enum: ['bed', 'gff3']
 
+  PostProcessType:
+    type: string
+    enum: ['orthomclMSA', 'isolatesMSA', 'geneTree']
+
+  OrthomclMsaFormat:
+    type: string
+    enum: ['fasta', 'clustal', 'msf', 'phylip', 'selex', 'stockholm', 'vienna']
+
+  IsolatesMsaFormat:
+    type: string
+    enum: ['tbd']
+
+  GeneTreeFormat:
+    type: string
+    enum: ['tbd']
+
+  OrthomclMsaOptions:
+    additionalProperties: false
+    properties:
+      format:
+        type: OrthomclMsaFormat
+        default: 'clustal'
+
+  IsolatesMsaOptions:
+    additionalProperties: false
+    properties:
+      format:
+        type: IsolatesMsaFormat
+        default: 'tbd'
+
+  GeneTreeOptions:
+    additionalProperties: false
+    properties:
+      format:
+        type: GeneTreeFormat
+        default: 'tbd'
+
   Feature:
     additionalProperties: false
     properties:
@@ -49,6 +86,14 @@ types:
       basesPerLine?:
         type: integer
         default: 60
+      postProcess?:
+        type: PostProcessType
+      orthomclMsaOptions?:
+        type: OrthomclMsaOptions
+      isolatesMsaOptions?:
+        type: IsolatesMsaOptions
+      geneTreeOptions?:
+        type: GeneTreeOptions
       
   SequenceRetrievalSpec:
     additionalProperties: false
@@ -72,3 +117,11 @@ types:
         type: integer
       sequenceType:
         type: string
+      postProcess:
+        type: PostProcessType
+      orthomclMsaOptions:
+        type: OrthomclMsaOptions
+      isolatesMsaOptions:
+        type: IsolatesMsaOptions
+      geneTreeOptions:
+        type: GeneTreeOptions

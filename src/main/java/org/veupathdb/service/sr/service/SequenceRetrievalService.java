@@ -1,13 +1,18 @@
 package org.veupathdb.service.sr.service;
 
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.IoUtil;
 import org.gusdb.fgputil.Timer;
+import org.veupathdb.service.sr.AsyncOptions;
 import org.veupathdb.service.sr.generated.model.*;
 import org.veupathdb.service.sr.generated.resources.SequencesSequenceType;
+import org.veupathdb.service.sr.postprocess.PostProcessResult;
+import org.veupathdb.service.sr.postprocess.PostProcessor;
+import org.veupathdb.service.sr.postprocess.PostProcessorFactory;
 import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
 import org.veupathdb.service.sr.util.EnumUtil;
 import org.veupathdb.service.sr.util.FeatureAdapter;
@@ -44,7 +49,21 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
     var features = FeatureAdapter.toBEDFeatures(entity.getFeatures());
 
+    // Validate MSA sync request limits
+    if (entity.getPostProcess() != null) {
+      validateMsaSyncRequest(features.size());
+    }
+
     var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
+
+    // Check if post-processing is requested
+    if (entity.getPostProcess() != null) {
+      try {
+        return handlePostProcessing(stream, entity);
+      } catch (IOException e) {
+        throw new RuntimeException("Post-processing failed", e);
+      }
+    }
 
     return PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(new StreamerWithLogging(stream));
 
@@ -88,6 +107,69 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
     } catch (IOException e) {
       throw new RuntimeException("Unable to complete file processing", e);
+    }
+  }
+
+  /**
+   * Validate that the number of sequences is within the limit for synchronous MSA requests.
+   */
+  private void validateMsaSyncRequest(int sequenceCount) {
+    AsyncOptions options = org.veupathdb.service.sr.Main.getOptions();
+    int maxSequences = options.getMsaSyncMaxSequences();
+
+    if (sequenceCount > maxSequences) {
+      throw new BadRequestException(
+        "Too many sequences for synchronous MSA request (" + sequenceCount + " sequences). " +
+        "Maximum allowed is " + maxSequences + ". " +
+        "Please use the async endpoint (/sequences-async) for larger requests.");
+    }
+  }
+
+  /**
+   * Handle post-processing of FASTA output.
+   */
+  private PostSequencesBySequenceTypeResponse handlePostProcessing(
+      Consumer<OutputStream> fastaStream,
+      SequencePostRequest entity) throws IOException {
+
+    // Write FASTA to temp file
+    File tempFasta = File.createTempFile("seq-retrieval-", ".fasta");
+    try {
+      try (FileOutputStream fos = new FileOutputStream(tempFasta)) {
+        fastaStream.accept(fos);
+      }
+
+      // Create post-processor
+      AsyncOptions options = org.veupathdb.service.sr.Main.getOptions();
+      PostProcessor processor = PostProcessorFactory.create(
+        entity.getPostProcess(),
+        entity.getOrthomclMsaOptions(),
+        entity.getIsolatesMsaOptions(),
+        entity.getGeneTreeOptions(),
+        options
+      );
+
+      // Process
+      PostProcessResult result = processor.process(tempFasta);
+
+      // Return appropriate response based on content type
+      if ("text/html".equals(result.getContentType())) {
+        return PostSequencesBySequenceTypeResponse.respond200WithTextHtml(
+          new String(result.getContent(), StandardCharsets.UTF_8));
+      } else {
+        // Return as plain text stream
+        return PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(
+          new StreamerWithLogging(os -> {
+            try {
+              os.write(result.getContent());
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
+          })
+        );
+      }
+    } finally {
+      tempFasta.delete();
     }
   }
 }

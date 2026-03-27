@@ -274,4 +274,50 @@ public class AsyncOptions extends Options {
   }
 
   // endregion Job Configuration
+
+  // region MSA Configuration
+
+  /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
+    ┃  MSA Post-Processing Configuration                                   ┃
+    ┃                                                                      ┃
+    ┃  Options for configuring MSA post-processing using clustal-omega.   ┃
+  \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+  @Option(
+    names = "--clustalo-binary-path",
+    defaultValue = "${env:CLUSTALO_BINARY_PATH}",
+    description = "Path to the clustalo binary executable",
+    arity = "1")
+  private String clustaloBinaryPath;
+  private static final String DEFAULT_CLUSTALO_BINARY_PATH = "/usr/bin/clustalo";
+
+  @Option(
+    names = "--msa-sync-max-sequences",
+    defaultValue = "${env:MSA_SYNC_MAX_SEQUENCES}",
+    description = "Maximum number of sequences allowed for synchronous MSA requests",
+    arity = "1")
+  private Integer msaSyncMaxSequences;
+  private static final int DEFAULT_MSA_SYNC_MAX_SEQUENCES = 20;
+
+  @Option(
+    names = "--clustalo-timeout-seconds",
+    defaultValue = "${env:CLUSTALO_TIMEOUT_SECONDS}",
+    description = "Timeout in seconds for clustalo execution",
+    arity = "1")
+  private Integer clustaloTimeoutSeconds;
+  private static final int DEFAULT_CLUSTALO_TIMEOUT_SECONDS = 300;
+
+  public String getClustaloBinaryPath() {
+    return clustaloBinaryPath == null ? DEFAULT_CLUSTALO_BINARY_PATH : clustaloBinaryPath;
+  }
+
+  public int getMsaSyncMaxSequences() {
+    return msaSyncMaxSequences == null ? DEFAULT_MSA_SYNC_MAX_SEQUENCES : msaSyncMaxSequences;
+  }
+
+  public int getClustaloTimeoutSeconds() {
+    return clustaloTimeoutSeconds == null ? DEFAULT_CLUSTALO_TIMEOUT_SECONDS : clustaloTimeoutSeconds;
+  }
+
+  // endregion MSA Configuration
 }

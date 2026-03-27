@@ -37,4 +37,28 @@ public interface SequencePostRequest {
       defaultValue = "60"
   )
   void setBasesPerLine(Integer basesPerLine);
+
+  @JsonProperty("postProcess")
+  PostProcessType getPostProcess();
+
+  @JsonProperty("postProcess")
+  void setPostProcess(PostProcessType postProcess);
+
+  @JsonProperty("orthomclMsaOptions")
+  OrthomclMsaOptions getOrthomclMsaOptions();
+
+  @JsonProperty("orthomclMsaOptions")
+  void setOrthomclMsaOptions(OrthomclMsaOptions orthomclMsaOptions);
+
+  @JsonProperty("isolatesMsaOptions")
+  IsolatesMsaOptions getIsolatesMsaOptions();
+
+  @JsonProperty("isolatesMsaOptions")
+  void setIsolatesMsaOptions(IsolatesMsaOptions isolatesMsaOptions);
+
+  @JsonProperty("geneTreeOptions")
+  GeneTreeOptions getGeneTreeOptions();
+
+  @JsonProperty("geneTreeOptions")
+  void setGeneTreeOptions(GeneTreeOptions geneTreeOptions);
 }
