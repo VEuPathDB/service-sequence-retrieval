@@ -67,7 +67,8 @@ RUN cd / \
     && chmod +x /usr/bin/clustalo
 
 ENV JVM_MEM_ARGS="-Xms256M -Xmx5G" \
-    JVM_ARGS=""
+    JVM_ARGS="" \
+    LD_LIBRARY_PATH="/lib64:${LD_LIBRARY_PATH}"
 
 COPY --from=prep /workspace/build/libs/service.jar /service.jar
 
