@@ -300,12 +300,20 @@ public class AsyncOptions extends Options {
   private static final int DEFAULT_MSA_SYNC_MAX_SEQUENCES = 20;
 
   @Option(
-    names = "--clustalo-timeout-seconds",
-    defaultValue = "${env:CLUSTALO_TIMEOUT_SECONDS}",
-    description = "Timeout in seconds for clustalo execution",
+    names = "--clustalo-sync-timeout-seconds",
+    defaultValue = "${env:CLUSTALO_SYNC_TIMEOUT_SECONDS}",
+    description = "Timeout in seconds for clustalo execution in synchronous requests",
     arity = "1")
-  private Integer clustaloTimeoutSeconds;
-  private static final int DEFAULT_CLUSTALO_TIMEOUT_SECONDS = 300;
+  private Integer clustaloSyncTimeoutSeconds;
+  private static final int DEFAULT_CLUSTALO_SYNC_TIMEOUT_SECONDS = 30;
+
+  @Option(
+    names = "--clustalo-async-timeout-seconds",
+    defaultValue = "${env:CLUSTALO_ASYNC_TIMEOUT_SECONDS}",
+    description = "Timeout in seconds for clustalo execution in asynchronous jobs",
+    arity = "1")
+  private Integer clustaloAsyncTimeoutSeconds;
+  private static final int DEFAULT_CLUSTALO_ASYNC_TIMEOUT_SECONDS = 1800;
 
   public String getClustaloBinaryPath() {
     return clustaloBinaryPath == null ? DEFAULT_CLUSTALO_BINARY_PATH : clustaloBinaryPath;
@@ -315,8 +323,12 @@ public class AsyncOptions extends Options {
     return msaSyncMaxSequences == null ? DEFAULT_MSA_SYNC_MAX_SEQUENCES : msaSyncMaxSequences;
   }
 
-  public int getClustaloTimeoutSeconds() {
-    return clustaloTimeoutSeconds == null ? DEFAULT_CLUSTALO_TIMEOUT_SECONDS : clustaloTimeoutSeconds;
+  public int getClustaloSyncTimeoutSeconds() {
+    return clustaloSyncTimeoutSeconds == null ? DEFAULT_CLUSTALO_SYNC_TIMEOUT_SECONDS : clustaloSyncTimeoutSeconds;
+  }
+
+  public int getClustaloAsyncTimeoutSeconds() {
+    return clustaloAsyncTimeoutSeconds == null ? DEFAULT_CLUSTALO_ASYNC_TIMEOUT_SECONDS : clustaloAsyncTimeoutSeconds;
   }
 
   // endregion MSA Configuration

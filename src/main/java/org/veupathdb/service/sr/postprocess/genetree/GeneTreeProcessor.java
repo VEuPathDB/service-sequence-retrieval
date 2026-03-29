@@ -5,6 +5,7 @@ import org.veupathdb.service.sr.generated.model.GeneTreeOptions;
 import org.veupathdb.service.sr.postprocess.ClustaloExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 import org.veupathdb.service.sr.postprocess.PostProcessor;
+import org.veupathdb.service.sr.postprocess.ProcessingContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +20,18 @@ public class GeneTreeProcessor implements PostProcessor {
   private final GeneTreeOptions options;
   private final ClustaloExecutor clustaloExecutor;
 
-  public GeneTreeProcessor(GeneTreeOptions options, AsyncOptions config) {
-    this(options, new ClustaloExecutor(config));
+  /**
+   * Production constructor.
+   *
+   * @param options Gene tree-specific options
+   * @param config Application configuration
+   * @param context Processing context (SYNC or ASYNC) - determines timeout
+   */
+  public GeneTreeProcessor(GeneTreeOptions options, AsyncOptions config, ProcessingContext context) {
+    this(options, new ClustaloExecutor(
+      config.getClustaloBinaryPath(),
+      context == ProcessingContext.ASYNC ? config.getClustaloAsyncTimeoutSeconds() : config.getClustaloSyncTimeoutSeconds()
+    ));
   }
 
   /**

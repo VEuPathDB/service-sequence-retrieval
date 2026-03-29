@@ -19,6 +19,7 @@ public class PostProcessorFactory {
    * @param isolatesMsaOptions Options for isolatesMSA (required if type is ISOLATES_MSA)
    * @param geneTreeOptions Options for geneTree (required if type is GENE_TREE)
    * @param options Application configuration
+   * @param context Processing context (SYNC or ASYNC) - affects timeout and resource limits
    * @return A PostProcessor instance
    * @throws IllegalArgumentException if the type/options combination is invalid
    */
@@ -27,7 +28,8 @@ public class PostProcessorFactory {
       OrthomclMsaOptions orthomclMsaOptions,
       IsolatesMsaOptions isolatesMsaOptions,
       GeneTreeOptions geneTreeOptions,
-      AsyncOptions options
+      AsyncOptions options,
+      ProcessingContext context
   ) {
     if (postProcessType == null) {
       throw new IllegalArgumentException("postProcessType cannot be null");
@@ -39,21 +41,21 @@ public class PostProcessorFactory {
           throw new IllegalArgumentException(
             "orthomclMsaOptions required when postProcess is orthomclMSA");
         }
-        yield new OrthomclMsaProcessor(orthomclMsaOptions, options);
+        yield new OrthomclMsaProcessor(orthomclMsaOptions, options, context);
       }
       case ISOLATESMSA -> {
         if (isolatesMsaOptions == null) {
           throw new IllegalArgumentException(
             "isolatesMsaOptions required when postProcess is isolatesMSA");
         }
-        yield new IsolatesMsaProcessor(isolatesMsaOptions, options);
+        yield new IsolatesMsaProcessor(isolatesMsaOptions, options, context);
       }
       case GENETREE -> {
         if (geneTreeOptions == null) {
           throw new IllegalArgumentException(
             "geneTreeOptions required when postProcess is geneTree");
         }
-        yield new GeneTreeProcessor(geneTreeOptions, options);
+        yield new GeneTreeProcessor(geneTreeOptions, options, context);
       }
     };
   }

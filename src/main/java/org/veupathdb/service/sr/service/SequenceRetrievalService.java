@@ -13,6 +13,7 @@ import org.veupathdb.service.sr.generated.resources.SequencesSequenceType;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 import org.veupathdb.service.sr.postprocess.PostProcessor;
 import org.veupathdb.service.sr.postprocess.PostProcessorFactory;
+import org.veupathdb.service.sr.postprocess.ProcessingContext;
 import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
 import org.veupathdb.service.sr.util.EnumUtil;
 import org.veupathdb.service.sr.util.FeatureAdapter;
@@ -146,7 +147,8 @@ public class SequenceRetrievalService implements SequencesSequenceType {
         entity.getOrthomclMsaOptions(),
         entity.getIsolatesMsaOptions(),
         entity.getGeneTreeOptions(),
-        options
+        options,
+        ProcessingContext.SYNC
       );
 
       // Process

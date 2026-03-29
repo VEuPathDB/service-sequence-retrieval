@@ -24,7 +24,8 @@ class PostProcessorFactoryTest {
       options,
       null,
       null,
-      mockOptions
+      mockOptions,
+      ProcessingContext.SYNC
     );
 
     assertNotNull(processor);
@@ -41,7 +42,8 @@ class PostProcessorFactoryTest {
       null,
       options,
       null,
-      mockOptions
+      mockOptions,
+      ProcessingContext.SYNC
     );
 
     assertNotNull(processor);
@@ -58,7 +60,8 @@ class PostProcessorFactoryTest {
       null,
       null,
       options,
-      mockOptions
+      mockOptions,
+      ProcessingContext.SYNC
     );
 
     assertNotNull(processor);
@@ -73,7 +76,8 @@ class PostProcessorFactoryTest {
         null,
         null,
         null,
-        mockOptions
+        mockOptions,
+        ProcessingContext.SYNC
       )
     );
   }
@@ -86,7 +90,8 @@ class PostProcessorFactoryTest {
         null,  // Missing orthomclMsaOptions
         null,
         null,
-        mockOptions
+        mockOptions,
+        ProcessingContext.SYNC
       )
     );
 
@@ -101,7 +106,8 @@ class PostProcessorFactoryTest {
         null,
         null,  // Missing isolatesMsaOptions
         null,
-        mockOptions
+        mockOptions,
+        ProcessingContext.SYNC
       )
     );
 
@@ -116,7 +122,8 @@ class PostProcessorFactoryTest {
         null,
         null,
         null,  // Missing geneTreeOptions
-        mockOptions
+        mockOptions,
+        ProcessingContext.SYNC
       )
     );
 

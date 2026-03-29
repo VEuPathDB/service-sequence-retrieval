@@ -7,6 +7,7 @@ import org.veupathdb.service.sr.generated.model.OrthomclMsaOptions;
 import org.veupathdb.service.sr.postprocess.ClustaloExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 import org.veupathdb.service.sr.postprocess.PostProcessor;
+import org.veupathdb.service.sr.postprocess.ProcessingContext;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -32,8 +33,18 @@ public class OrthomclMsaProcessor implements PostProcessor {
   private final OrthomclMsaOptions options;
   private final ClustaloExecutor clustaloExecutor;
 
-  public OrthomclMsaProcessor(OrthomclMsaOptions options, AsyncOptions config) {
-    this(options, new ClustaloExecutor(config));
+  /**
+   * Production constructor.
+   *
+   * @param options MSA-specific options
+   * @param config Application configuration
+   * @param context Processing context (SYNC or ASYNC) - determines timeout
+   */
+  public OrthomclMsaProcessor(OrthomclMsaOptions options, AsyncOptions config, ProcessingContext context) {
+    this(options, new ClustaloExecutor(
+      config.getClustaloBinaryPath(),
+      context == ProcessingContext.ASYNC ? config.getClustaloAsyncTimeoutSeconds() : config.getClustaloSyncTimeoutSeconds()
+    ));
   }
 
   /**

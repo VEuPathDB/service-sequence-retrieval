@@ -9,6 +9,7 @@ import org.veupathdb.service.sr.AsyncOptions;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 import org.veupathdb.service.sr.postprocess.PostProcessor;
 import org.veupathdb.service.sr.postprocess.PostProcessorFactory;
+import org.veupathdb.service.sr.postprocess.ProcessingContext;
 import org.veupathdb.service.sr.util.FeatureAdapter;
 import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpec;
@@ -105,7 +106,8 @@ public class WriteFeaturesJob implements JobExecutor {
         jobSpec.getOrthomclMsaOptions(),
         jobSpec.getIsolatesMsaOptions(),
         jobSpec.getGeneTreeOptions(),
-        options
+        options,
+        ProcessingContext.ASYNC
       );
 
       // Process

@@ -25,13 +25,14 @@ public class ClustaloExecutor {
   private final int timeoutSeconds;
 
   /**
-   * Create a ClustaloExecutor with configuration from AsyncOptions.
+   * Create a ClustaloExecutor with the specified configuration.
    *
-   * @param options The application configuration options
+   * @param clustaloBinaryPath Path to the clustalo binary executable
+   * @param timeoutSeconds Timeout in seconds for clustalo execution
    */
-  public ClustaloExecutor(AsyncOptions options) {
-    this.clustaloBinaryPath = options.getClustaloBinaryPath();
-    this.timeoutSeconds = options.getClustaloTimeoutSeconds();
+  public ClustaloExecutor(String clustaloBinaryPath, int timeoutSeconds) {
+    this.clustaloBinaryPath = clustaloBinaryPath;
+    this.timeoutSeconds = timeoutSeconds;
   }
 
   /**

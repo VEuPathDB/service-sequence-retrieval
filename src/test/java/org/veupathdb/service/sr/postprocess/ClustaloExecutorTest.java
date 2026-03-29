@@ -27,8 +27,6 @@ class ClustaloExecutorTest {
   @BeforeEach
   void setUp() throws IOException {
     mockOptions = mock(AsyncOptions.class);
-    when(mockOptions.getClustaloBinaryPath()).thenReturn("/usr/bin/clustalo");
-    when(mockOptions.getClustaloTimeoutSeconds()).thenReturn(300);
 
     // Create temp files for testing
     inputFile = tempDir.resolve("input.fasta").toFile();
@@ -40,15 +38,13 @@ class ClustaloExecutorTest {
 
   @Test
   void testClustaloExecutorCreation() {
-    ClustaloExecutor executor = new ClustaloExecutor(mockOptions);
+    ClustaloExecutor executor = new ClustaloExecutor("/usr/bin/clustalo", 300);
     assertNotNull(executor);
   }
 
   @Test
   void testExecuteWithNonExistentBinary() {
-    when(mockOptions.getClustaloBinaryPath()).thenReturn("/nonexistent/clustalo");
-
-    ClustaloExecutor executor = new ClustaloExecutor(mockOptions);
+    ClustaloExecutor executor = new ClustaloExecutor("/nonexistent/clustalo", 300);
 
     assertThrows(Exception.class, () ->
       executor.execute(inputFile, outputFile, "clustal", guideTreeFile)
@@ -57,7 +53,7 @@ class ClustaloExecutorTest {
 
   @Test
   void testExecuteWithInvalidInputFile() {
-    ClustaloExecutor executor = new ClustaloExecutor(mockOptions);
+    ClustaloExecutor executor = new ClustaloExecutor("/usr/bin/clustalo", 300);
 
     File nonExistentInput = tempDir.resolve("nonexistent.fasta").toFile();
 
