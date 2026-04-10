@@ -36,15 +36,13 @@ RUN export GITHUB_USERNAME=${GITHUB_USERNAME} GITHUB_TOKEN=${GITHUB_TOKEN} && \
 # copy raml over for merging, then perform code and documentation generation
 COPY api.raml ./
 COPY schema schema
-RUN export GITHUB_USERNAME=${GITHUB_USERNAME} GITHUB_TOKEN=${GITHUB_TOKEN} && \
-    ./gradlew generate-jaxrs generate-raml-docs
+RUN ./gradlew generate-jaxrs generate-raml-docs
 
 # copy remaining files
 COPY . .
 
 # build the project
-RUN export GITHUB_USERNAME=${GITHUB_USERNAME} GITHUB_TOKEN=${GITHUB_TOKEN} && \
-    ./gradlew clean test shadowJar
+RUN ./gradlew clean test shadowJar
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
