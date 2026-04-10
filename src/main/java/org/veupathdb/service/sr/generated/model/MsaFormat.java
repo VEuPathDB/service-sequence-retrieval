@@ -2,12 +2,15 @@ package org.veupathdb.service.sr.generated.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public enum OrthomclMsaFormat {
+public enum MsaFormat {
   @JsonProperty("fasta")
   FASTA("fasta"),
 
   @JsonProperty("clustal")
   CLUSTAL("clustal"),
+
+  @JsonProperty("clustal_dnd")
+  CLUSTALDND("clustal_dnd"),
 
   @JsonProperty("msf")
   MSF("msf"),
@@ -30,7 +33,7 @@ public enum OrthomclMsaFormat {
     return this.value;
   }
 
-  OrthomclMsaFormat(String name) {
+  MsaFormat(String name) {
     this.value = name;
   }
 }

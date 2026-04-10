@@ -143,12 +143,11 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       // Create post-processor
       AsyncOptions options = org.veupathdb.service.sr.Main.getOptions();
       PostProcessor processor = PostProcessorFactory.create(
-        entity.getPostProcess(),
-        entity.getOrthomclMsaOptions(),
-        entity.getIsolatesMsaOptions(),
-        entity.getGeneTreeOptions(),
-        options,
-        ProcessingContext.SYNC
+          entity.getPostProcess(),
+          entity.getMsaOptions(),
+          entity.getGeneTreeOptions(),
+          options,
+          ProcessingContext.SYNC
       );
 
       // Process

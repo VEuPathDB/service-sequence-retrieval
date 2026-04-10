@@ -60,8 +60,7 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
 
     // Add post-processing options
     spec.setPostProcess(entity.getPostProcess());
-    spec.setOrthomclMsaOptions(entity.getOrthomclMsaOptions());
-    spec.setIsolatesMsaOptions(entity.getIsolatesMsaOptions());
+    spec.setMsaOptions(entity.getMsaOptions());
     spec.setGeneTreeOptions(entity.getGeneTreeOptions());
 
     return PostSequencesAsyncBySequenceTypeResponse.respond200WithApplicationJson(asyncResponse(spec));

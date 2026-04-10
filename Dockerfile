@@ -10,10 +10,6 @@ LABEL service="sequence-retrieval-build"
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
 
-# make available for build
-ENV GITHUB_USERNAME=${GITHUB_USERNAME}
-ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-
 WORKDIR /workspace
 
 RUN apk add --no-cache git sed findutils coreutils make npm curl gawk jq \
@@ -30,21 +26,25 @@ RUN bash -c 'echo "\n\n" | ./gradlew init --type basic --dsl kotlin --no-daemon'
 COPY build.gradle.kts settings.gradle.kts ./
 
 # download raml tools (these never change)
-RUN ./gradlew install-raml-4-jax-rs install-raml-merge
+RUN export GITHUB_USERNAME=${GITHUB_USERNAME} GITHUB_TOKEN=${GITHUB_TOKEN} && \
+    ./gradlew install-raml-4-jax-rs install-raml-merge
 
 # download project dependencies in advance
-RUN ./gradlew download-dependencies
+RUN export GITHUB_USERNAME=${GITHUB_USERNAME} GITHUB_TOKEN=${GITHUB_TOKEN} && \
+    ./gradlew download-dependencies
 
 # copy raml over for merging, then perform code and documentation generation
 COPY api.raml ./
 COPY schema schema
-RUN ./gradlew generate-jaxrs generate-raml-docs
+RUN export GITHUB_USERNAME=${GITHUB_USERNAME} GITHUB_TOKEN=${GITHUB_TOKEN} && \
+    ./gradlew generate-jaxrs generate-raml-docs
 
 # copy remaining files
 COPY . .
 
 # build the project
-RUN ./gradlew clean test shadowJar
+RUN export GITHUB_USERNAME=${GITHUB_USERNAME} GITHUB_TOKEN=${GITHUB_TOKEN} && \
+    ./gradlew clean test shadowJar
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #

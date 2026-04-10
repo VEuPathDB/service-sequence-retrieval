@@ -102,12 +102,11 @@ public class WriteFeaturesJob implements JobExecutor {
       // Create post-processor
       AsyncOptions options = org.veupathdb.service.sr.Main.getOptions();
       PostProcessor processor = PostProcessorFactory.create(
-        jobSpec.getPostProcess(),
-        jobSpec.getOrthomclMsaOptions(),
-        jobSpec.getIsolatesMsaOptions(),
-        jobSpec.getGeneTreeOptions(),
-        options,
-        ProcessingContext.ASYNC
+          jobSpec.getPostProcess(),
+          jobSpec.getMsaOptions(),
+          jobSpec.getGeneTreeOptions(),
+          options,
+          ProcessingContext.ASYNC
       );
 
       // Process

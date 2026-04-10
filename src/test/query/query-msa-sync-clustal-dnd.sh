@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Test synchronous MSA with clustal format output (returns HTML)
+# Test synchronous MSA with clustal_dnd format output (returns HTML with iTOL link and .dnd file)
 curl -X POST "http://localhost:8080/sequences/protein" \
   -H 'Content-Type: application/json' \
   --no-buffer \
@@ -14,6 +14,6 @@ curl -X POST "http://localhost:8080/sequences/protein" \
     "basesPerLine": 60,
     "postProcess": "MSA",
     "msaOptions": {
-      "format": "clustal"
+      "format": "clustal_dnd"
     }
   }'

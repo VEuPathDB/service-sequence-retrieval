@@ -16,8 +16,8 @@ doCurl() {
       ],
       "deflineFormat": "QUERYONLY",
       "basesPerLine": 60,
-      "postProcess": "orthomclMSA",
-      "orthomclMsaOptions": {
+      "postProcess": "MSA",
+      "msaOptions": {
         "format": "clustal"
       }
     }'

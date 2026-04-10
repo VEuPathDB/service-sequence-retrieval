@@ -4,18 +4,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(
-    as = OrthomclMsaOptionsImpl.class
+    as = MsaOptionsImpl.class
 )
-public interface OrthomclMsaOptions {
+public interface MsaOptions {
   @JsonProperty(
       value = "format",
       defaultValue = "clustal"
   )
-  OrthomclMsaFormat getFormat();
+  MsaFormat getFormat();
 
   @JsonProperty(
       value = "format",
       defaultValue = "clustal"
   )
-  void setFormat(OrthomclMsaFormat format);
+  void setFormat(MsaFormat format);
+
+  @JsonProperty("metadataUrl")
+  String getMetadataUrl();
+
+  @JsonProperty("metadataUrl")
+  void setMetadataUrl(String metadataUrl);
 }

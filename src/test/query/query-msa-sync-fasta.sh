@@ -12,8 +12,8 @@ curl -X POST "http://localhost:8080/sequences/protein" \
     ],
     "deflineFormat": "QUERYONLY",
     "basesPerLine": 60,
-    "postProcess": "orthomclMSA",
-    "orthomclMsaOptions": {
+    "postProcess": "MSA",
+    "msaOptions": {
       "format": "fasta"
     }
   }'

@@ -315,6 +315,14 @@ public class AsyncOptions extends Options {
   private Integer clustaloAsyncTimeoutSeconds;
   private static final int DEFAULT_CLUSTALO_ASYNC_TIMEOUT_SECONDS = 1800;
 
+  @Option(
+    names = "--itol-base-url",
+    defaultValue = "${env:ITOL_BASE_URL}",
+    description = "Base URL for iTOL (Interactive Tree of Life) service for phylogenetic tree visualization",
+    arity = "1")
+  private String itolBaseUrl;
+  private static final String DEFAULT_ITOL_BASE_URL = "https://itol.embl.de";
+
   public String getClustaloBinaryPath() {
     return clustaloBinaryPath == null ? DEFAULT_CLUSTALO_BINARY_PATH : clustaloBinaryPath;
   }
@@ -329,6 +337,10 @@ public class AsyncOptions extends Options {
 
   public int getClustaloAsyncTimeoutSeconds() {
     return clustaloAsyncTimeoutSeconds == null ? DEFAULT_CLUSTALO_ASYNC_TIMEOUT_SECONDS : clustaloAsyncTimeoutSeconds;
+  }
+
+  public String getItolBaseUrl() {
+    return itolBaseUrl == null ? DEFAULT_ITOL_BASE_URL : itolBaseUrl;
   }
 
   // endregion MSA Configuration

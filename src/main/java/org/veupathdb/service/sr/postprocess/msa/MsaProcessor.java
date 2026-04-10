@@ -1,14 +1,16 @@
-package org.veupathdb.service.sr.postprocess.orthomcl;
+package org.veupathdb.service.sr.postprocess.msa;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.veupathdb.service.sr.AsyncOptions;
-import org.veupathdb.service.sr.generated.model.OrthomclMsaOptions;
+import org.veupathdb.service.sr.generated.model.MsaFormat;
+import org.veupathdb.service.sr.generated.model.MsaOptions;
 import org.veupathdb.service.sr.postprocess.ClustaloExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 import org.veupathdb.service.sr.postprocess.PostProcessor;
 import org.veupathdb.service.sr.postprocess.ProcessingContext;
 
+import jakarta.ws.rs.BadRequestException;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -19,19 +21,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Post-processor for OrthoMCL multiple sequence alignment.
+ * Unified post-processor for multiple sequence alignment.
  *
  * Runs clustal-omega with guide tree generation and optionally creates
- * an HTML page with iTOL phylogenetic tree visualization.
+ * HTML output with iTOL phylogenetic tree visualization.
+ *
+ * Supports both orthomcl and isolates MSA use cases.
  */
-public class OrthomclMsaProcessor implements PostProcessor {
+public class MsaProcessor implements PostProcessor {
 
-  private static final Logger LOG = LogManager.getLogger(OrthomclMsaProcessor.class);
+  private static final Logger LOG = LogManager.getLogger(MsaProcessor.class);
 
-  private static final String ITOL_UPLOAD_URL = "https://itol.embl.de/upload.cgi";
-
-  private final OrthomclMsaOptions options;
+  private final MsaOptions options;
   private final ClustaloExecutor clustaloExecutor;
+  private final String itolBaseUrl;
 
   /**
    * Production constructor.
@@ -40,40 +43,48 @@ public class OrthomclMsaProcessor implements PostProcessor {
    * @param config Application configuration
    * @param context Processing context (SYNC or ASYNC) - determines timeout
    */
-  public OrthomclMsaProcessor(OrthomclMsaOptions options, AsyncOptions config, ProcessingContext context) {
-    this(options, new ClustaloExecutor(
-      config.getClustaloBinaryPath(),
-      context == ProcessingContext.ASYNC ? config.getClustaloAsyncTimeoutSeconds() : config.getClustaloSyncTimeoutSeconds()
-    ));
+  public MsaProcessor(MsaOptions options, AsyncOptions config, ProcessingContext context) {
+    this(options,
+        new ClustaloExecutor(
+            config.getClustaloBinaryPath(),
+            context == ProcessingContext.ASYNC
+                ? config.getClustaloAsyncTimeoutSeconds()
+                : config.getClustaloSyncTimeoutSeconds()
+        ),
+        config.getItolBaseUrl()
+    );
   }
 
   /**
-   * Constructor for testing with injectable ClustaloExecutor.
+   * Constructor for testing with injectable ClustaloExecutor and iTOL URL.
    */
-  public OrthomclMsaProcessor(OrthomclMsaOptions options, ClustaloExecutor clustaloExecutor) {
+  public MsaProcessor(MsaOptions options, ClustaloExecutor clustaloExecutor, String itolBaseUrl) {
     this.options = options;
     this.clustaloExecutor = clustaloExecutor;
+    this.itolBaseUrl = itolBaseUrl;
   }
 
   @Override
   public PostProcessResult process(File fastaInput) throws IOException {
+    // Validate metadata URL usage
+    validateMetadataUrl();
+
     // Create temp files for output
     File alignmentFile = File.createTempFile("alignment-", ".txt");
     File guideTreeFile = File.createTempFile("guidetree-", ".dnd");
 
     try {
-      // Get output format from options
-      String format = options.getFormat().toString().toLowerCase();
+      // Get format - use clustal for clustal_dnd since clustalo doesn't have that format
+      MsaFormat format = options.getFormat();
+      String clustaloFormat = format == MsaFormat.CLUSTALDND ? "clustal" : format.getValue();
 
-      // Run clustalo with OrthoMCL-specific flags
+      // Run clustalo
       try {
         clustaloExecutor.execute(
-          fastaInput,
-          alignmentFile,
-          format,
-          guideTreeFile,
-          "--residuenumber",
-          "--output-order=tree-order"
+            fastaInput,
+            alignmentFile,
+            clustaloFormat,
+            guideTreeFile
         );
       } catch (ClustaloExecutor.ClustaloException e) {
         throw new IOException("Clustalo execution failed", e);
@@ -81,12 +92,23 @@ public class OrthomclMsaProcessor implements PostProcessor {
 
       // Read alignment content
       byte[] alignmentContent = Files.readAllBytes(alignmentFile.toPath());
+      String treeData = Files.readString(guideTreeFile.toPath(), StandardCharsets.UTF_8);
 
-      // If format is clustal, generate HTML with iTOL integration
-      if ("clustal".equals(format)) {
-        return generateHtmlResponse(alignmentContent, guideTreeFile);
+      // Generate response based on format
+      if (format == MsaFormat.CLUSTAL && options.getMetadataUrl() != null) {
+        // Future: clustal with metadata tooltips (HTML)
+        // For now, return plain text
+        // TODO: Implement metadata fetching and HTML tooltip generation
+        LOG.warn("Metadata URL provided but metadata HTML generation not yet implemented");
+        return new PostProcessResult("text/plain", alignmentContent);
+      } else if (format == MsaFormat.CLUSTAL && options.getMetadataUrl() == null) {
+        // Plain text clustal
+        return new PostProcessResult("text/plain", alignmentContent);
+      } else if (format == MsaFormat.CLUSTALDND) {
+        // HTML with iTOL tree link
+        return generateHtmlWithItol(alignmentContent, treeData);
       } else {
-        // For other formats, return plain text
+        // Other formats: plain text
         return new PostProcessResult("text/plain", alignmentContent);
       }
 
@@ -98,13 +120,25 @@ public class OrthomclMsaProcessor implements PostProcessor {
   }
 
   /**
-   * Generate HTML response with iTOL tree link and alignment.
+   * Validate metadata URL usage - only allowed with clustal format.
    */
-  private PostProcessResult generateHtmlResponse(byte[] alignmentContent, File guideTreeFile)
+  private void validateMetadataUrl() {
+    if (options.getMetadataUrl() != null && options.getFormat() != MsaFormat.CLUSTAL) {
+      throw new BadRequestException(
+          "metadataUrl is only supported with 'clustal' format. " +
+              "Current format: " + options.getFormat().getValue()
+      );
+    }
+  }
+
+  /**
+   * Generate HTML response with iTOL tree link and alignment.
+   * Used for clustal_dnd format.
+   */
+  private PostProcessResult generateHtmlWithItol(byte[] alignmentContent, String treeData)
       throws IOException {
 
-    // Read and process guide tree
-    String treeData = Files.readString(guideTreeFile.toPath(), StandardCharsets.UTF_8);
+    // Process tree data for iTOL
     String processedTreeData = processTreeDataForItol(treeData);
 
     // Try to upload to iTOL
@@ -121,7 +155,7 @@ public class OrthomclMsaProcessor implements PostProcessor {
     html.append("<!DOCTYPE html>\n");
     html.append("<html>\n<head>\n");
     html.append("<meta charset=\"UTF-8\">\n");
-    html.append("<title>OrthoMCL Multiple Sequence Alignment</title>\n");
+    html.append("<title>Multiple Sequence Alignment</title>\n");
     html.append("</head>\n<body>\n");
 
     // Add iTOL link if available
@@ -148,7 +182,8 @@ public class OrthomclMsaProcessor implements PostProcessor {
 
     // Add guide tree data
     html.append("<hr>\n");
-    html.append("<pre>.dnd file\n\n");
+    html.append("<h4>Guide Tree (.dnd format)</h4>\n");
+    html.append("<pre>");
     html.append(escapeHtml(treeData));
     html.append("</pre>\n");
 
@@ -194,7 +229,8 @@ public class OrthomclMsaProcessor implements PostProcessor {
    * @return URL of the uploaded tree
    */
   private String uploadToItol(String treeData) throws IOException {
-    URL url = new URL(ITOL_UPLOAD_URL);
+    String uploadUrl = itolBaseUrl + "/upload.cgi";
+    URL url = new URL(uploadUrl);
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
     try {
@@ -217,7 +253,7 @@ public class OrthomclMsaProcessor implements PostProcessor {
       // Get redirect location
       String location = conn.getHeaderField("Location");
       if (location != null) {
-        return "https://itol.embl.de/" + location;
+        return itolBaseUrl + "/" + location;
       } else {
         // If no redirect, read response body
         try (BufferedReader reader = new BufferedReader(
@@ -241,9 +277,9 @@ public class OrthomclMsaProcessor implements PostProcessor {
    */
   private String escapeHtml(String text) {
     return text.replace("&", "&amp;")
-               .replace("<", "&lt;")
-               .replace(">", "&gt;")
-               .replace("\"", "&quot;")
-               .replace("'", "&#39;");
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("\"", "&quot;")
+        .replace("'", "&#39;");
   }
 }

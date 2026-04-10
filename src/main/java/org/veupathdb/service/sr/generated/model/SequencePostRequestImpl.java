@@ -11,8 +11,7 @@ import java.util.List;
     "deflineFormat",
     "basesPerLine",
     "postProcess",
-    "orthomclMsaOptions",
-    "isolatesMsaOptions",
+    "msaOptions",
     "geneTreeOptions"
 })
 public class SequencePostRequestImpl implements SequencePostRequest {
@@ -34,11 +33,8 @@ public class SequencePostRequestImpl implements SequencePostRequest {
   @JsonProperty("postProcess")
   private PostProcessType postProcess;
 
-  @JsonProperty("orthomclMsaOptions")
-  private OrthomclMsaOptions orthomclMsaOptions;
-
-  @JsonProperty("isolatesMsaOptions")
-  private IsolatesMsaOptions isolatesMsaOptions;
+  @JsonProperty("msaOptions")
+  private MsaOptions msaOptions;
 
   @JsonProperty("geneTreeOptions")
   private GeneTreeOptions geneTreeOptions;
@@ -95,24 +91,14 @@ public class SequencePostRequestImpl implements SequencePostRequest {
     this.postProcess = postProcess;
   }
 
-  @JsonProperty("orthomclMsaOptions")
-  public OrthomclMsaOptions getOrthomclMsaOptions() {
-    return this.orthomclMsaOptions;
+  @JsonProperty("msaOptions")
+  public MsaOptions getMsaOptions() {
+    return this.msaOptions;
   }
 
-  @JsonProperty("orthomclMsaOptions")
-  public void setOrthomclMsaOptions(OrthomclMsaOptions orthomclMsaOptions) {
-    this.orthomclMsaOptions = orthomclMsaOptions;
-  }
-
-  @JsonProperty("isolatesMsaOptions")
-  public IsolatesMsaOptions getIsolatesMsaOptions() {
-    return this.isolatesMsaOptions;
-  }
-
-  @JsonProperty("isolatesMsaOptions")
-  public void setIsolatesMsaOptions(IsolatesMsaOptions isolatesMsaOptions) {
-    this.isolatesMsaOptions = isolatesMsaOptions;
+  @JsonProperty("msaOptions")
+  public void setMsaOptions(MsaOptions msaOptions) {
+    this.msaOptions = msaOptions;
   }
 
   @JsonProperty("geneTreeOptions")

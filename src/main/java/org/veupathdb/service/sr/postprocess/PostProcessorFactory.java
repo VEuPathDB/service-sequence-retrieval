@@ -2,9 +2,7 @@ package org.veupathdb.service.sr.postprocess;
 
 import org.veupathdb.service.sr.AsyncOptions;
 import org.veupathdb.service.sr.generated.model.*;
-import org.veupathdb.service.sr.postprocess.orthomcl.OrthomclMsaProcessor;
-import org.veupathdb.service.sr.postprocess.isolates.IsolatesMsaProcessor;
-import org.veupathdb.service.sr.postprocess.genetree.GeneTreeProcessor;
+import org.veupathdb.service.sr.postprocess.msa.MsaProcessor;
 
 /**
  * Factory for creating PostProcessor instances based on type and options.
@@ -15,9 +13,8 @@ public class PostProcessorFactory {
    * Create a PostProcessor for the given type and options.
    *
    * @param postProcessType The type of post-processing
-   * @param orthomclMsaOptions Options for orthomclMSA (required if type is ORTHOMCL_MSA)
-   * @param isolatesMsaOptions Options for isolatesMSA (required if type is ISOLATES_MSA)
-   * @param geneTreeOptions Options for geneTree (required if type is GENE_TREE)
+   * @param msaOptions Options for MSA (required if type is MSA)
+   * @param geneTreeOptions Options for GENETREE (required if type is GENETREE)
    * @param options Application configuration
    * @param context Processing context (SYNC or ASYNC) - affects timeout and resource limits
    * @return A PostProcessor instance
@@ -25,8 +22,7 @@ public class PostProcessorFactory {
    */
   public static PostProcessor create(
       PostProcessType postProcessType,
-      OrthomclMsaOptions orthomclMsaOptions,
-      IsolatesMsaOptions isolatesMsaOptions,
+      MsaOptions msaOptions,
       GeneTreeOptions geneTreeOptions,
       AsyncOptions options,
       ProcessingContext context
@@ -36,26 +32,20 @@ public class PostProcessorFactory {
     }
 
     return switch (postProcessType) {
-      case ORTHOMCLMSA -> {
-        if (orthomclMsaOptions == null) {
+      case MSA -> {
+        if (msaOptions == null) {
           throw new IllegalArgumentException(
-            "orthomclMsaOptions required when postProcess is orthomclMSA");
+              "msaOptions required when postProcess is MSA");
         }
-        yield new OrthomclMsaProcessor(orthomclMsaOptions, options, context);
-      }
-      case ISOLATESMSA -> {
-        if (isolatesMsaOptions == null) {
-          throw new IllegalArgumentException(
-            "isolatesMsaOptions required when postProcess is isolatesMSA");
-        }
-        yield new IsolatesMsaProcessor(isolatesMsaOptions, options, context);
+        yield new MsaProcessor(msaOptions, options, context);
       }
       case GENETREE -> {
         if (geneTreeOptions == null) {
           throw new IllegalArgumentException(
-            "geneTreeOptions required when postProcess is geneTree");
+              "geneTreeOptions required when postProcess is GENETREE");
         }
-        yield new GeneTreeProcessor(geneTreeOptions, options, context);
+        // TODO: Implement GeneTreeProcessor
+        throw new UnsupportedOperationException("GENETREE post-processing not yet implemented");
       }
     };
   }

@@ -44,17 +44,11 @@ public interface SequencePostRequest {
   @JsonProperty("postProcess")
   void setPostProcess(PostProcessType postProcess);
 
-  @JsonProperty("orthomclMsaOptions")
-  OrthomclMsaOptions getOrthomclMsaOptions();
+  @JsonProperty("msaOptions")
+  MsaOptions getMsaOptions();
 
-  @JsonProperty("orthomclMsaOptions")
-  void setOrthomclMsaOptions(OrthomclMsaOptions orthomclMsaOptions);
-
-  @JsonProperty("isolatesMsaOptions")
-  IsolatesMsaOptions getIsolatesMsaOptions();
-
-  @JsonProperty("isolatesMsaOptions")
-  void setIsolatesMsaOptions(IsolatesMsaOptions isolatesMsaOptions);
+  @JsonProperty("msaOptions")
+  void setMsaOptions(MsaOptions msaOptions);
 
   @JsonProperty("geneTreeOptions")
   GeneTreeOptions getGeneTreeOptions();

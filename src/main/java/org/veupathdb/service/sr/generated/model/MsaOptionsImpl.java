@@ -5,19 +5,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder("format")
-public class OrthomclMsaOptionsImpl implements OrthomclMsaOptions {
+@JsonPropertyOrder({
+    "format",
+    "metadataUrl"
+})
+public class MsaOptionsImpl implements MsaOptions {
   @JsonProperty(
       value = "format",
       defaultValue = "clustal"
   )
-  private OrthomclMsaFormat format;
+  private MsaFormat format;
+
+  @JsonProperty("metadataUrl")
+  private String metadataUrl;
 
   @JsonProperty(
       value = "format",
       defaultValue = "clustal"
   )
-  public OrthomclMsaFormat getFormat() {
+  public MsaFormat getFormat() {
     return this.format;
   }
 
@@ -25,7 +31,17 @@ public class OrthomclMsaOptionsImpl implements OrthomclMsaOptions {
       value = "format",
       defaultValue = "clustal"
   )
-  public void setFormat(OrthomclMsaFormat format) {
+  public void setFormat(MsaFormat format) {
     this.format = format;
+  }
+
+  @JsonProperty("metadataUrl")
+  public String getMetadataUrl() {
+    return this.metadataUrl;
+  }
+
+  @JsonProperty("metadataUrl")
+  public void setMetadataUrl(String metadataUrl) {
+    this.metadataUrl = metadataUrl;
   }
 }

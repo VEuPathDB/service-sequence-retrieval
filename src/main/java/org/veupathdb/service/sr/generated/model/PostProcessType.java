@@ -3,14 +3,11 @@ package org.veupathdb.service.sr.generated.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum PostProcessType {
-  @JsonProperty("orthomclMSA")
-  ORTHOMCLMSA("orthomclMSA"),
+  @JsonProperty("MSA")
+  MSA("MSA"),
 
-  @JsonProperty("isolatesMSA")
-  ISOLATESMSA("isolatesMSA"),
-
-  @JsonProperty("geneTree")
-  GENETREE("geneTree");
+  @JsonProperty("GENETREE")
+  GENETREE("GENETREE");
 
   public final String value;
 

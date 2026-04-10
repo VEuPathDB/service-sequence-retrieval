@@ -8,11 +8,11 @@ import java.util.function.Consumer;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.StreamingOutput;
 
-public class IsolatesMsaOptionsStream extends IsolatesMsaOptionsImpl implements StreamingOutput {
+public class MsaOptionsStream extends MsaOptionsImpl implements StreamingOutput {
 
   private final Consumer<OutputStream> _streamer;
 
-  public IsolatesMsaOptionsStream(Consumer<OutputStream> streamer) {
+  public MsaOptionsStream(Consumer<OutputStream> streamer) {
     _streamer = streamer;
   }
 
