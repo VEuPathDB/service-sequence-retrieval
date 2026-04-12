@@ -26,12 +26,10 @@ RUN bash -c 'echo "\n\n" | ./gradlew init --type basic --dsl kotlin --no-daemon'
 COPY build.gradle.kts settings.gradle.kts ./
 
 # download raml tools (these never change)
-RUN export GITHUB_USERNAME=${GITHUB_USERNAME} GITHUB_TOKEN=${GITHUB_TOKEN} && \
-    ./gradlew install-raml-4-jax-rs install-raml-merge
+RUN ./gradlew install-raml-4-jax-rs install-raml-merge
 
 # download project dependencies in advance
-RUN export GITHUB_USERNAME=${GITHUB_USERNAME} GITHUB_TOKEN=${GITHUB_TOKEN} && \
-    ./gradlew download-dependencies
+RUN ./gradlew download-dependencies
 
 # copy raml over for merging, then perform code and documentation generation
 COPY api.raml ./

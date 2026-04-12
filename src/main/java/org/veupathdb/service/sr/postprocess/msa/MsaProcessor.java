@@ -13,8 +13,8 @@ import org.veupathdb.service.sr.postprocess.ProcessingContext;
 import jakarta.ws.rs.BadRequestException;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -138,16 +138,28 @@ public class MsaProcessor implements PostProcessor {
   private PostProcessResult generateHtmlWithItol(byte[] alignmentContent, String treeData)
       throws IOException {
 
-    // Process tree data for iTOL
-    String processedTreeData = processTreeDataForItol(treeData);
-
-    // Try to upload to iTOL
+    // Validate tree data before uploading
     String itolUrl = null;
-    try {
-      itolUrl = uploadToItol(processedTreeData);
-      LOG.info("Successfully uploaded tree to iTOL: " + itolUrl);
-    } catch (IOException e) {
-      LOG.warn("Failed to upload tree to iTOL, continuing without tree link", e);
+    if (treeData == null || treeData.trim().isEmpty()) {
+      LOG.warn("Guide tree data is empty, skipping iTOL upload");
+    } else {
+      // Process tree data for iTOL
+      String processedTreeData = processTreeDataForItol(treeData);
+
+      // Try to upload to iTOL
+      try {
+        itolUrl = uploadToItol(processedTreeData);
+
+        // Validate that we got a real tree URL, not just the iTOL home page
+        if (itolUrl != null && !itolUrl.equals(itolBaseUrl) && !itolUrl.equals(itolBaseUrl + "/")) {
+          LOG.info("Successfully uploaded tree to iTOL: " + itolUrl);
+        } else {
+          LOG.warn("iTOL upload returned home page URL, tree upload likely failed");
+          itolUrl = null;
+        }
+      } catch (IOException e) {
+        LOG.warn("Failed to upload tree to iTOL, continuing without tree link", e);
+      }
     }
 
     // Generate HTML
@@ -163,6 +175,9 @@ public class MsaProcessor implements PostProcessor {
       html.append("<h3><a href=\"").append(itolUrl).append("\" target=\"_blank\">")
           .append("Click here to view a phylogenetic tree of the alignment.")
           .append("</a></h3>\n");
+    } else {
+      // No valid iTOL URL - show message
+      html.append("<h3>(.dnd file does not produce a valid iTOL phylogenetic tree)</h3>\n");
     }
 
     // Add alignment
@@ -230,22 +245,35 @@ public class MsaProcessor implements PostProcessor {
    */
   private String uploadToItol(String treeData) throws IOException {
     String uploadUrl = itolBaseUrl + "/upload.cgi";
-    URL url = new URL(uploadUrl);
+    URL url = URI.create(uploadUrl).toURL();
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
     try {
       conn.setRequestMethod("POST");
       conn.setDoOutput(true);
-      conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+      conn.setInstanceFollowRedirects(false);  // Don't follow redirects automatically
 
-      // Send tree data as form parameter
-      String postData = "ttext=" + URLEncoder.encode(treeData, StandardCharsets.UTF_8);
+      // Use multipart/form-data like the Perl example
+      String boundary = "----WebKitFormBoundary" + System.currentTimeMillis();
+      conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+      // Build multipart/form-data body
+      StringBuilder body = new StringBuilder();
+      body.append("--").append(boundary).append("\r\n");
+      body.append("Content-Disposition: form-data; name=\"ttext\"\r\n\r\n");
+      body.append(treeData).append("\r\n");
+      body.append("--").append(boundary).append("--\r\n");
+
+      byte[] bodyBytes = body.toString().getBytes(StandardCharsets.UTF_8);
+      LOG.debug("iTOL upload boundary: " + boundary);
+      LOG.debug("iTOL upload body length: " + bodyBytes.length);
 
       try (OutputStream os = conn.getOutputStream()) {
-        os.write(postData.getBytes(StandardCharsets.UTF_8));
+        os.write(bodyBytes);
       }
 
       int responseCode = conn.getResponseCode();
+      LOG.debug("iTOL response code: " + responseCode);
       if (responseCode != 302 && responseCode != 200) {
         throw new IOException("iTOL upload failed with response code: " + responseCode);
       }

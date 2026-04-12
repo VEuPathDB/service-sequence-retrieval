@@ -16,6 +16,7 @@ import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpec;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpecImpl;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.lang.StringBuilder;
@@ -116,12 +117,18 @@ public class WriteFeaturesJob implements JobExecutor {
       jobContext.getWorkspace().write("output", new String(result.getContent(), StandardCharsets.UTF_8));
 
       // Write additional files (e.g., guide tree)
-      for (Map.Entry<String, byte[]> entry : result.getAdditionalFiles().entrySet()) {
+      Map<String, byte[]> additionalFiles = result.getAdditionalFiles();
+      for (Map.Entry<String, byte[]> entry : additionalFiles.entrySet()) {
         jobContext.getWorkspace().write(entry.getKey(),
           new String(entry.getValue(), StandardCharsets.UTF_8));
       }
 
-      return JobResult.success("output");
+      // Build list of all output files (primary + additional)
+      List<String> outputFiles = new ArrayList<>();
+      outputFiles.add("output");
+      outputFiles.addAll(additionalFiles.keySet());
+
+      return JobResult.success(outputFiles);
     } catch (IOException e) {
       return JobResult.failure("Post-processing failed: " + e.getMessage());
     } catch (Exception e) {
