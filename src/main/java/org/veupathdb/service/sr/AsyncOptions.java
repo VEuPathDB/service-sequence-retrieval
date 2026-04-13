@@ -300,6 +300,14 @@ public class AsyncOptions extends Options {
   private static final int DEFAULT_MSA_SYNC_MAX_SEQUENCES = 20;
 
   @Option(
+    names = "--msa-async-max-sequences",
+    defaultValue = "${env:MSA_ASYNC_MAX_SEQUENCES}",
+    description = "Maximum number of sequences allowed for asynchronous MSA requests",
+    arity = "1",
+    required = true)
+  private Integer msaAsyncMaxSequences;
+
+  @Option(
     names = "--clustalo-sync-timeout-seconds",
     defaultValue = "${env:CLUSTALO_SYNC_TIMEOUT_SECONDS}",
     description = "Timeout in seconds for clustalo execution in synchronous requests",
@@ -329,6 +337,10 @@ public class AsyncOptions extends Options {
 
   public int getMsaSyncMaxSequences() {
     return msaSyncMaxSequences == null ? DEFAULT_MSA_SYNC_MAX_SEQUENCES : msaSyncMaxSequences;
+  }
+
+  public int getMsaAsyncMaxSequences() {
+    return msaAsyncMaxSequences;
   }
 
   public int getClustaloSyncTimeoutSeconds() {

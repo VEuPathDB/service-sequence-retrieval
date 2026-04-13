@@ -12,6 +12,7 @@ import org.veupathdb.service.sr.postprocess.PostProcessorFactory;
 import org.veupathdb.service.sr.postprocess.ProcessingContext;
 import org.veupathdb.service.sr.util.FeatureAdapter;
 import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
+import org.veupathdb.service.sr.generated.model.PostProcessType;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpec;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpecImpl;
 
@@ -52,6 +53,18 @@ public class WriteFeaturesJob implements JobExecutor {
       };
       } catch (IOException e){
         throw new RuntimeException("Unable to complete file processing", e);
+      }
+    }
+
+    // Validate async MSA sequence limit if MSA post-processing is requested
+    if (jobSpec.getPostProcess() == PostProcessType.MSA) {
+      AsyncOptions options = org.veupathdb.service.sr.Main.getOptions();
+      int maxSequences = options.getMsaAsyncMaxSequences();
+      if (features.size() > maxSequences) {
+        return JobResult.failure(
+          "Too many sequences for asynchronous MSA request (" + features.size() + " sequences). " +
+          "Maximum allowed is " + maxSequences + "."
+        );
       }
     }
 

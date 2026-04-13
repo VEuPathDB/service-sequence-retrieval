@@ -106,6 +106,14 @@ services:
       # Job Settings
       JOB_CACHE_TIMEOUT_DAYS: 30
 
+      # MSA Post-Processing Configuration
+      CLUSTALO_BINARY_PATH: ${CLUSTALO_BINARY_PATH:-/usr/bin/clustalo}
+      MSA_SYNC_MAX_SEQUENCES: ${MSA_SYNC_MAX_SEQUENCES:-20}
+      MSA_ASYNC_MAX_SEQUENCES: ${MSA_ASYNC_MAX_SEQUENCES:-1000}
+      CLUSTALO_SYNC_TIMEOUT_SECONDS: ${CLUSTALO_SYNC_TIMEOUT_SECONDS:-30}
+      CLUSTALO_ASYNC_TIMEOUT_SECONDS: ${CLUSTALO_ASYNC_TIMEOUT_SECONDS:-1800}
+      ITOL_BASE_URL: ${ITOL_BASE_URL:-https://itol.embl.de}
+
     labels:
       - "prometheus.scrape_enabled=true"
       - "com.centurylinklabs.watchtower.enable=${DATA_WATCHTOWER:-false}"
