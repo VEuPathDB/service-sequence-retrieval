@@ -2,7 +2,7 @@ package org.veupathdb.service.sr.postprocess.msa;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.veupathdb.service.sr.AsyncOptions;
+import org.veupathdb.service.sr.SrtServiceOptions;
 import org.veupathdb.service.sr.generated.model.MsaFormat;
 import org.veupathdb.service.sr.generated.model.MsaOptions;
 import org.veupathdb.service.sr.postprocess.ClustaloExecutor;
@@ -43,7 +43,7 @@ public class MsaProcessor implements PostProcessor {
    * @param config Application configuration
    * @param context Processing context (SYNC or ASYNC) - determines timeout
    */
-  public MsaProcessor(MsaOptions options, AsyncOptions config, ProcessingContext context) {
+  public MsaProcessor(MsaOptions options, SrtServiceOptions config, ProcessingContext context) {
     this(options,
         new ClustaloExecutor(
             config.getClustaloBinaryPath(),

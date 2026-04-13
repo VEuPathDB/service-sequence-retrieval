@@ -2,7 +2,7 @@ package org.veupathdb.service.sr.postprocess;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.veupathdb.service.sr.AsyncOptions;
+import org.veupathdb.service.sr.SrtServiceOptions;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,6 +1,6 @@
 package org.veupathdb.service.sr.postprocess.genetree;
 
-import org.veupathdb.service.sr.AsyncOptions;
+import org.veupathdb.service.sr.SrtServiceOptions;
 import org.veupathdb.service.sr.generated.model.GeneTreeOptions;
 import org.veupathdb.service.sr.postprocess.ClustaloExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
@@ -27,7 +27,7 @@ public class GeneTreeProcessor implements PostProcessor {
    * @param config Application configuration
    * @param context Processing context (SYNC or ASYNC) - determines timeout
    */
-  public GeneTreeProcessor(GeneTreeOptions options, AsyncOptions config, ProcessingContext context) {
+  public GeneTreeProcessor(GeneTreeOptions options, SrtServiceOptions config, ProcessingContext context) {
     this(options, new ClustaloExecutor(
       config.getClustaloBinaryPath(),
       context == ProcessingContext.ASYNC ? config.getClustaloAsyncTimeoutSeconds() : config.getClustaloSyncTimeoutSeconds()

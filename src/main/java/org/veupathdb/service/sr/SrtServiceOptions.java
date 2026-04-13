@@ -9,10 +9,8 @@ import picocli.CommandLine.Option;
  * Contains both async platform configuration (queues, S3, Postgres database)
  * and general application configuration (MSA post-processing, etc.).
  *
- * Note: Despite the name "AsyncOptions", this class also contains configuration
- * used by synchronous endpoints (e.g., clustalo binary path, MSA limits).
  */
-public class AsyncOptions extends Options {
+public class SrtServiceOptions extends Options {
 
   // region Postgres
 

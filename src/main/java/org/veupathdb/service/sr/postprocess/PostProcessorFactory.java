@@ -1,6 +1,6 @@
 package org.veupathdb.service.sr.postprocess;
 
-import org.veupathdb.service.sr.AsyncOptions;
+import org.veupathdb.service.sr.SrtServiceOptions;
 import org.veupathdb.service.sr.generated.model.*;
 import org.veupathdb.service.sr.postprocess.msa.MsaProcessor;
 
@@ -24,7 +24,7 @@ public class PostProcessorFactory {
       PostProcessType postProcessType,
       MsaOptions msaOptions,
       GeneTreeOptions geneTreeOptions,
-      AsyncOptions options,
+      SrtServiceOptions options,
       ProcessingContext context
   ) {
     if (postProcessType == null) {

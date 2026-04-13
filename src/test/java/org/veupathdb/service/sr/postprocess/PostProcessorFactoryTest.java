@@ -1,7 +1,7 @@
 package org.veupathdb.service.sr.postprocess;
 
 import org.junit.jupiter.api.Test;
-import org.veupathdb.service.sr.AsyncOptions;
+import org.veupathdb.service.sr.SrtServiceOptions;
 import org.veupathdb.service.sr.generated.model.*;
 import org.veupathdb.service.sr.postprocess.msa.MsaProcessor;
 
@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 
 class PostProcessorFactoryTest {
 
-  private final AsyncOptions mockOptions = mock(AsyncOptions.class);
+  private final SrtServiceOptions mockOptions = mock(SrtServiceOptions.class);
 
   @Test
   void testCreateMsaProcessor() {

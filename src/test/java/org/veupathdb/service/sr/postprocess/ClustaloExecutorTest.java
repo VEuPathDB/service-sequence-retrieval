@@ -3,7 +3,7 @@ package org.veupathdb.service.sr.postprocess;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.veupathdb.service.sr.AsyncOptions;
+import org.veupathdb.service.sr.SrtServiceOptions;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,14 +19,14 @@ class ClustaloExecutorTest {
   @TempDir
   Path tempDir;
 
-  private AsyncOptions mockOptions;
+  private SrtServiceOptions mockOptions;
   private File inputFile;
   private File outputFile;
   private File guideTreeFile;
 
   @BeforeEach
   void setUp() throws IOException {
-    mockOptions = mock(AsyncOptions.class);
+    mockOptions = mock(SrtServiceOptions.class);
 
     // Create temp files for testing
     inputFile = tempDir.resolve("input.fasta").toFile();

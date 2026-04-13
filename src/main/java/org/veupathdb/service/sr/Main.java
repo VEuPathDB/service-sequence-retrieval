@@ -13,9 +13,9 @@ public class Main extends Server {
 
   private static final Logger LOG = LogManager.getLogger(Main.class);
 
-  private final AsyncOptions options = new AsyncOptions();
+  private final SrtServiceOptions options = new SrtServiceOptions();
 
-  private static AsyncOptions staticOptions;
+  private static SrtServiceOptions staticOptions;
 
   public static void main(String[] args) {
     var server = new Main();
@@ -25,10 +25,10 @@ public class Main extends Server {
   }
 
   /**
-   * Get the AsyncOptions instance.
+   * Get the SrtServiceOptions instance.
    * Available after server initialization.
    */
-  public static AsyncOptions getOptions() {
+  public static SrtServiceOptions getOptions() {
     return staticOptions;
   }
 

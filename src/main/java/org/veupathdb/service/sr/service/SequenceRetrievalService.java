@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.IoUtil;
 import org.gusdb.fgputil.Timer;
-import org.veupathdb.service.sr.AsyncOptions;
+import org.veupathdb.service.sr.SrtServiceOptions;
 import org.veupathdb.service.sr.generated.model.*;
 import org.veupathdb.service.sr.generated.resources.SequencesSequenceType;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
@@ -115,7 +115,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
    * Validate that the number of sequences is within the limit for synchronous MSA requests.
    */
   private void validateMsaSyncRequest(int sequenceCount) {
-    AsyncOptions options = org.veupathdb.service.sr.Main.getOptions();
+    SrtServiceOptions options = org.veupathdb.service.sr.Main.getOptions();
     int maxSequences = options.getMsaSyncMaxSequences();
 
     if (sequenceCount > maxSequences) {
@@ -141,7 +141,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       }
 
       // Create post-processor
-      AsyncOptions options = org.veupathdb.service.sr.Main.getOptions();
+      SrtServiceOptions options = org.veupathdb.service.sr.Main.getOptions();
       PostProcessor processor = PostProcessorFactory.create(
           entity.getPostProcess(),
           entity.getMsaOptions(),

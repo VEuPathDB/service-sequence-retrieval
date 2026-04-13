@@ -5,7 +5,7 @@ import org.veupathdb.lib.compute.platform.job.JobContext;
 import org.veupathdb.lib.compute.platform.job.JobExecutor;
 import org.veupathdb.lib.compute.platform.job.JobResult;
 import org.veupathdb.lib.jackson.Json;
-import org.veupathdb.service.sr.AsyncOptions;
+import org.veupathdb.service.sr.SrtServiceOptions;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 import org.veupathdb.service.sr.postprocess.PostProcessor;
 import org.veupathdb.service.sr.postprocess.PostProcessorFactory;
@@ -57,7 +57,7 @@ public class WriteFeaturesJob implements JobExecutor {
 
     // Validate async MSA sequence limit if MSA post-processing is requested
     if (jobSpec.getPostProcess() == PostProcessType.MSA) {
-      AsyncOptions options = org.veupathdb.service.sr.Main.getOptions();
+      SrtServiceOptions options = org.veupathdb.service.sr.Main.getOptions();
       int maxSequences = options.getMsaAsyncMaxSequences();
       if (features.size() > maxSequences) {
         return JobResult.failure(
@@ -113,7 +113,7 @@ public class WriteFeaturesJob implements JobExecutor {
 
     try {
       // Create post-processor
-      AsyncOptions options = org.veupathdb.service.sr.Main.getOptions();
+      SrtServiceOptions options = org.veupathdb.service.sr.Main.getOptions();
       PostProcessor processor = PostProcessorFactory.create(
           jobSpec.getPostProcess(),
           jobSpec.getMsaOptions(),
