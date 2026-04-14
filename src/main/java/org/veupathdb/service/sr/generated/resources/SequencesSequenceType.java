@@ -20,7 +20,8 @@ public interface SequencesSequenceType {
   @POST
   @Produces({
       "text/html",
-      "text/x-fasta"
+      "text/x-fasta",
+      "text/plain"
   })
   @Consumes("application/json")
   PostSequencesBySequenceTypeResponse postSequencesBySequenceType(
@@ -30,7 +31,8 @@ public interface SequencesSequenceType {
   @Path("/{fileFormat}")
   @Produces({
       "text/html",
-      "text/x-fasta"
+      "text/x-fasta",
+      "text/plain"
   })
   @Consumes("multipart/form-data")
   PostSequencesBySequenceTypeAndFileFormatResponse postSequencesBySequenceTypeAndFileFormat(
@@ -56,6 +58,13 @@ public interface SequencesSequenceType {
       return new PostSequencesBySequenceTypeResponse(responseBuilder.build(), entity);
     }
 
+    public static PostSequencesBySequenceTypeResponse respond200WithTextPlain(
+        PlainTextFastaResponse entity) {
+      Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "text/plain");
+      responseBuilder.entity(entity);
+      return new PostSequencesBySequenceTypeResponse(responseBuilder.build(), entity);
+    }
+
     public static PostSequencesBySequenceTypeResponse respond200WithTextHtml(Object entity) {
       Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "text/html");
       responseBuilder.entity(entity);
@@ -75,6 +84,13 @@ public interface SequencesSequenceType {
     public static PostSequencesBySequenceTypeAndFileFormatResponse respond200WithTextXFasta(
         PlainTextFastaResponse entity) {
       Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "text/x-fasta");
+      responseBuilder.entity(entity);
+      return new PostSequencesBySequenceTypeAndFileFormatResponse(responseBuilder.build(), entity);
+    }
+
+    public static PostSequencesBySequenceTypeAndFileFormatResponse respond200WithTextPlain(
+        PlainTextFastaResponse entity) {
+      Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "text/plain");
       responseBuilder.entity(entity);
       return new PostSequencesBySequenceTypeAndFileFormatResponse(responseBuilder.build(), entity);
     }

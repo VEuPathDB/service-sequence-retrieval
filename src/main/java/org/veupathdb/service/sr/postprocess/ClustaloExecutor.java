@@ -42,7 +42,6 @@ public class ClustaloExecutor {
    * @param outputFile Output file for alignment
    * @param outputFormat Output format (e.g., "clustal", "fasta", "phylip")
    * @param guideTreeFile Optional guide tree output file (null if not needed)
-   * @param additionalArgs Optional additional arguments
    * @throws IOException if execution fails
    * @throws ClustaloException if clustalo returns non-zero exit code or times out
    */
@@ -50,8 +49,7 @@ public class ClustaloExecutor {
       File inputFile,
       File outputFile,
       String outputFormat,
-      File guideTreeFile,
-      String... additionalArgs
+      File guideTreeFile
   ) throws IOException, ClustaloException {
 
     List<String> command = new ArrayList<>();
@@ -67,32 +65,12 @@ public class ClustaloExecutor {
       command.add("--guidetree-out=" + guideTreeFile.getAbsolutePath());
     }
 
-    // Add any additional arguments
-    for (String arg : additionalArgs) {
-      command.add(arg);
-    }
-
     LOG.info("Executing clustalo: " + String.join(" ", command));
 
     ProcessBuilder pb = new ProcessBuilder(command);
     pb.redirectErrorStream(true); // Merge stderr into stdout
 
     Process process = pb.start();
-
-    // Capture output in separate thread
-    StringBuilder output = new StringBuilder();
-    Thread outputReader = new Thread(() -> {
-      try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-          output.append(line).append("\n");
-          LOG.debug("clustalo: " + line);
-        }
-      } catch (IOException e) {
-        LOG.warn("Error reading clustalo output", e);
-      }
-    });
-    outputReader.start();
 
     // Wait for process with timeout
     boolean completed;
@@ -109,11 +87,16 @@ public class ClustaloExecutor {
         "Clustalo execution timed out after " + timeoutSeconds + " seconds");
     }
 
-    // Wait for output reader to finish
-    try {
-      outputReader.join(5000);
-    } catch (InterruptedException e) {
-      LOG.warn("Output reader thread interrupted", e);
+    // Read output after process completes
+    String output;
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+      StringBuilder sb = new StringBuilder();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        sb.append(line).append("\n");
+        LOG.debug("clustalo: " + line);
+      }
+      output = sb.toString();
     }
 
     int exitCode = process.exitValue();

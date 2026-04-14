@@ -154,21 +154,26 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       PostProcessResult result = processor.process(tempFasta);
 
       // Return appropriate response based on content type
-      if ("text/html".equals(result.getContentType())) {
-        return PostSequencesBySequenceTypeResponse.respond200WithTextHtml(
+      return switch (result.getContentType()) {
+        case "text/html" -> PostSequencesBySequenceTypeResponse.respond200WithTextHtml(
           new String(result.getContent(), StandardCharsets.UTF_8));
-      } else {
-        // Return as plain text stream
-        return PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(
+        case "text/plain" -> PostSequencesBySequenceTypeResponse.respond200WithTextPlain(
           new StreamerWithLogging(os -> {
             try {
               os.write(result.getContent());
             } catch (IOException e) {
               throw new RuntimeException(e);
             }
-          })
-        );
-      }
+          }));
+        default -> PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(
+          new StreamerWithLogging(os -> {
+            try {
+              os.write(result.getContent());
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
+          }));
+      };
     } finally {
       tempFasta.delete();
     }

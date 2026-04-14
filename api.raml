@@ -33,6 +33,8 @@ securitySchemes:
         body:
           text/x-fasta:
             type: lib.PlainTextFastaResponse
+          text/plain:
+            type: lib.PlainTextFastaResponse
           text/html:
             type: any
 
@@ -61,6 +63,8 @@ securitySchemes:
         200:
           body:
             text/x-fasta:
+              type: lib.PlainTextFastaResponse
+            text/plain:
               type: lib.PlainTextFastaResponse
             text/html:
               type: any
