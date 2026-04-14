@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Test asynchronous MSA with clustal format output
 
@@ -34,10 +34,14 @@ echo -e "\n=== Job Status ==="
 curl --silent "http://localhost:8080/jobs/$jobId" | jq
 
 echo -e "\n=== Available Files ==="
-curl --silent "http://localhost:8080/jobs/$jobId/files" | jq
+files=$(curl --silent "http://localhost:8080/jobs/$jobId/files")
+echo "$files" | jq
+
+# Check for unexpected guide tree (should only exist for clustal-dnd format)
+if echo "$files" | jq -e '.[] | select(. == "guidetree.dnd")' > /dev/null 2>&1; then
+  echo -e "\nERROR: Guide tree file found for non-CLUSTALDND format!"
+  exit 1
+fi
 
 echo -e "\n=== Output File ==="
 curl --silent "http://localhost:8080/jobs/$jobId/files/output"
-
-echo -e "\n=== Guide Tree (if available) ==="
-curl --silent "http://localhost:8080/jobs/$jobId/files/guidetree.dnd" 2>/dev/null || echo "(Guide tree not available)"

@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 # Test asynchronous MSA with clustal_dnd format
-# This will submit a job, wait for completion, and retrieve the results
+# This will submit a job, wait for completion, and retrieve the results (including guide tree)
 
 echo "Submitting async MSA job with clustal_dnd format..."
 
@@ -66,7 +66,15 @@ fi
 # List available files
 echo ""
 echo "Available files:"
-curl --silent "http://localhost:8080/jobs/$JOB_ID/files" | grep -o '"[^"]*"' | tr -d '"'
+FILES=$(curl --silent "http://localhost:8080/jobs/$JOB_ID/files")
+echo "$FILES" | grep -o '"[^"]*"' | tr -d '"'
+
+# Verify guide tree exists for clustal_dnd format
+if ! echo "$FILES" | grep -q "guidetree.dnd"; then
+  echo ""
+  echo "ERROR: Guide tree file not found! CLUSTALDND format should produce a guide tree."
+  exit 1
+fi
 
 # Download main output (HTML)
 echo ""
@@ -77,5 +85,10 @@ echo ""
 # Download guide tree
 echo ""
 echo "Guide tree (.dnd file):"
-curl --silent "http://localhost:8080/jobs/$JOB_ID/files/guidetree.dnd"
+TREE_CONTENT=$(curl --silent "http://localhost:8080/jobs/$JOB_ID/files/guidetree.dnd")
+if [ -z "$TREE_CONTENT" ]; then
+  echo "ERROR: Guide tree file is empty!"
+  exit 1
+fi
+echo "$TREE_CONTENT"
 echo ""

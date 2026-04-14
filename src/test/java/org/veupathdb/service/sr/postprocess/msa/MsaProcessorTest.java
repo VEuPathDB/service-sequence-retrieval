@@ -60,14 +60,11 @@ class MsaProcessorTest {
     MsaOptions options = new MsaOptionsImpl();
     options.setFormat(MsaFormat.CLUSTAL);
 
-    // Mock clustalo execution to create output files
+    // Mock clustalo execution to create output files (no guide tree for plain clustal)
     doAnswer(invocation -> {
       File outputFile = invocation.getArgument(1);
-      File guideTreeFile = invocation.getArgument(3);
 
       Files.copy(mockAlignmentClustal.toPath(), outputFile.toPath(),
-          StandardCopyOption.REPLACE_EXISTING);
-      Files.copy(mockGuideTree.toPath(), guideTreeFile.toPath(),
           StandardCopyOption.REPLACE_EXISTING);
 
       return null;
@@ -75,7 +72,7 @@ class MsaProcessorTest {
         any(File.class),
         any(File.class),
         eq("clustal"),
-        any(File.class)
+        isNull()
     );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
@@ -86,12 +83,12 @@ class MsaProcessorTest {
     String output = new String(result.getContent(), StandardCharsets.UTF_8);
     assertTrue(output.contains("CLUSTAL"));
 
-    // Verify clustalo was called
+    // Verify clustalo was called with null guide tree file
     verify(mockExecutor).execute(
         eq(testInputFasta),
         any(File.class),
         eq("clustal"),
-        any(File.class)
+        isNull()
     );
   }
 
@@ -156,14 +153,11 @@ class MsaProcessorTest {
     MsaOptions options = new MsaOptionsImpl();
     options.setFormat(MsaFormat.FASTA);
 
-    // Mock clustalo execution
+    // Mock clustalo execution (no guide tree for fasta format)
     doAnswer(invocation -> {
       File outputFile = invocation.getArgument(1);
-      File guideTreeFile = invocation.getArgument(3);
 
       Files.copy(mockAlignmentFasta.toPath(), outputFile.toPath(),
-          StandardCopyOption.REPLACE_EXISTING);
-      Files.copy(mockGuideTree.toPath(), guideTreeFile.toPath(),
           StandardCopyOption.REPLACE_EXISTING);
 
       return null;
@@ -171,7 +165,7 @@ class MsaProcessorTest {
         any(File.class),
         any(File.class),
         eq("fasta"),
-        any(File.class)
+        isNull()
     );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
@@ -186,7 +180,7 @@ class MsaProcessorTest {
         eq(testInputFasta),
         any(File.class),
         eq("fasta"),
-        any(File.class)
+        isNull()
     );
   }
 
@@ -195,22 +189,19 @@ class MsaProcessorTest {
     MsaOptions options = new MsaOptionsImpl();
     options.setFormat(MsaFormat.PHYLIP);
 
-    // Mock clustalo execution
+    // Mock clustalo execution (no guide tree for phylip format)
     doAnswer(invocation -> {
       File outputFile = invocation.getArgument(1);
-      File guideTreeFile = invocation.getArgument(3);
 
       // Write simple phylip format
       Files.writeString(outputFile.toPath(), "3 100\nseq1  ACGT\nseq2  ACGT\nseq3  ACGT\n");
-      Files.copy(mockGuideTree.toPath(), guideTreeFile.toPath(),
-          StandardCopyOption.REPLACE_EXISTING);
 
       return null;
     }).when(mockExecutor).execute(
         any(File.class),
         any(File.class),
         eq("phylip"),
-        any(File.class)
+        isNull()
     );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
@@ -223,7 +214,7 @@ class MsaProcessorTest {
         eq(testInputFasta),
         any(File.class),
         eq("phylip"),
-        any(File.class)
+        isNull()
     );
   }
 
@@ -233,14 +224,11 @@ class MsaProcessorTest {
     options.setFormat(MsaFormat.CLUSTAL);
     options.setMetadataUrl("https://example.com/metadata.tsv");
 
-    // Mock clustalo execution
+    // Mock clustalo execution (no guide tree for clustal with metadata)
     doAnswer(invocation -> {
       File outputFile = invocation.getArgument(1);
-      File guideTreeFile = invocation.getArgument(3);
 
       Files.copy(mockAlignmentClustal.toPath(), outputFile.toPath(),
-          StandardCopyOption.REPLACE_EXISTING);
-      Files.copy(mockGuideTree.toPath(), guideTreeFile.toPath(),
           StandardCopyOption.REPLACE_EXISTING);
 
       return null;
@@ -248,7 +236,7 @@ class MsaProcessorTest {
         ArgumentMatchers.any(),
         ArgumentMatchers.any(),
         ArgumentMatchers.any(),
-        ArgumentMatchers.any()
+        isNull()
     );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
@@ -299,13 +287,13 @@ class MsaProcessorTest {
     MsaOptions options = new MsaOptionsImpl();
     options.setFormat(MsaFormat.CLUSTAL);
 
-    // Mock clustalo to throw exception
+    // Mock clustalo to throw exception (CLUSTAL format doesn't use guide tree)
     doThrow(new ClustaloExecutor.ClustaloException("Clustalo failed with exit code 1"))
         .when(mockExecutor).execute(
             any(File.class),
             any(File.class),
             any(String.class),
-            any(File.class)
+            isNull()
         );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");

@@ -69,15 +69,18 @@ public class MsaProcessor implements PostProcessor {
     // Validate metadata URL usage
     validateMetadataUrl();
 
+    // Get format - use clustal for clustal_dnd since clustalo doesn't have that format
+    MsaFormat format = options.getFormat();
+    String clustaloFormat = format == MsaFormat.CLUSTALDND ? "clustal" : format.getValue();
+
     // Create temp files for output
     File alignmentFile = File.createTempFile("alignment-", ".txt");
-    File guideTreeFile = File.createTempFile("guidetree-", ".dnd");
+    // Only create guide tree file if needed for CLUSTALDND format
+    File guideTreeFile = (format == MsaFormat.CLUSTALDND)
+        ? File.createTempFile("guidetree-", ".dnd")
+        : null;
 
     try {
-      // Get format - use clustal for clustal_dnd since clustalo doesn't have that format
-      MsaFormat format = options.getFormat();
-      String clustaloFormat = format == MsaFormat.CLUSTALDND ? "clustal" : format.getValue();
-
       // Run clustalo
       try {
         clustaloExecutor.execute(
@@ -92,7 +95,6 @@ public class MsaProcessor implements PostProcessor {
 
       // Read alignment content
       byte[] alignmentContent = Files.readAllBytes(alignmentFile.toPath());
-      String treeData = Files.readString(guideTreeFile.toPath(), StandardCharsets.UTF_8);
 
       // Generate response based on format
       if (format == MsaFormat.CLUSTAL && options.getMetadataUrl() != null) {
@@ -105,7 +107,8 @@ public class MsaProcessor implements PostProcessor {
         // Plain text clustal
         return new PostProcessResult("text/plain", alignmentContent);
       } else if (format == MsaFormat.CLUSTALDND) {
-        // HTML with iTOL tree link
+        // HTML with iTOL tree link - read tree data
+        String treeData = Files.readString(guideTreeFile.toPath(), StandardCharsets.UTF_8);
         return generateHtmlWithItol(alignmentContent, treeData);
       } else {
         // Other formats: plain text
@@ -115,7 +118,9 @@ public class MsaProcessor implements PostProcessor {
     } finally {
       // Clean up temp files
       alignmentFile.delete();
-      guideTreeFile.delete();
+      if (guideTreeFile != null) {
+        guideTreeFile.delete();
+      }
     }
   }
 
