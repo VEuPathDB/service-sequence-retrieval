@@ -3,6 +3,7 @@ package org.veupathdb.service.sr.postprocess;
 import org.junit.jupiter.api.Test;
 import org.veupathdb.service.sr.SrtServiceOptions;
 import org.veupathdb.service.sr.generated.model.*;
+import org.veupathdb.service.sr.postprocess.genetree.GeneTreeProcessor;
 import org.veupathdb.service.sr.postprocess.msa.MsaProcessor;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,19 +33,18 @@ class PostProcessorFactoryTest {
   @Test
   void testCreateGeneTreeProcessor() {
     GeneTreeOptions options = new GeneTreeOptionsImpl();
-    options.setFormat(GeneTreeFormat.TBD);
+    options.setFormat(GeneTreeFormat.NEWICK);
 
-    Exception exception = assertThrows(UnsupportedOperationException.class, () ->
-        PostProcessorFactory.create(
-            PostProcessType.GENETREE,
-            null,
-            options,
-            mockOptions,
-            ProcessingContext.SYNC
-        )
+    PostProcessor processor = PostProcessorFactory.create(
+        PostProcessType.GENETREE,
+        null,
+        options,
+        mockOptions,
+        ProcessingContext.SYNC
     );
 
-    assertTrue(exception.getMessage().contains("GENETREE"));
+    assertNotNull(processor);
+    assertInstanceOf(GeneTreeProcessor.class, processor);
   }
 
   @Test

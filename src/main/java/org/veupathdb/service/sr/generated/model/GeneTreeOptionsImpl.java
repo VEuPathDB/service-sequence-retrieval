@@ -9,13 +9,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class GeneTreeOptionsImpl implements GeneTreeOptions {
   @JsonProperty(
       value = "format",
-      defaultValue = "tbd"
+      defaultValue = "newick"
   )
   private GeneTreeFormat format;
 
   @JsonProperty(
       value = "format",
-      defaultValue = "tbd"
+      defaultValue = "newick"
   )
   public GeneTreeFormat getFormat() {
     return this.format;
@@ -23,7 +23,7 @@ public class GeneTreeOptionsImpl implements GeneTreeOptions {
 
   @JsonProperty(
       value = "format",
-      defaultValue = "tbd"
+      defaultValue = "newick"
   )
   public void setFormat(GeneTreeFormat format) {
     this.format = format;

@@ -55,15 +55,36 @@ public class WriteFeaturesJob implements JobExecutor {
       }
     }
 
-    // Validate async MSA sequence limit if MSA post-processing is requested
-    if (jobSpec.getPostProcess() == PostProcessType.MSA) {
+    // Validate async post-processing sequence limits
+    if (jobSpec.getPostProcess() != null) {
       SrtServiceOptions options = org.veupathdb.service.sr.Main.getOptions();
-      int maxSequences = options.getMsaAsyncMaxSequences();
-      if (features.size() > maxSequences) {
-        return JobResult.failure(
-          "Too many sequences for asynchronous MSA request (" + features.size() + " sequences). " +
-          "Maximum allowed is " + maxSequences + "."
-        );
+
+      switch (jobSpec.getPostProcess()) {
+        case MSA -> {
+          int maxSequences = options.getMsaAsyncMaxSequences();
+          if (features.size() > maxSequences) {
+            return JobResult.failure(
+              "Too many sequences for asynchronous MSA request (" + features.size() + " sequences). " +
+              "Maximum allowed is " + maxSequences + "."
+            );
+          }
+        }
+        case GENETREE -> {
+          // Minimum 3 sequences required for gene tree generation
+          if (features.size() < 3) {
+            return JobResult.failure(
+              "Too few sequences for gene tree generation (" + features.size() + " sequences). " +
+              "Minimum required is 3 sequences."
+            );
+          }
+          int maxSequences = options.getGeneTreeAsyncMaxSequences();
+          if (features.size() > maxSequences) {
+            return JobResult.failure(
+              "Too many sequences for asynchronous gene tree request (" + features.size() + " sequences). " +
+              "Maximum allowed is " + maxSequences + "."
+            );
+          }
+        }
       }
     }
 

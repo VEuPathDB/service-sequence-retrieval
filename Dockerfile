@@ -1,73 +1,69 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#
-#   Build Service & Dependencies
-#
+# Stage 1: Prep (Build the Java Application)
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM veupathdb/alpine-dev-base:jdk-21-gradle-8.7 AS prep
+FROM gradle:8.7-jdk21 AS prep
 
-LABEL service="sequence-retrieval-build"
+WORKDIR /workspace
 
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
 
-WORKDIR /workspace
-
-RUN apk add --no-cache git sed findutils coreutils make npm curl gawk jq \
-    && git config --global advice.detachedHead false
-
-RUN npm install -gs raml2html raml2html-modern-theme
-
-# download gradle
-COPY gradlew ./
-COPY gradle gradle
-RUN bash -c 'echo "\n\n" | ./gradlew init --type basic --dsl kotlin --no-daemon'
-
-# copy files required to build dev environment and fetch dependencies
+# Copy files and build the project
 COPY build.gradle.kts settings.gradle.kts ./
-
-# download raml tools (these never change)
-RUN ./gradlew install-raml-4-jax-rs install-raml-merge
-
-# download project dependencies in advance
+COPY gradle gradle
+COPY gradlew ./
 RUN ./gradlew download-dependencies
 
-# copy raml over for merging, then perform code and documentation generation
-COPY api.raml ./
-COPY schema schema
-RUN ./gradlew generate-jaxrs generate-raml-docs
-
-# copy remaining files
 COPY . .
+RUN ./gradlew clean shadowJar
 
-# build the project
-RUN ./gradlew clean test shadowJar
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#
-#   Run the service
-#
+# Stage 2: Bio-Builder (Install Tools via Conda)
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-FROM amazoncorretto:21-alpine3.16
+FROM debian:bookworm-slim AS bio-builder
 
-LABEL service="sequence-retrieval"
+RUN apt-get update && apt-get install -y wget bzip2 ca-certificates && rm -rf /var/lib/apt/lists/*
 
-RUN apk add --no-cache tzdata \
-    && cp /usr/share/zoneinfo/America/New_York /etc/localtime \
-    && echo "America/New_York" > /etc/timezone
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh \
+    && bash /tmp/miniconda.sh -b -p /opt/conda \
+    && rm /tmp/miniconda.sh
 
-# Install clustal-omega from tar file
-COPY resources/clustalo-runtime.tar /tmp/clustalo-runtime.tar
-RUN cd / \
-    && tar -xf /tmp/clustalo-runtime.tar \
-    && rm -f /tmp/clustalo-runtime.tar \
-    && chmod +x /usr/bin/clustalo
 
-ENV JVM_MEM_ARGS="-Xms256M -Xmx5G" \
-    JVM_ARGS="" \
-    LD_LIBRARY_PATH="/lib64:${LD_LIBRARY_PATH}"
+# Remove problematic defaults immediately
+RUN /opt/conda/bin/conda config --remove channels defaults || true \
+    && /opt/conda/bin/conda config --remove channels https://repo.anaconda.com/pkgs/main || true \
+    && /opt/conda/bin/conda config --remove channels https://repo.anaconda.com/pkgs/r || true
 
+# Install tools
+RUN /opt/conda/bin/conda install -y -c conda-forge -c bioconda --override-channels clustalo mafft fasttree \
+    && /opt/conda/bin/conda clean -afy
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Stage 3: Runtime (Use Eclipse Temurin Debian-based)
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+FROM eclipse-temurin:21-jre-jammy
+
+# 1. Install dependencies for the tools
+# Temurin uses apt (Debian/Ubuntu), so this will work perfectly
+RUN apt-get update && apt-get install -y \
+    libgomp1 \
+    libstdc++6 \
+    bash \
+    netcat-openbsd \    
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Copy the built Java application
 COPY --from=prep /workspace/build/libs/service.jar /service.jar
 
-COPY startup.sh startup.sh
+# 3. Copy the entire Conda directory
+COPY --from=bio-builder /opt/conda /opt/conda
 
-CMD ./startup.sh
+# 4. Set PATH
+ENV PATH="/opt/conda/bin:${PATH}"
+
+# Runtime configuration
+COPY startup.sh startup.sh
+RUN chmod +x startup.sh
+
+CMD ["/bin/bash", "./startup.sh"]

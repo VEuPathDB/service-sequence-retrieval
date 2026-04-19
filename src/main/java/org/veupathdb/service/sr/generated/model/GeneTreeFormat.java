@@ -3,8 +3,8 @@ package org.veupathdb.service.sr.generated.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum GeneTreeFormat {
-  @JsonProperty("tbd")
-  TBD("tbd");
+  @JsonProperty("newick")
+  NEWICK("newick");
 
   public final String value;
 

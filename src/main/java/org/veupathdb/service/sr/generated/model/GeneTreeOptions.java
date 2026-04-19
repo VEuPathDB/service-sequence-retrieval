@@ -9,13 +9,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public interface GeneTreeOptions {
   @JsonProperty(
       value = "format",
-      defaultValue = "tbd"
+      defaultValue = "newick"
   )
   GeneTreeFormat getFormat();
 
   @JsonProperty(
       value = "format",
-      defaultValue = "tbd"
+      defaultValue = "newick"
   )
   void setFormat(GeneTreeFormat format);
 }

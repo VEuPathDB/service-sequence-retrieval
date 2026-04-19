@@ -57,14 +57,14 @@ types:
 
   GeneTreeFormat:
     type: string
-    enum: ['tbd']
+    enum: ['newick']
 
   GeneTreeOptions:
     additionalProperties: false
     properties:
-      format:
+      format?:
         type: GeneTreeFormat
-        default: 'tbd'
+        default: 'newick'
 
   Feature:
     additionalProperties: false

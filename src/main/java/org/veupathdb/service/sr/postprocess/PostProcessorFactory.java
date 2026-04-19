@@ -2,6 +2,7 @@ package org.veupathdb.service.sr.postprocess;
 
 import org.veupathdb.service.sr.SrtServiceOptions;
 import org.veupathdb.service.sr.generated.model.*;
+import org.veupathdb.service.sr.postprocess.genetree.GeneTreeProcessor;
 import org.veupathdb.service.sr.postprocess.msa.MsaProcessor;
 
 /**
@@ -44,8 +45,7 @@ public class PostProcessorFactory {
           throw new IllegalArgumentException(
               "geneTreeOptions required when postProcess is GENETREE");
         }
-        // TODO: Implement GeneTreeProcessor
-        throw new UnsupportedOperationException("GENETREE post-processing not yet implemented");
+        yield new GeneTreeProcessor(geneTreeOptions, options, context);
       }
     };
   }

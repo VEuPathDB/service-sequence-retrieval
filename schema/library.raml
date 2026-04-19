@@ -27,14 +27,14 @@ types:
   GeneTreeFormat:
     type: string
     enum:
-      - tbd
+      - newick
   GeneTreeOptions:
     type: object
     additionalProperties: false
     properties:
-      format:
+      format?:
         type: GeneTreeFormat
-        default: 'tbd'
+        default: 'newick'
   JobDataResponse: any
   JobResponse:
     type: object

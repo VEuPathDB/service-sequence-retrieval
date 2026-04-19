@@ -50,9 +50,9 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
     var features = FeatureAdapter.toBEDFeatures(entity.getFeatures());
 
-    // Validate MSA sync request limits
+    // Validate post-processing sync request limits
     if (entity.getPostProcess() != null) {
-      validateMsaSyncRequest(features.size());
+      validatePostProcessSyncRequest(entity.getPostProcess(), features.size());
     }
 
     var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
@@ -112,17 +112,36 @@ public class SequenceRetrievalService implements SequencesSequenceType {
   }
 
   /**
-   * Validate that the number of sequences is within the limit for synchronous MSA requests.
+   * Validate that the number of sequences is within the limits for synchronous post-processing requests.
    */
-  private void validateMsaSyncRequest(int sequenceCount) {
+  private void validatePostProcessSyncRequest(PostProcessType postProcessType, int sequenceCount) {
     SrtServiceOptions options = org.veupathdb.service.sr.Main.getOptions();
-    int maxSequences = options.getMsaSyncMaxSequences();
 
-    if (sequenceCount > maxSequences) {
-      throw new BadRequestException(
-        "Too many sequences for synchronous MSA request (" + sequenceCount + " sequences). " +
-        "Maximum allowed is " + maxSequences + ". " +
-        "Please use the async endpoint (/sequences-async) for larger requests.");
+    switch (postProcessType) {
+      case MSA -> {
+        int maxSequences = options.getMsaSyncMaxSequences();
+        if (sequenceCount > maxSequences) {
+          throw new BadRequestException(
+            "Too many sequences for synchronous MSA request (" + sequenceCount + " sequences). " +
+            "Maximum allowed is " + maxSequences + ". " +
+            "Please use the async endpoint (/sequences-async) for larger requests.");
+        }
+      }
+      case GENETREE -> {
+        // Minimum 3 sequences required for gene tree generation
+        if (sequenceCount < 3) {
+          throw new BadRequestException(
+            "Too few sequences for gene tree generation (" + sequenceCount + " sequences). " +
+            "Minimum required is 3 sequences.");
+        }
+        int maxSequences = options.getGeneTreeSyncMaxSequences();
+        if (sequenceCount > maxSequences) {
+          throw new BadRequestException(
+            "Too many sequences for synchronous gene tree request (" + sequenceCount + " sequences). " +
+            "Maximum allowed is " + maxSequences + ". " +
+            "Please use the async endpoint (/sequences-async) for larger requests.");
+        }
+      }
     }
   }
 
