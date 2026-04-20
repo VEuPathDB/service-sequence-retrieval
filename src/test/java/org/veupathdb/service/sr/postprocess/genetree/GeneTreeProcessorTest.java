@@ -1,5 +1,6 @@
 package org.veupathdb.service.sr.postprocess.genetree;
 
+import htsjdk.tribble.bed.BEDFeature;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -15,6 +16,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,11 +30,13 @@ class GeneTreeProcessorTest {
   private MafftExecutor mockMafftExecutor;
   private FastTreeExecutor mockFastTreeExecutor;
   private File testInputFasta;
+  private List<BEDFeature> emptyFeatures;
 
   @BeforeEach
   void setUp() throws IOException {
     mockMafftExecutor = mock(MafftExecutor.class);
     mockFastTreeExecutor = mock(FastTreeExecutor.class);
+    emptyFeatures = Collections.emptyList();
 
     // Create test input FASTA
     testInputFasta = tempDir.resolve("test-input.fasta").toFile();
@@ -67,7 +72,7 @@ class GeneTreeProcessorTest {
 
     GeneTreeProcessor processor = new GeneTreeProcessor(
       options, mockMafftExecutor, mockFastTreeExecutor);
-    PostProcessResult result = processor.process(testInputFasta);
+    PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Verify plain text output (Newick format)
     assertEquals("text/plain", result.getContentType());
@@ -92,7 +97,7 @@ class GeneTreeProcessorTest {
     GeneTreeProcessor processor = new GeneTreeProcessor(
       options, mockMafftExecutor, mockFastTreeExecutor);
 
-    assertThrows(IOException.class, () -> processor.process(testInputFasta));
+    assertThrows(IOException.class, () -> processor.process(testInputFasta, emptyFeatures));
 
     // Verify mafft was called but fasttree was not
     verify(mockMafftExecutor).execute(eq(testInputFasta), any(File.class));
@@ -118,7 +123,7 @@ class GeneTreeProcessorTest {
     GeneTreeProcessor processor = new GeneTreeProcessor(
       options, mockMafftExecutor, mockFastTreeExecutor);
 
-    assertThrows(IOException.class, () -> processor.process(testInputFasta));
+    assertThrows(IOException.class, () -> processor.process(testInputFasta, emptyFeatures));
 
     // Verify both executors were called
     verify(mockMafftExecutor).execute(eq(testInputFasta), any(File.class));

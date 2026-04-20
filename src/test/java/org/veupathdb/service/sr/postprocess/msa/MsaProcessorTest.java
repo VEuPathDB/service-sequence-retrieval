@@ -1,5 +1,6 @@
 package org.veupathdb.service.sr.postprocess.msa;
 
+import htsjdk.tribble.bed.BEDFeature;
 import jakarta.ws.rs.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -32,10 +35,12 @@ class MsaProcessorTest {
   private File mockAlignmentClustal;
   private File mockAlignmentFasta;
   private File mockGuideTree;
+  private List<BEDFeature> emptyFeatures;
 
   @BeforeEach
   void setUp() throws IOException {
     mockExecutor = mock(ClustaloExecutor.class);
+    emptyFeatures = Collections.emptyList();
 
     // Load test resources
     ClassLoader classLoader = getClass().getClassLoader();
@@ -76,7 +81,7 @@ class MsaProcessorTest {
     );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
-    PostProcessResult result = processor.process(testInputFasta);
+    PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Verify plain text output for clustal without metadata
     assertEquals("text/plain", result.getContentType());
@@ -116,7 +121,7 @@ class MsaProcessorTest {
     );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
-    PostProcessResult result = processor.process(testInputFasta);
+    PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Verify HTML output
     assertEquals("text/html", result.getContentType());
@@ -169,7 +174,7 @@ class MsaProcessorTest {
     );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
-    PostProcessResult result = processor.process(testInputFasta);
+    PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Verify plain text output
     assertEquals("text/plain", result.getContentType());
@@ -205,7 +210,7 @@ class MsaProcessorTest {
     );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
-    PostProcessResult result = processor.process(testInputFasta);
+    PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Verify plain text output
     assertEquals("text/plain", result.getContentType());
@@ -219,12 +224,12 @@ class MsaProcessorTest {
   }
 
   @Test
-  void testMetadataUrlValidationWithClustal() throws Exception {
+  void testClustalWithoutMetadata() throws Exception {
     MsaOptions options = new MsaOptionsImpl();
     options.setFormat(MsaFormat.CLUSTAL);
-    options.setMetadataUrl("https://example.com/metadata.tsv");
+    // No metadataUrl - should return plain text
 
-    // Mock clustalo execution (no guide tree for clustal with metadata)
+    // Mock clustalo execution (no guide tree for plain clustal)
     doAnswer(invocation -> {
       File outputFile = invocation.getArgument(1);
 
@@ -241,10 +246,11 @@ class MsaProcessorTest {
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
 
-    // Should not throw - metadataUrl is allowed with clustal
-    // Currently returns plain text (metadata HTML not yet implemented)
-    PostProcessResult result = processor.process(testInputFasta);
+    PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
     assertNotNull(result);
+    assertEquals("text/plain", result.getContentType());
+    String output = new String(result.getContent(), StandardCharsets.UTF_8);
+    assertTrue(output.contains("CLUSTAL"));
   }
 
   @Test
@@ -257,7 +263,7 @@ class MsaProcessorTest {
 
     // Should throw BadRequestException
     Exception exception = assertThrows(BadRequestException.class, () -> {
-      processor.process(testInputFasta);
+      processor.process(testInputFasta, emptyFeatures);
     });
 
     assertTrue(exception.getMessage().contains("metadataUrl"));
@@ -275,7 +281,7 @@ class MsaProcessorTest {
 
     // Should throw BadRequestException
     Exception exception = assertThrows(BadRequestException.class, () -> {
-      processor.process(testInputFasta);
+      processor.process(testInputFasta, emptyFeatures);
     });
 
     assertTrue(exception.getMessage().contains("metadataUrl"));
@@ -300,7 +306,7 @@ class MsaProcessorTest {
 
     // Should wrap in IOException
     Exception exception = assertThrows(IOException.class, () -> {
-      processor.process(testInputFasta);
+      processor.process(testInputFasta, emptyFeatures);
     });
 
     assertTrue(exception.getMessage().contains("Clustalo execution failed"));
@@ -334,7 +340,7 @@ class MsaProcessorTest {
     );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
-    PostProcessResult result = processor.process(testInputFasta);
+    PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     String html = new String(result.getContent(), StandardCharsets.UTF_8);
 
@@ -371,7 +377,7 @@ class MsaProcessorTest {
     );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, customItolUrl);
-    PostProcessResult result = processor.process(testInputFasta);
+    PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Note: iTOL upload will fail in tests (no network), but the custom URL
     // should be used in the upload attempt
@@ -380,5 +386,66 @@ class MsaProcessorTest {
     // Verify HTML was generated (even if iTOL upload failed)
     assertTrue(html.contains("<!DOCTYPE html>"));
     assertTrue(html.contains("Multiple Sequence Alignment"));
+  }
+
+  @Test
+  void testClustalWithMetadataFromFileUrl() throws Exception {
+    MsaOptions options = new MsaOptionsImpl();
+    options.setFormat(MsaFormat.CLUSTAL);
+
+    // Get file URL for test metadata (shared with functional tests)
+    ClassLoader classLoader = getClass().getClassLoader();
+    URL metadataUrl = classLoader.getResource("veupathdb/service/sequence/reference/test-msa-metadata.tsv");
+    assertNotNull(metadataUrl, "Test metadata file not found");
+
+    // Convert to file:// URL
+    String fileUrl = metadataUrl.toString();
+    options.setMetadataUrl(fileUrl);
+
+    // Create mock features with IDs matching the metadata file (SEQ1, SEQ2, SEQ3)
+    BEDFeature feature1 = mock(BEDFeature.class);
+    when(feature1.getName()).thenReturn("SEQ1");
+    BEDFeature feature2 = mock(BEDFeature.class);
+    when(feature2.getName()).thenReturn("SEQ2");
+    BEDFeature feature3 = mock(BEDFeature.class);
+    when(feature3.getName()).thenReturn("SEQ3");
+
+    List<BEDFeature> features = List.of(feature1, feature2, feature3);
+
+    // Mock clustalo execution
+    doAnswer(invocation -> {
+      File outputFile = invocation.getArgument(1);
+      Files.copy(mockAlignmentClustal.toPath(), outputFile.toPath(),
+          StandardCopyOption.REPLACE_EXISTING);
+      return null;
+    }).when(mockExecutor).execute(
+        any(File.class),
+        any(File.class),
+        eq("clustal"),
+        isNull()
+    );
+
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
+    PostProcessResult result = processor.process(testInputFasta, features);
+
+    // Verify plain text output
+    assertEquals("text/plain", result.getContentType());
+    String output = new String(result.getContent(), StandardCharsets.UTF_8);
+
+    // Verify metadata TSV is at the top
+    assertTrue(output.startsWith("ID\t"), "Output should start with TSV header");
+    assertTrue(output.contains("organism\tsample_type\tlocation"), "Should contain metadata column headers");
+    assertTrue(output.contains("SEQ1\tEntamoeba histolytica\tisolate\tlaboratory"), "Should contain SEQ1 metadata");
+    assertTrue(output.contains("SEQ2\tEntamoeba histolytica\tclinical\tfield_site_A"), "Should contain SEQ2 metadata");
+    assertTrue(output.contains("SEQ3\tEntamoeba histolytica\treference\tgenome_project"), "Should contain SEQ3 metadata");
+
+    // Verify double newline separator and clustal alignment follows
+    assertTrue(output.contains("\n\nCLUSTAL"), "Should have double newline before CLUSTAL header");
+    assertTrue(output.contains("CLUSTAL O"), "Should contain clustal alignment");
+
+    // Verify metadata appears before alignment
+    int metadataPos = output.indexOf("SEQ1\tEntamoeba");
+    int clustalPos = output.indexOf("CLUSTAL");
+    assertTrue(metadataPos < clustalPos, "Metadata should appear before clustal alignment");
   }
 }

@@ -107,7 +107,7 @@ public class WriteFeaturesJob implements JobExecutor {
 
       // Check if post-processing is requested
       if (jobSpec.getPostProcess() != null) {
-        return executeWithPostProcessing(jobContext, jobSpec, tempFasta);
+        return executeWithPostProcessing(jobContext, jobSpec, tempFasta, features);
       } else {
         // No post-processing - write FASTA directly
         byte[] fastaContent;
@@ -130,7 +130,8 @@ public class WriteFeaturesJob implements JobExecutor {
   private JobResult executeWithPostProcessing(
       JobContext jobContext,
       SequenceRetrievalSpec jobSpec,
-      File tempFasta) {
+      File tempFasta,
+      List<BEDFeature> features) {
 
     try {
       // Create post-processor
@@ -144,7 +145,7 @@ public class WriteFeaturesJob implements JobExecutor {
       );
 
       // Process
-      PostProcessResult result = processor.process(tempFasta);
+      PostProcessResult result = processor.process(tempFasta, features);
 
       // Write primary output
       jobContext.getWorkspace().write("output", new String(result.getContent(), StandardCharsets.UTF_8));

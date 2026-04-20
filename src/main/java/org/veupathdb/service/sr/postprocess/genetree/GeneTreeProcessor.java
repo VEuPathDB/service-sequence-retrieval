@@ -1,5 +1,6 @@
 package org.veupathdb.service.sr.postprocess.genetree;
 
+import htsjdk.tribble.bed.BEDFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.veupathdb.service.sr.SrtServiceOptions;
@@ -13,6 +14,7 @@ import org.veupathdb.service.sr.postprocess.ProcessingContext;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 
 /**
  * Post-processor for gene tree generation.
@@ -62,7 +64,7 @@ public class GeneTreeProcessor implements PostProcessor {
   }
 
   @Override
-  public PostProcessResult process(File fastaInput) throws IOException {
+  public PostProcessResult process(File fastaInput, List<BEDFeature> features) throws IOException {
     // Create temp files for intermediate alignment and final tree output
     File alignmentFile = File.createTempFile("alignment-", ".fasta");
     File treeFile = File.createTempFile("tree-", ".newick");

@@ -159,6 +159,9 @@ public class SequenceRetrievalService implements SequencesSequenceType {
         fastaStream.accept(fos);
       }
 
+      // Get features for post-processing
+      var features = FeatureAdapter.toBEDFeatures(entity.getFeatures());
+
       // Create post-processor
       SrtServiceOptions options = org.veupathdb.service.sr.Main.getOptions();
       PostProcessor processor = PostProcessorFactory.create(
@@ -170,7 +173,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       );
 
       // Process
-      PostProcessResult result = processor.process(tempFasta);
+      PostProcessResult result = processor.process(tempFasta, features);
 
       // Return appropriate response based on content type
       return switch (result.getContentType()) {

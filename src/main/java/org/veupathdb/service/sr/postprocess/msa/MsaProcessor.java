@@ -1,5 +1,6 @@
 package org.veupathdb.service.sr.postprocess.msa;
 
+import htsjdk.tribble.bed.BEDFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.veupathdb.service.sr.SrtServiceOptions;
@@ -18,7 +19,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Unified post-processor for multiple sequence alignment.
@@ -58,14 +61,17 @@ public class MsaProcessor implements PostProcessor {
   /**
    * Constructor for testing with injectable ClustaloExecutor and iTOL URL.
    */
-  public MsaProcessor(MsaOptions options, ClustaloExecutor clustaloExecutor, String itolBaseUrl) {
+  public MsaProcessor(
+      MsaOptions options,
+      ClustaloExecutor clustaloExecutor,
+      String itolBaseUrl) {
     this.options = options;
     this.clustaloExecutor = clustaloExecutor;
     this.itolBaseUrl = itolBaseUrl;
   }
 
   @Override
-  public PostProcessResult process(File fastaInput) throws IOException {
+  public PostProcessResult process(File fastaInput, List<BEDFeature> features) throws IOException {
     // Validate metadata URL usage
     validateMetadataUrl();
 
@@ -98,11 +104,23 @@ public class MsaProcessor implements PostProcessor {
 
       // Generate response based on format
       if (format == MsaFormat.CLUSTAL && options.getMetadataUrl() != null) {
-        // Future: clustal with metadata tooltips (HTML)
-        // For now, return plain text
-        // TODO: Implement metadata fetching and HTML tooltip generation
-        LOG.warn("Metadata URL provided but metadata HTML generation not yet implemented");
-        return new PostProcessResult("text/plain", alignmentContent);
+        // Clustal with metadata TSV prepended
+        LOG.info("Prepending metadata TSV to clustal output");
+
+        // 1. Extract IDs from features
+        var featureIds = MetadataParser.extractIdsFromFeatures(features);
+
+        // 2. Fetch and parse metadata from URL (with preserved order)
+        MetadataParser.ParsedMetadata parsedMetadata =
+            MetadataParser.parseMetadataFromUrl(options.getMetadataUrl());
+
+        // 3. Strict validation - throws BadRequestException on mismatch
+        MetadataParser.validateMetadataIds(parsedMetadata.getData(), featureIds);
+
+        // 4. Prepend metadata TSV to alignment output (preserving row and column order)
+        byte[] outputContent = prependMetadataTsv(parsedMetadata, alignmentContent);
+
+        return new PostProcessResult("text/plain", outputContent);
       } else if (format == MsaFormat.CLUSTAL && options.getMetadataUrl() == null) {
         // Plain text clustal
         return new PostProcessResult("text/plain", alignmentContent);
@@ -122,6 +140,55 @@ public class MsaProcessor implements PostProcessor {
         guideTreeFile.delete();
       }
     }
+  }
+
+  /**
+   * Prepend metadata TSV content to alignment output.
+   * Converts metadata map back to TSV format and prepends it with a double newline separator.
+   * Preserves both row and column order from the original TSV file.
+   *
+   * @param parsedMetadata Parsed metadata with field names and data
+   * @param alignmentContent Original clustal alignment bytes
+   * @return Combined output with metadata TSV followed by double newline and alignment
+   */
+  private byte[] prependMetadataTsv(MetadataParser.ParsedMetadata parsedMetadata, byte[] alignmentContent) {
+    StringBuilder tsv = new StringBuilder();
+
+    String[] fieldNames = parsedMetadata.getFieldNames();
+    Map<String, Map<String, String>> metadata = parsedMetadata.getData();
+
+    if (!metadata.isEmpty()) {
+      // Write header row: ID followed by field names in original order
+      tsv.append("ID");
+      for (String fieldName : fieldNames) {
+        tsv.append("\t").append(fieldName);
+      }
+      tsv.append("\n");
+
+      // Write data rows in original order (LinkedHashMap preserves insertion order)
+      for (Map.Entry<String, Map<String, String>> entry : metadata.entrySet()) {
+        String id = entry.getKey();
+        Map<String, String> fields = entry.getValue();
+
+        tsv.append(id);
+        // Use field names array to ensure correct column order
+        for (String fieldName : fieldNames) {
+          tsv.append("\t").append(fields.get(fieldName));
+        }
+        tsv.append("\n");
+      }
+    }
+
+    // Append double newline separator
+    tsv.append("\n");
+
+    // Combine TSV and alignment
+    byte[] tsvBytes = tsv.toString().getBytes(StandardCharsets.UTF_8);
+    byte[] combined = new byte[tsvBytes.length + alignmentContent.length];
+    System.arraycopy(tsvBytes, 0, combined, 0, tsvBytes.length);
+    System.arraycopy(alignmentContent, 0, combined, tsvBytes.length, alignmentContent.length);
+
+    return combined;
   }
 
   /**
