@@ -20,6 +20,8 @@ RUN ./gradlew clean shadowJar
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Stage 2: Bio-Builder (Install Tools via Conda)
+#
+# Use debian because these tools are not available in alpine
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 FROM debian:bookworm-slim AS bio-builder
 
