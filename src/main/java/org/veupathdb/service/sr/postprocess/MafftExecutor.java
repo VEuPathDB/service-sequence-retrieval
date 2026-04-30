@@ -2,13 +2,18 @@ package org.veupathdb.service.sr.postprocess;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gusdb.fgputil.runtime.RuntimeUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -52,55 +57,26 @@ public class MafftExecutor {
 
     LOG.info("Executing mafft: " + String.join(" ", command));
 
-    ProcessBuilder pb = new ProcessBuilder(command);
-    pb.redirectOutput(outputFile); // Redirect stdout to output file
-    pb.redirectErrorStream(false); // Keep stderr separate for logging
-
-    Process process = pb.start();
-
-    // Capture stderr for logging
     StringBuilder stderrOutput = new StringBuilder();
-    Thread stderrReader = new Thread(() -> {
-      try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-          stderrOutput.append(line).append("\n");
-          LOG.debug("mafft: " + line);
-        }
-      } catch (IOException e) {
-        LOG.warn("Error reading mafft stderr", e);
-      }
-    });
-    stderrReader.start();
+    Optional<Integer> exitValue = RuntimeUtil.executeSubprocess(
+        command,
+        Collections.emptyMap(),                   // no extra environment
+        Optional.empty(),                         // input is read from file, not stdin
+        line -> {
+          LOG.debug("mafft: " + line);            // log stderr at debug level
+          stderrOutput.append(line).append("\n"); // collect output for logging on error
+        },
+        Optional.of(outputFile),                  // write to output file from stdout
+        Optional.of(Duration.of(                  // timeout the subprocess
+            timeoutSeconds, ChronoUnit.SECONDS))
+    );
 
-    // Wait for process with timeout
-    boolean completed;
-    try {
-      completed = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      process.destroyForcibly();
-      throw new MafftException("Mafft execution interrupted", e);
+    if (exitValue.isEmpty()) {
+      throw new MafftException("Mafft execution timed out after " + timeoutSeconds + " seconds");
     }
-
-    if (!completed) {
-      process.destroyForcibly();
-      throw new MafftException(
-        "Mafft execution timed out after " + timeoutSeconds + " seconds");
+    if (exitValue.get() != 0) {
+      throw new MafftException("Mafft failed with exit code " + exitValue.get() + ". Error output:\n" + stderrOutput);
     }
-
-    // Wait for stderr reader to finish
-    try {
-      stderrReader.join(1000);
-    } catch (InterruptedException e) {
-      LOG.warn("Interrupted while waiting for stderr reader", e);
-    }
-
-    int exitCode = process.exitValue();
-    if (exitCode != 0) {
-      throw new MafftException(
-        "Mafft failed with exit code " + exitCode + ". Error output:\n" + stderrOutput.toString());
-    }
-
     LOG.info("Mafft completed successfully");
   }
 

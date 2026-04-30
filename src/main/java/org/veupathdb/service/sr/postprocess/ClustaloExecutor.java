@@ -2,14 +2,19 @@ package org.veupathdb.service.sr.postprocess;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gusdb.fgputil.runtime.RuntimeUtil;
 import org.veupathdb.service.sr.SrtServiceOptions;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -67,44 +72,26 @@ public class ClustaloExecutor {
 
     LOG.info("Executing clustalo: " + String.join(" ", command));
 
-    ProcessBuilder pb = new ProcessBuilder(command);
-    pb.redirectErrorStream(true); // Merge stderr into stdout
+    StringBuilder output = new StringBuilder();
+    Optional<Integer> exitValue = RuntimeUtil.executeSubprocess(
+        command,
+        Collections.emptyMap(),                   // no extra environment
+        Optional.empty(),                         // input is read from file, not stdin
+        line -> {
+          LOG.debug("clustalo: " + line);         // log stdout/stderr at debug level
+          output.append(line).append("\n");       // collect output for logging on error
+        },
+        Optional.empty(),                         // join stdout/stderr
+        Optional.of(Duration.of(                  // timeout the subprocess
+            timeoutSeconds, ChronoUnit.SECONDS))
+    );
 
-    Process process = pb.start();
-
-    // Wait for process with timeout
-    boolean completed;
-    try {
-      completed = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      process.destroyForcibly();
-      throw new ClustaloException("Clustalo execution interrupted", e);
+    if (exitValue.isEmpty()) {
+      throw new ClustaloException("Clustalo execution timed out after " + timeoutSeconds + " seconds");
     }
-
-    if (!completed) {
-      process.destroyForcibly();
-      throw new ClustaloException(
-        "Clustalo execution timed out after " + timeoutSeconds + " seconds");
+    if (exitValue.get() != 0) {
+      throw new ClustaloException("Clustalo failed with exit code " + exitValue.get() + ". Output:\n" + output);
     }
-
-    // Read output after process completes
-    String output;
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-      StringBuilder sb = new StringBuilder();
-      String line;
-      while ((line = reader.readLine()) != null) {
-        sb.append(line).append("\n");
-        LOG.debug("clustalo: " + line);
-      }
-      output = sb.toString();
-    }
-
-    int exitCode = process.exitValue();
-    if (exitCode != 0) {
-      throw new ClustaloException(
-        "Clustalo failed with exit code " + exitCode + ". Output:\n" + output);
-    }
-
     LOG.info("Clustalo completed successfully");
   }
 
