@@ -99,12 +99,9 @@ public class MsaProcessor implements PostProcessor {
         throw new IOException("Clustalo execution failed", e);
       }
 
-      // Read alignment content
-      byte[] alignmentContent = Files.readAllBytes(alignmentFile.toPath());
-
       // Generate response based on format
       if (format == MsaFormat.CLUSTAL && options.getMetadataUrl() != null) {
-        // Clustal with metadata TSV prepended
+        // Clustal with metadata TSV prepended (complex streaming)
         LOG.info("Prepending metadata TSV to clustal output");
 
         // 1. Extract IDs from features
@@ -117,78 +114,82 @@ public class MsaProcessor implements PostProcessor {
         // 3. Strict validation - throws BadRequestException on mismatch
         MetadataParser.validateMetadataIds(parsedMetadata.getData(), featureIds);
 
-        // 4. Prepend metadata TSV to alignment output (preserving row and column order)
-        byte[] outputContent = prependMetadataTsv(parsedMetadata, alignmentContent);
-
-        return new PostProcessResult("text/plain", outputContent);
+        // 4. Stream metadata TSV followed by alignment
+        return streamMetadataWithAlignment(parsedMetadata, alignmentFile, guideTreeFile);
       } else if (format == MsaFormat.CLUSTAL && options.getMetadataUrl() == null) {
-        // Plain text clustal
-        return new PostProcessResult("text/plain", alignmentContent);
+        // Plain text clustal (simple streaming)
+        return new PostProcessResult("text/plain",
+            os -> Files.copy(alignmentFile.toPath(), os),
+            List.of(alignmentFile));
       } else if (format == MsaFormat.CLUSTALDND) {
-        // HTML with iTOL tree link - read tree data
-        String treeData = Files.readString(guideTreeFile.toPath(), StandardCharsets.UTF_8);
-        return generateHtmlWithItol(alignmentContent, treeData);
+        // HTML with iTOL tree link (complex streaming)
+        return generateHtmlWithItol(alignmentFile, guideTreeFile);
       } else {
-        // Other formats: plain text
-        return new PostProcessResult("text/plain", alignmentContent);
+        // Other formats: plain text (simple streaming)
+        return new PostProcessResult("text/plain",
+            os -> Files.copy(alignmentFile.toPath(), os),
+            List.of(alignmentFile));
       }
 
     } finally {
-      // Clean up temp files
-      alignmentFile.delete();
-      if (guideTreeFile != null) {
-        guideTreeFile.delete();
-      }
+      // Temp files are managed by PostProcessResult for cleanup after streaming
+      // No cleanup here
     }
   }
 
   /**
-   * Prepend metadata TSV content to alignment output.
-   * Converts metadata map back to TSV format and prepends it with a double newline separator.
-   * Preserves both row and column order from the original TSV file.
+   * Stream metadata TSV content followed by alignment output.
+   * Converts metadata map to TSV format and streams it with a double newline separator,
+   * then streams the alignment file. Preserves both row and column order from the original TSV file.
    *
    * @param parsedMetadata Parsed metadata with field names and data
-   * @param alignmentContent Original clustal alignment bytes
-   * @return Combined output with metadata TSV followed by double newline and alignment
+   * @param alignmentFile Clustal alignment file
+   * @param guideTreeFile Guide tree file (may be null)
+   * @return PostProcessResult with streaming content
    */
-  private byte[] prependMetadataTsv(MetadataParser.ParsedMetadata parsedMetadata, byte[] alignmentContent) {
-    StringBuilder tsv = new StringBuilder();
+  private PostProcessResult streamMetadataWithAlignment(
+      MetadataParser.ParsedMetadata parsedMetadata,
+      File alignmentFile,
+      File guideTreeFile) {
 
-    String[] fieldNames = parsedMetadata.getFieldNames();
-    Map<String, Map<String, String>> metadata = parsedMetadata.getData();
+    List<File> tempFiles = guideTreeFile != null
+        ? List.of(alignmentFile, guideTreeFile)
+        : List.of(alignmentFile);
 
-    if (!metadata.isEmpty()) {
-      // Write header row: ID followed by field names in original order
-      tsv.append("ID");
-      for (String fieldName : fieldNames) {
-        tsv.append("\t").append(fieldName);
-      }
-      tsv.append("\n");
+    return new PostProcessResult("text/plain", os -> {
+      String[] fieldNames = parsedMetadata.getFieldNames();
+      Map<String, Map<String, String>> metadata = parsedMetadata.getData();
 
-      // Write data rows in original order (LinkedHashMap preserves insertion order)
-      for (Map.Entry<String, Map<String, String>> entry : metadata.entrySet()) {
-        String id = entry.getKey();
-        Map<String, String> fields = entry.getValue();
-
-        tsv.append(id);
-        // Use field names array to ensure correct column order
+      if (!metadata.isEmpty()) {
+        // Write header row: ID followed by field names in original order
+        StringBuilder header = new StringBuilder("ID");
         for (String fieldName : fieldNames) {
-          tsv.append("\t").append(fields.get(fieldName));
+          header.append("\t").append(fieldName);
         }
-        tsv.append("\n");
+        header.append("\n");
+        os.write(header.toString().getBytes(StandardCharsets.UTF_8));
+
+        // Write data rows in original order (LinkedHashMap preserves insertion order)
+        for (Map.Entry<String, Map<String, String>> entry : metadata.entrySet()) {
+          String id = entry.getKey();
+          Map<String, String> fields = entry.getValue();
+
+          StringBuilder row = new StringBuilder(id);
+          // Use field names array to ensure correct column order
+          for (String fieldName : fieldNames) {
+            row.append("\t").append(fields.get(fieldName));
+          }
+          row.append("\n");
+          os.write(row.toString().getBytes(StandardCharsets.UTF_8));
+        }
       }
-    }
 
-    // Append double newline separator
-    tsv.append("\n");
+      // Write double newline separator
+      os.write("\n".getBytes(StandardCharsets.UTF_8));
 
-    // Combine TSV and alignment
-    byte[] tsvBytes = tsv.toString().getBytes(StandardCharsets.UTF_8);
-    byte[] combined = new byte[tsvBytes.length + alignmentContent.length];
-    System.arraycopy(tsvBytes, 0, combined, 0, tsvBytes.length);
-    System.arraycopy(alignmentContent, 0, combined, tsvBytes.length, alignmentContent.length);
-
-    return combined;
+      // Stream alignment file
+      Files.copy(alignmentFile.toPath(), os);
+    }, tempFiles);
   }
 
   /**
@@ -205,10 +206,14 @@ public class MsaProcessor implements PostProcessor {
 
   /**
    * Generate HTML response with iTOL tree link and alignment.
-   * Used for clustal_dnd format.
+   * Used for clustal_dnd format. Streams HTML generation to avoid memory overhead.
    */
-  private PostProcessResult generateHtmlWithItol(byte[] alignmentContent, String treeData)
+  private PostProcessResult generateHtmlWithItol(File alignmentFile, File guideTreeFile)
       throws IOException {
+
+    // Read tree data for iTOL upload and additional file
+    // Tree files are small, so reading into memory is acceptable here
+    String treeData = Files.readString(guideTreeFile.toPath(), StandardCharsets.UTF_8);
 
     // Validate tree data before uploading
     String itolUrl = null;
@@ -234,54 +239,62 @@ public class MsaProcessor implements PostProcessor {
       }
     }
 
-    // Generate HTML
-    StringBuilder html = new StringBuilder();
-    html.append("<!DOCTYPE html>\n");
-    html.append("<html>\n<head>\n");
-    html.append("<meta charset=\"UTF-8\">\n");
-    html.append("<title>Multiple Sequence Alignment</title>\n");
-    html.append("</head>\n<body>\n");
-
-    // Add iTOL link if available
-    if (itolUrl != null) {
-      html.append("<h3><a href=\"").append(itolUrl).append("\" target=\"_blank\">")
-          .append("Click here to view a phylogenetic tree of the alignment.")
-          .append("</a></h3>\n");
-    } else {
-      // No valid iTOL URL - show message
-      html.append("<h3>(.dnd file does not produce a valid iTOL phylogenetic tree)</h3>\n");
-    }
-
-    // Add alignment
-    html.append("<pre>\n");
-    String alignmentText = new String(alignmentContent, StandardCharsets.UTF_8);
-
-    // Process alignment - highlight header line
-    String[] lines = alignmentText.split("\n");
-    for (String line : lines) {
-      if (line.startsWith("CLUSTAL O")) {
-        html.append("<h3>").append(escapeHtml(line)).append("</h3>\n");
-      } else {
-        html.append(escapeHtml(line)).append("\n");
-      }
-    }
-    html.append("</pre>\n");
-
-    // Add guide tree data
-    html.append("<hr>\n");
-    html.append("<h4>Guide Tree (.dnd format)</h4>\n");
-    html.append("<pre>");
-    html.append(escapeHtml(treeData));
-    html.append("</pre>\n");
-
-    html.append("</body>\n</html>\n");
-
     // Store guide tree as additional file
     Map<String, byte[]> additionalFiles = new HashMap<>();
     additionalFiles.put("guidetree.dnd", treeData.getBytes(StandardCharsets.UTF_8));
 
-    return new PostProcessResult("text/html", html.toString().getBytes(StandardCharsets.UTF_8),
-        additionalFiles);
+    // Capture itolUrl for use in lambda
+    final String finalItolUrl = itolUrl;
+    final String finalTreeData = treeData;
+
+    // Stream HTML generation
+    return new PostProcessResult("text/html", os -> {
+      // Write HTML header
+      os.write("<!DOCTYPE html>\n".getBytes(StandardCharsets.UTF_8));
+      os.write("<html>\n<head>\n".getBytes(StandardCharsets.UTF_8));
+      os.write("<meta charset=\"UTF-8\">\n".getBytes(StandardCharsets.UTF_8));
+      os.write("<title>Multiple Sequence Alignment</title>\n".getBytes(StandardCharsets.UTF_8));
+      os.write("</head>\n<body>\n".getBytes(StandardCharsets.UTF_8));
+
+      // Add iTOL link if available
+      if (finalItolUrl != null) {
+        String link = "<h3><a href=\"" + finalItolUrl + "\" target=\"_blank\">" +
+            "Click here to view a phylogenetic tree of the alignment." +
+            "</a></h3>\n";
+        os.write(link.getBytes(StandardCharsets.UTF_8));
+      } else {
+        // No valid iTOL URL - show message
+        os.write("<h3>(.dnd file does not produce a valid iTOL phylogenetic tree)</h3>\n"
+            .getBytes(StandardCharsets.UTF_8));
+      }
+
+      // Start alignment section
+      os.write("<pre>\n".getBytes(StandardCharsets.UTF_8));
+
+      // Stream alignment line-by-line with HTML escaping
+      try (BufferedReader reader = Files.newBufferedReader(alignmentFile.toPath(), StandardCharsets.UTF_8)) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+          if (line.startsWith("CLUSTAL O")) {
+            os.write(("<h3>" + escapeHtml(line) + "</h3>\n").getBytes(StandardCharsets.UTF_8));
+          } else {
+            os.write((escapeHtml(line) + "\n").getBytes(StandardCharsets.UTF_8));
+          }
+        }
+      }
+
+      os.write("</pre>\n".getBytes(StandardCharsets.UTF_8));
+
+      // Add guide tree data
+      os.write("<hr>\n".getBytes(StandardCharsets.UTF_8));
+      os.write("<h4>Guide Tree (.dnd format)</h4>\n".getBytes(StandardCharsets.UTF_8));
+      os.write("<pre>".getBytes(StandardCharsets.UTF_8));
+      os.write(escapeHtml(finalTreeData).getBytes(StandardCharsets.UTF_8));
+      os.write("</pre>\n".getBytes(StandardCharsets.UTF_8));
+
+      // Write HTML footer
+      os.write("</body>\n</html>\n".getBytes(StandardCharsets.UTF_8));
+    }, additionalFiles, List.of(alignmentFile, guideTreeFile));
   }
 
   /**

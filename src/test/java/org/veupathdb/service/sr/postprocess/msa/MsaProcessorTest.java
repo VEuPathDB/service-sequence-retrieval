@@ -12,6 +12,7 @@ import org.veupathdb.service.sr.generated.model.MsaOptionsImpl;
 import org.veupathdb.service.sr.postprocess.ClustaloExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -85,7 +86,13 @@ class MsaProcessorTest {
 
     // Verify plain text output for clustal without metadata
     assertEquals("text/plain", result.getContentType());
-    String output = new String(result.getContent(), StandardCharsets.UTF_8);
+
+    // Use writeContent for streaming results
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    result.writeContent(baos);
+    result.cleanup();
+    String output = baos.toString(StandardCharsets.UTF_8);
+
     assertTrue(output.contains("CLUSTAL"));
 
     // Verify clustalo was called with null guide tree file
@@ -125,7 +132,12 @@ class MsaProcessorTest {
 
     // Verify HTML output
     assertEquals("text/html", result.getContentType());
-    String html = new String(result.getContent(), StandardCharsets.UTF_8);
+
+    // Use writeContent for streaming results
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    result.writeContent(baos);
+    result.cleanup();
+    String html = baos.toString(StandardCharsets.UTF_8);
 
     // Check HTML structure
     assertTrue(html.contains("<!DOCTYPE html>"));
@@ -178,7 +190,13 @@ class MsaProcessorTest {
 
     // Verify plain text output
     assertEquals("text/plain", result.getContentType());
-    String output = new String(result.getContent(), StandardCharsets.UTF_8);
+
+    // Use writeContent for streaming results
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    result.writeContent(baos);
+    result.cleanup();
+    String output = baos.toString(StandardCharsets.UTF_8);
+
     assertTrue(output.startsWith(">"));
 
     verify(mockExecutor).execute(
@@ -249,7 +267,13 @@ class MsaProcessorTest {
     PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
     assertNotNull(result);
     assertEquals("text/plain", result.getContentType());
-    String output = new String(result.getContent(), StandardCharsets.UTF_8);
+
+    // Use writeContent for streaming results
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    result.writeContent(baos);
+    result.cleanup();
+    String output = baos.toString(StandardCharsets.UTF_8);
+
     assertTrue(output.contains("CLUSTAL"));
   }
 
@@ -342,7 +366,11 @@ class MsaProcessorTest {
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
     PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
-    String html = new String(result.getContent(), StandardCharsets.UTF_8);
+    // Use writeContent for streaming results
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    result.writeContent(baos);
+    result.cleanup();
+    String html = baos.toString(StandardCharsets.UTF_8);
 
     // Verify HTML escaping
     assertTrue(html.contains("&lt;"));  // < escaped
@@ -381,7 +409,11 @@ class MsaProcessorTest {
 
     // Note: iTOL upload will fail in tests (no network), but the custom URL
     // should be used in the upload attempt
-    String html = new String(result.getContent(), StandardCharsets.UTF_8);
+    // Use writeContent for streaming results
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    result.writeContent(baos);
+    result.cleanup();
+    String html = baos.toString(StandardCharsets.UTF_8);
 
     // Verify HTML was generated (even if iTOL upload failed)
     assertTrue(html.contains("<!DOCTYPE html>"));
@@ -430,7 +462,12 @@ class MsaProcessorTest {
 
     // Verify plain text output
     assertEquals("text/plain", result.getContentType());
-    String output = new String(result.getContent(), StandardCharsets.UTF_8);
+
+    // Use writeContent for streaming results
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    result.writeContent(baos);
+    result.cleanup();
+    String output = baos.toString(StandardCharsets.UTF_8);
 
     // Verify metadata TSV is at the top
     assertTrue(output.startsWith("ID\t"), "Output should start with TSV header");

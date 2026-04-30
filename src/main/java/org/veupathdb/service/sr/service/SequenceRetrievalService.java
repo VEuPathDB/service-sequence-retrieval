@@ -175,14 +175,22 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       // Process
       PostProcessResult result = processor.process(tempFasta, features);
 
-      // Return appropriate response based on content type
+      // Return appropriate response based on content type (all use streaming)
       return switch (result.getContentType()) {
         case "text/html" -> PostSequencesBySequenceTypeResponse.respond200WithTextHtml(
-          new String(result.getContent(), StandardCharsets.UTF_8));
+          new StreamerWithLogging(os -> {
+            try {
+              result.writeContent(os);
+              result.cleanup();
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
+          }));
         case "text/plain" -> PostSequencesBySequenceTypeResponse.respond200WithTextPlain(
           new StreamerWithLogging(os -> {
             try {
-              os.write(result.getContent());
+              result.writeContent(os);
+              result.cleanup();
             } catch (IOException e) {
               throw new RuntimeException(e);
             }
@@ -190,7 +198,8 @@ public class SequenceRetrievalService implements SequencesSequenceType {
         default -> PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(
           new StreamerWithLogging(os -> {
             try {
-              os.write(result.getContent());
+              result.writeContent(os);
+              result.cleanup();
             } catch (IOException e) {
               throw new RuntimeException(e);
             }

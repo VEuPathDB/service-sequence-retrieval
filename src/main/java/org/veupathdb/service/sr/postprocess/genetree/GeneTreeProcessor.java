@@ -86,18 +86,17 @@ public class GeneTreeProcessor implements PostProcessor {
         throw new IOException("FastTree execution failed", e);
       }
 
-      // Read tree content
-      byte[] treeContent = Files.readAllBytes(treeFile.toPath());
-
       LOG.info("Gene tree generation completed successfully");
 
-      // Return tree as plain text (Newick format)
-      return new PostProcessResult("text/plain", treeContent);
+      // Return tree as plain text (Newick format) with streaming
+      // Temp files will be cleaned up by caller after streaming
+      return new PostProcessResult("text/plain",
+          os -> Files.copy(treeFile.toPath(), os),
+          List.of(alignmentFile, treeFile));
 
     } finally {
-      // Clean up temp files
-      alignmentFile.delete();
-      treeFile.delete();
+      // Temp files are managed by PostProcessResult for cleanup after streaming
+      // No cleanup here
     }
   }
 }
