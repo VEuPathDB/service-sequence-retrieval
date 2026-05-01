@@ -84,7 +84,7 @@ dependencies {
   implementation("com.github.samtools:htsjdk:2.24.1")
 
   // FgpUtil
-  implementation("org.gusdb:fgputil-core:3.2.4-jakarta")
+  implementation("org.gusdb:fgputil-core:3.2.5-jakarta")
 
   // Core lib
   implementation("org.veupathdb.lib:jaxrs-container-core:10.0.3")
