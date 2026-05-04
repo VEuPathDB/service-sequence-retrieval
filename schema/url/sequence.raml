@@ -26,6 +26,46 @@ types:
     type: string
     enum: ['bed', 'gff3']
 
+  PostProcessType:
+    type: string
+    enum: ['MSA', 'GENETREE']
+
+  MsaFormat:
+    type: string
+    enum: ['fasta', 'clustal', 'clustal_dnd', 'msf', 'phylip', 'selex', 'stockholm', 'vienna']
+
+  MsaOptions:
+    additionalProperties: false
+    properties:
+      format:
+        type: MsaFormat
+        default: 'clustal'
+      metadataUrl?:
+        type: string
+        description: |
+          Optional URL to fetch metadata for sequence annotations.
+          Currently only supported with 'clustal' format.
+
+          Expected format: Tab-delimited with header row.
+          Example:
+            ID	sample_type	culture_type	country
+            SEQ1	isolate	axenic	USA
+            SEQ2	strain	mixed	Brazil
+
+          Future implementation will display metadata as tooltips
+          on sequence IDs in HTML output.
+
+  GeneTreeFormat:
+    type: string
+    enum: ['newick']
+
+  GeneTreeOptions:
+    additionalProperties: false
+    properties:
+      format?:
+        type: GeneTreeFormat
+        default: 'newick'
+
   Feature:
     additionalProperties: false
     properties:
@@ -49,6 +89,12 @@ types:
       basesPerLine?:
         type: integer
         default: 60
+      postProcess?:
+        type: PostProcessType
+      msaOptions?:
+        type: MsaOptions
+      geneTreeOptions?:
+        type: GeneTreeOptions
       
   SequenceRetrievalSpec:
     additionalProperties: false
@@ -72,3 +118,9 @@ types:
         type: integer
       sequenceType:
         type: string
+      postProcess:
+        type: PostProcessType
+      msaOptions:
+        type: MsaOptions
+      geneTreeOptions:
+        type: GeneTreeOptions

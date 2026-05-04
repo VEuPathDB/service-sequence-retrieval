@@ -24,6 +24,17 @@ types:
       strand?:
         type: Strand
         default: 'NONE'
+  GeneTreeFormat:
+    type: string
+    enum:
+      - newick
+  GeneTreeOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      format?:
+        type: GeneTreeFormat
+        default: 'newick'
   JobDataResponse: any
   JobResponse:
     type: object
@@ -46,7 +57,44 @@ types:
       - complete
       - failed
       - expired
+  MsaFormat:
+    type: string
+    enum:
+      - fasta
+      - clustal
+      - clustal_dnd
+      - msf
+      - phylip
+      - selex
+      - stockholm
+      - vienna
+  MsaOptions:
+    type: object
+    additionalProperties: false
+    properties:
+      format:
+        type: MsaFormat
+        default: 'clustal'
+      metadataUrl?:
+        description: |
+          Optional URL to fetch metadata for sequence annotations.
+          Currently only supported with 'clustal' format.
+
+          Expected format: Tab-delimited with header row.
+          Example:
+            ID	sample_type	culture_type	country
+            SEQ1	isolate	axenic	USA
+            SEQ2	strain	mixed	Brazil
+
+          Future implementation will display metadata as tooltips
+          on sequence IDs in HTML output.
+        type: string
   PlainTextFastaResponse: object
+  PostProcessType:
+    type: string
+    enum:
+      - MSA
+      - GENETREE
   SequencePostRequest:
     type: object
     additionalProperties: false
@@ -60,6 +108,9 @@ types:
       basesPerLine?:
         type: integer
         default: 60
+      postProcess?: PostProcessType
+      msaOptions?: MsaOptions
+      geneTreeOptions?: GeneTreeOptions
   SequenceRetrievalSpec:
     type: object
     additionalProperties: false
@@ -75,6 +126,9 @@ types:
       deflineFormat: DeflineFormat
       basesPerLine: integer
       sequenceType: string
+      postProcess: PostProcessType
+      msaOptions: MsaOptions
+      geneTreeOptions: GeneTreeOptions
   StartOffset:
     type: string
     enum:

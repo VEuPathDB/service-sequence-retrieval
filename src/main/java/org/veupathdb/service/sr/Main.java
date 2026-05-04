@@ -13,13 +13,23 @@ public class Main extends Server {
 
   private static final Logger LOG = LogManager.getLogger(Main.class);
 
-  private final AsyncOptions options = new AsyncOptions();
+  private final SrtServiceOptions options = new SrtServiceOptions();
+
+  private static SrtServiceOptions staticOptions;
 
   public static void main(String[] args) {
     var server = new Main();
 
 
     server.start(args);
+  }
+
+  /**
+   * Get the SrtServiceOptions instance.
+   * Available after server initialization.
+   */
+  public static SrtServiceOptions getOptions() {
+    return staticOptions;
   }
 
   @Override
@@ -41,6 +51,7 @@ public class Main extends Server {
 
   @Override
   protected void postCliParse(Options opts) {
+    staticOptions = options;
     initializeAsyncPlatform();
   }
 

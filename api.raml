@@ -33,6 +33,10 @@ securitySchemes:
         body:
           text/x-fasta:
             type: lib.PlainTextFastaResponse
+          text/plain:
+            type: lib.PlainTextFastaResponse
+          text/html:
+            type: any
 
   /{fileFormat}:
     displayName: Retrieve sequences based on submitted file
@@ -60,6 +64,10 @@ securitySchemes:
           body:
             text/x-fasta:
               type: lib.PlainTextFastaResponse
+            text/plain:
+              type: lib.PlainTextFastaResponse
+            text/html:
+              type: any
 
 /sequences-async/{sequenceType}:
   displayName: Retrieve sequences (async)

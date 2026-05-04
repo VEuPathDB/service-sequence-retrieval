@@ -1,0 +1,12 @@
+CLUSTAL O(1.2.4) multiple sequence alignment
+
+
+SEQ1            ATGCGATCGATCGATCGATCGATCGATCG
+SEQ2            ATGCGATCGAT-GATCGATCGATCGATCG
+SEQ3            ATGCGATCGATCGATCGAT-GATCGATCG
+                ***********:***********:******
+
+SEQ1            ATCGATCGATCGATCGATCGATCG
+SEQ2            ATCGATCGATCGATCGATCGATCG
+SEQ3            ATCGATCGATCGATCGATCGATCG
+                *************************

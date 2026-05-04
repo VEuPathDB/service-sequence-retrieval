@@ -1,0 +1,4 @@
+ID	organism	sample_type	location
+SEQ1	Entamoeba histolytica	isolate	laboratory
+SEQ2	Entamoeba histolytica	clinical	field_site_A
+SEQ3	Entamoeba histolytica	reference	genome_project

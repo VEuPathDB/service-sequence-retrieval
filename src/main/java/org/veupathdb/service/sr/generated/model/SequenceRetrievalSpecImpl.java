@@ -15,7 +15,10 @@ import java.util.List;
     "startOffset",
     "deflineFormat",
     "basesPerLine",
-    "sequenceType"
+    "sequenceType",
+    "postProcess",
+    "msaOptions",
+    "geneTreeOptions"
 })
 public class SequenceRetrievalSpecImpl implements SequenceRetrievalSpec {
   @JsonProperty("features")
@@ -44,6 +47,15 @@ public class SequenceRetrievalSpecImpl implements SequenceRetrievalSpec {
 
   @JsonProperty("sequenceType")
   private String sequenceType;
+
+  @JsonProperty("postProcess")
+  private PostProcessType postProcess;
+
+  @JsonProperty("msaOptions")
+  private MsaOptions msaOptions;
+
+  @JsonProperty("geneTreeOptions")
+  private GeneTreeOptions geneTreeOptions;
 
   @JsonProperty("features")
   public List<Feature> getFeatures() {
@@ -133,5 +145,35 @@ public class SequenceRetrievalSpecImpl implements SequenceRetrievalSpec {
   @JsonProperty("sequenceType")
   public void setSequenceType(String sequenceType) {
     this.sequenceType = sequenceType;
+  }
+
+  @JsonProperty("postProcess")
+  public PostProcessType getPostProcess() {
+    return this.postProcess;
+  }
+
+  @JsonProperty("postProcess")
+  public void setPostProcess(PostProcessType postProcess) {
+    this.postProcess = postProcess;
+  }
+
+  @JsonProperty("msaOptions")
+  public MsaOptions getMsaOptions() {
+    return this.msaOptions;
+  }
+
+  @JsonProperty("msaOptions")
+  public void setMsaOptions(MsaOptions msaOptions) {
+    this.msaOptions = msaOptions;
+  }
+
+  @JsonProperty("geneTreeOptions")
+  public GeneTreeOptions getGeneTreeOptions() {
+    return this.geneTreeOptions;
+  }
+
+  @JsonProperty("geneTreeOptions")
+  public void setGeneTreeOptions(GeneTreeOptions geneTreeOptions) {
+    this.geneTreeOptions = geneTreeOptions;
   }
 }

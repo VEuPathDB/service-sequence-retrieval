@@ -84,7 +84,7 @@ dependencies {
   implementation("com.github.samtools:htsjdk:2.24.1")
 
   // FgpUtil
-  implementation("org.gusdb:fgputil-core:3.1.0-jakarta")
+  implementation("org.gusdb:fgputil-core:3.2.5-jakarta")
 
   // Core lib
   implementation("org.veupathdb.lib:jaxrs-container-core:10.0.3")
@@ -130,6 +130,6 @@ dependencies {
 
   // Unit Testing
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-  testImplementation("org.mockito:mockito-core:5.2.0")
+  testImplementation("org.mockito:mockito-core:5.14.2")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
 }

@@ -57,6 +57,12 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
     spec.setDeflineFormat(deflineFormat);
     spec.setBasesPerLine(basesPerLine);
     spec.setSequenceType(sequenceType);
+
+    // Add post-processing options
+    spec.setPostProcess(entity.getPostProcess());
+    spec.setMsaOptions(entity.getMsaOptions());
+    spec.setGeneTreeOptions(entity.getGeneTreeOptions());
+
     return PostSequencesAsyncBySequenceTypeResponse.respond200WithApplicationJson(asyncResponse(spec));
   }
 

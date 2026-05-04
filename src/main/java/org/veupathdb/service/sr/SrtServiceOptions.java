@@ -4,11 +4,13 @@ import org.veupathdb.lib.container.jaxrs.config.Options;
 import picocli.CommandLine.Option;
 
 /**
- * Customized options example.
+ * Service configuration options.
  *
- * Configures details for the queues, s3, and postgres database.
+ * Contains both async platform configuration (queues, S3, Postgres database)
+ * and general application configuration (MSA post-processing, etc.).
+ *
  */
-public class AsyncOptions extends Options {
+public class SrtServiceOptions extends Options {
 
   // region Postgres
 
@@ -274,4 +276,169 @@ public class AsyncOptions extends Options {
   }
 
   // endregion Job Configuration
+
+  // region MSA Configuration
+
+  /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
+    ┃  MSA Post-Processing Configuration                                   ┃
+    ┃                                                                      ┃
+    ┃  Options for configuring MSA post-processing using clustal-omega.   ┃
+  \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+  @Option(
+    names = "--clustalo-binary-path",
+    defaultValue = "${env:CLUSTALO_BINARY_PATH}",
+    description = "Path to the clustalo binary executable",
+    arity = "1")
+  private String clustaloBinaryPath;
+  private static final String DEFAULT_CLUSTALO_BINARY_PATH = "/usr/bin/clustalo";
+
+  @Option(
+    names = "--msa-sync-max-sequences",
+    defaultValue = "${env:MSA_SYNC_MAX_SEQUENCES}",
+    description = "Maximum number of sequences allowed for synchronous MSA requests",
+    arity = "1")
+  private Integer msaSyncMaxSequences;
+  private static final int DEFAULT_MSA_SYNC_MAX_SEQUENCES = 20;
+
+  @Option(
+    names = "--msa-async-max-sequences",
+    defaultValue = "${env:MSA_ASYNC_MAX_SEQUENCES}",
+    description = "Maximum number of sequences allowed for asynchronous MSA requests",
+    arity = "1",
+    required = true)
+  private Integer msaAsyncMaxSequences;
+
+  @Option(
+    names = "--clustalo-sync-timeout-seconds",
+    defaultValue = "${env:CLUSTALO_SYNC_TIMEOUT_SECONDS}",
+    description = "Timeout in seconds for clustalo execution in synchronous requests",
+    arity = "1")
+  private Integer clustaloSyncTimeoutSeconds;
+  private static final int DEFAULT_CLUSTALO_SYNC_TIMEOUT_SECONDS = 30;
+
+  @Option(
+    names = "--clustalo-async-timeout-seconds",
+    defaultValue = "${env:CLUSTALO_ASYNC_TIMEOUT_SECONDS}",
+    description = "Timeout in seconds for clustalo execution in asynchronous jobs",
+    arity = "1")
+  private Integer clustaloAsyncTimeoutSeconds;
+  private static final int DEFAULT_CLUSTALO_ASYNC_TIMEOUT_SECONDS = 1800;
+
+  @Option(
+    names = "--itol-base-url",
+    defaultValue = "${env:ITOL_BASE_URL}",
+    description = "Base URL for iTOL (Interactive Tree of Life) service for phylogenetic tree visualization",
+    arity = "1")
+  private String itolBaseUrl;
+  private static final String DEFAULT_ITOL_BASE_URL = "https://itol.embl.de";
+
+  public String getClustaloBinaryPath() {
+    return clustaloBinaryPath == null ? DEFAULT_CLUSTALO_BINARY_PATH : clustaloBinaryPath;
+  }
+
+  public int getMsaSyncMaxSequences() {
+    return msaSyncMaxSequences == null ? DEFAULT_MSA_SYNC_MAX_SEQUENCES : msaSyncMaxSequences;
+  }
+
+  public int getMsaAsyncMaxSequences() {
+    return msaAsyncMaxSequences;
+  }
+
+  public int getClustaloSyncTimeoutSeconds() {
+    return clustaloSyncTimeoutSeconds == null ? DEFAULT_CLUSTALO_SYNC_TIMEOUT_SECONDS : clustaloSyncTimeoutSeconds;
+  }
+
+  public int getClustaloAsyncTimeoutSeconds() {
+    return clustaloAsyncTimeoutSeconds == null ? DEFAULT_CLUSTALO_ASYNC_TIMEOUT_SECONDS : clustaloAsyncTimeoutSeconds;
+  }
+
+  public String getItolBaseUrl() {
+    return itolBaseUrl == null ? DEFAULT_ITOL_BASE_URL : itolBaseUrl;
+  }
+
+  // endregion MSA Configuration
+
+  // region Gene Tree Configuration
+
+  /*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*\
+    ┃  Gene Tree Post-Processing Configuration                            ┃
+    ┃                                                                      ┃
+    ┃  Options for configuring gene tree post-processing using mafft      ┃
+    ┃  and fasttree.                                                       ┃
+  \*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*/
+
+  @Option(
+    names = "--mafft-binary-path",
+    defaultValue = "${env:MAFFT_BINARY_PATH}",
+    description = "Path to the mafft binary executable",
+    arity = "1")
+  private String mafftBinaryPath;
+  private static final String DEFAULT_MAFFT_BINARY_PATH = "/usr/bin/mafft";
+
+  @Option(
+    names = "--fasttree-binary-path",
+    defaultValue = "${env:FASTTREE_BINARY_PATH}",
+    description = "Path to the fasttree binary executable",
+    arity = "1")
+  private String fastTreeBinaryPath;
+  private static final String DEFAULT_FASTTREE_BINARY_PATH = "/usr/bin/fasttree";
+
+  @Option(
+    names = "--genetree-sync-max-sequences",
+    defaultValue = "${env:GENETREE_SYNC_MAX_SEQUENCES}",
+    description = "Maximum number of sequences allowed for synchronous gene tree requests",
+    arity = "1")
+  private Integer geneTreeSyncMaxSequences;
+  private static final int DEFAULT_GENETREE_SYNC_MAX_SEQUENCES = 20;
+
+  @Option(
+    names = "--genetree-async-max-sequences",
+    defaultValue = "${env:GENETREE_ASYNC_MAX_SEQUENCES}",
+    description = "Maximum number of sequences allowed for asynchronous gene tree requests",
+    arity = "1",
+    required = true)
+  private Integer geneTreeAsyncMaxSequences;
+
+  @Option(
+    names = "--genetree-sync-timeout-seconds",
+    defaultValue = "${env:GENETREE_SYNC_TIMEOUT_SECONDS}",
+    description = "Timeout in seconds for gene tree execution in synchronous requests",
+    arity = "1")
+  private Integer geneTreeSyncTimeoutSeconds;
+  private static final int DEFAULT_GENETREE_SYNC_TIMEOUT_SECONDS = 30;
+
+  @Option(
+    names = "--genetree-async-timeout-seconds",
+    defaultValue = "${env:GENETREE_ASYNC_TIMEOUT_SECONDS}",
+    description = "Timeout in seconds for gene tree execution in asynchronous jobs",
+    arity = "1")
+  private Integer geneTreeAsyncTimeoutSeconds;
+  private static final int DEFAULT_GENETREE_ASYNC_TIMEOUT_SECONDS = 1800;
+
+  public String getMafftBinaryPath() {
+    return mafftBinaryPath == null ? DEFAULT_MAFFT_BINARY_PATH : mafftBinaryPath;
+  }
+
+  public String getFastTreeBinaryPath() {
+    return fastTreeBinaryPath == null ? DEFAULT_FASTTREE_BINARY_PATH : fastTreeBinaryPath;
+  }
+
+  public int getGeneTreeSyncMaxSequences() {
+    return geneTreeSyncMaxSequences == null ? DEFAULT_GENETREE_SYNC_MAX_SEQUENCES : geneTreeSyncMaxSequences;
+  }
+
+  public int getGeneTreeAsyncMaxSequences() {
+    return geneTreeAsyncMaxSequences;
+  }
+
+  public int getGeneTreeSyncTimeoutSeconds() {
+    return geneTreeSyncTimeoutSeconds == null ? DEFAULT_GENETREE_SYNC_TIMEOUT_SECONDS : geneTreeSyncTimeoutSeconds;
+  }
+
+  public int getGeneTreeAsyncTimeoutSeconds() {
+    return geneTreeAsyncTimeoutSeconds == null ? DEFAULT_GENETREE_ASYNC_TIMEOUT_SECONDS : geneTreeAsyncTimeoutSeconds;
+  }
+
+  // endregion Gene Tree Configuration
 }
