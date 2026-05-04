@@ -1,3 +1,9 @@
+################### Overview #######################################
+# Bioinformatics tools need glibc → Can't use Alpine → Use Debian for build → Need compatible runtime → Eclipse Temurin 
+# Eclipse Temurin (Debian-based) is a production quality Java runtime that maintains binary compatibility with the Conda packages.
+####################################################################
+ 
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Stage 1: Prep (Build the Java Application)
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -66,6 +72,5 @@ ENV PATH="/opt/conda/bin:${PATH}"
 
 # Runtime configuration
 COPY startup.sh startup.sh
-RUN chmod +x startup.sh
 
 CMD ["/bin/bash", "./startup.sh"]

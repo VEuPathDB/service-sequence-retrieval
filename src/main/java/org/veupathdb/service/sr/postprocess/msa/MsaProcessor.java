@@ -3,6 +3,7 @@ package org.veupathdb.service.sr.postprocess.msa;
 import htsjdk.tribble.bed.BEDFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gusdb.fgputil.FormatUtil;
 import org.veupathdb.service.sr.SrtServiceOptions;
 import org.veupathdb.service.sr.generated.model.MsaFormat;
 import org.veupathdb.service.sr.generated.model.MsaOptions;
@@ -260,9 +261,9 @@ public class MsaProcessor implements PostProcessor {
     String[] lines = alignmentText.split("\n");
     for (String line : lines) {
       if (line.startsWith("CLUSTAL O")) {
-        html.append("<h3>").append(escapeHtml(line)).append("</h3>\n");
+        html.append("<h3>").append(FormatUtil.escapeHtml(line)).append("</h3>\n");
       } else {
-        html.append(escapeHtml(line)).append("\n");
+        html.append(FormatUtil.escapeHtml(line)).append("\n");
       }
     }
     html.append("</pre>\n");
@@ -271,7 +272,7 @@ public class MsaProcessor implements PostProcessor {
     html.append("<hr>\n");
     html.append("<h4>Guide Tree (.dnd format)</h4>\n");
     html.append("<pre>");
-    html.append(escapeHtml(treeData));
+    html.append(FormatUtil.escapeHtml(treeData));
     html.append("</pre>\n");
 
     html.append("</body>\n</html>\n");
@@ -370,16 +371,5 @@ public class MsaProcessor implements PostProcessor {
     } finally {
       conn.disconnect();
     }
-  }
-
-  /**
-   * Escape HTML special characters.
-   */
-  private String escapeHtml(String text) {
-    return text.replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace("\"", "&quot;")
-        .replace("'", "&#39;");
   }
 }

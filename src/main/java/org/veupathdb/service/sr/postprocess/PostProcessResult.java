@@ -14,7 +14,7 @@ public class PostProcessResult {
 
   private final String contentType;
   private final byte[] content;
-  private final Map<String, byte[]> additionalFiles;
+  private final Map<String, byte[]> additionalFiles; // used for, eg, .dnd file in clustalo output
 
   /**
    * Create a post-process result.
