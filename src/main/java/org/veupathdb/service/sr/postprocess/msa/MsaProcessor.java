@@ -3,6 +3,7 @@ package org.veupathdb.service.sr.postprocess.msa;
 import htsjdk.tribble.bed.BEDFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gusdb.fgputil.FormatUtil;
 import org.veupathdb.service.sr.SrtServiceOptions;
 import org.veupathdb.service.sr.generated.model.MsaFormat;
 import org.veupathdb.service.sr.generated.model.MsaOptions;
@@ -383,16 +384,5 @@ public class MsaProcessor implements PostProcessor {
     } finally {
       conn.disconnect();
     }
-  }
-
-  /**
-   * Escape HTML special characters.
-   */
-  private String escapeHtml(String text) {
-    return text.replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace("\"", "&quot;")
-        .replace("'", "&#39;");
   }
 }

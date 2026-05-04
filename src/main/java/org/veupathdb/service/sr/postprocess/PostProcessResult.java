@@ -19,7 +19,7 @@ public class PostProcessResult {
 
   private final String contentType;
   private final StreamingContent streamingContent;
-  private final Map<String, byte[]> additionalFiles;
+  private final Map<String, byte[]> additionalFiles; // used for, eg, .dnd file in clustalo output
   private final List<File> tempFilesToCleanup;
 
   /**
