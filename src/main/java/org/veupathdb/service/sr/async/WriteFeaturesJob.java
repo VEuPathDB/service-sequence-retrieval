@@ -109,14 +109,12 @@ public class WriteFeaturesJob implements JobExecutor {
       if (jobSpec.getPostProcess() != null) {
         return executeWithPostProcessing(jobContext, jobSpec, tempFasta, features);
       } else {
-        // No post-processing - write FASTA directly
-        byte[] fastaContent;
-        try {
-          fastaContent = Files.readAllBytes(tempFasta.toPath());
+        // No post-processing - write FASTA directly using streaming
+        try (FileInputStream fis = new FileInputStream(tempFasta)) {
+          jobContext.getWorkspace().write("output", fis);
         } catch (IOException e) {
-          return JobResult.failure("Failed to read FASTA from temp file: " + e.getMessage());
+          return JobResult.failure("Failed to write FASTA to workspace: " + e.getMessage());
         }
-        jobContext.getWorkspace().write("output", new String(fastaContent, StandardCharsets.UTF_8));
         return JobResult.success("output");
       }
     } finally {
@@ -147,14 +145,40 @@ public class WriteFeaturesJob implements JobExecutor {
       // Process
       PostProcessResult result = processor.process(tempFasta, features);
 
-      // Write primary output
-      jobContext.getWorkspace().write("output", new String(result.getContent(), StandardCharsets.UTF_8));
+      // Write primary output using streaming to avoid buffering
+      try (PipedInputStream pis = new PipedInputStream();
+           PipedOutputStream pos = new PipedOutputStream(pis)) {
+
+        // Start streaming in background thread
+        Thread streamer = new Thread(() -> {
+          try {
+            result.writeContent(pos);
+            pos.close();
+          } catch (IOException e) {
+            throw new RuntimeException("Failed to stream post-processing output", e);
+          } finally {
+            result.cleanup();
+          }
+        });
+        streamer.start();
+
+        // Write to workspace from input stream (no memory buffering)
+        jobContext.getWorkspace().write("output", pis);
+
+        // Wait for streaming to complete
+        streamer.join();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new IOException("Streaming interrupted", e);
+      }
 
       // Write additional files (e.g., guide tree)
       Map<String, byte[]> additionalFiles = result.getAdditionalFiles();
       for (Map.Entry<String, byte[]> entry : additionalFiles.entrySet()) {
+        // Additional files are typically small (guide trees, metadata)
+        // so byte array approach is acceptable
         jobContext.getWorkspace().write(entry.getKey(),
-          new String(entry.getValue(), StandardCharsets.UTF_8));
+          new ByteArrayInputStream(entry.getValue()));
       }
 
       // Build list of all output files (primary + additional)

@@ -10,6 +10,7 @@ import org.veupathdb.service.sr.postprocess.FastTreeExecutor;
 import org.veupathdb.service.sr.postprocess.MafftExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -76,7 +77,13 @@ class GeneTreeProcessorTest {
 
     // Verify plain text output (Newick format)
     assertEquals("text/plain", result.getContentType());
-    String output = new String(result.getContent(), StandardCharsets.UTF_8);
+
+    // Use writeContent for streaming results
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    result.writeContent(baos);
+    result.cleanup();
+    String output = baos.toString(StandardCharsets.UTF_8);
+
     assertTrue(output.contains("seq1"));
     assertTrue(output.contains("seq2"));
     assertTrue(output.contains("seq3"));
