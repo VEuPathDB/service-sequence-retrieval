@@ -277,9 +277,9 @@ public class MsaProcessor implements PostProcessor {
         String line;
         while ((line = reader.readLine()) != null) {
           if (line.startsWith("CLUSTAL O")) {
-            os.write(("<h3>" + escapeHtml(line) + "</h3>\n").getBytes(StandardCharsets.UTF_8));
+            os.write(("<h3>" + FormatUtil.escapeHtml(line) + "</h3>\n").getBytes(StandardCharsets.UTF_8));
           } else {
-            os.write((escapeHtml(line) + "\n").getBytes(StandardCharsets.UTF_8));
+            os.write((FormatUtil.escapeHtml(line) + "\n").getBytes(StandardCharsets.UTF_8));
           }
         }
       }
@@ -290,7 +290,7 @@ public class MsaProcessor implements PostProcessor {
       os.write("<hr>\n".getBytes(StandardCharsets.UTF_8));
       os.write("<h4>Guide Tree (.dnd format)</h4>\n".getBytes(StandardCharsets.UTF_8));
       os.write("<pre>".getBytes(StandardCharsets.UTF_8));
-      os.write(escapeHtml(finalTreeData).getBytes(StandardCharsets.UTF_8));
+      os.write(FormatUtil.escapeHtml(finalTreeData).getBytes(StandardCharsets.UTF_8));
       os.write("</pre>\n".getBytes(StandardCharsets.UTF_8));
 
       // Write HTML footer
