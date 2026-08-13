@@ -21,11 +21,15 @@ import org.veupathdb.service.sr.util.FeatureAdapter;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class SequenceRetrievalService implements SequencesSequenceType {
 
   private static final Logger LOG = LogManager.getLogger(SequenceRetrievalService.class);
+
+  private static final DeflineFormat DEFAULT_DEFLINE_FORMAT = DeflineFormat.REGIONONLY;
+  private static final int DEFAULT_BASES_PER_LINE = 60;
 
   /**
    * Extend generated streamer class so we can log processing duration
@@ -45,8 +49,8 @@ public class SequenceRetrievalService implements SequencesSequenceType {
   @Override
   public PostSequencesBySequenceTypeResponse postSequencesBySequenceType(String sequenceType, SequencePostRequest entity) {
 
-    var deflineFormat = entity.getDeflineFormat();
-    var basesPerLine = entity.getBasesPerLine();
+    var deflineFormat = Optional.ofNullable(entity.getDeflineFormat()).orElse(DEFAULT_DEFLINE_FORMAT);
+    var basesPerLine = Optional.ofNullable(entity.getBasesPerLine()).orElse(DEFAULT_BASES_PER_LINE);
 
     var features = FeatureAdapter.toBEDFeatures(entity.getFeatures());
 

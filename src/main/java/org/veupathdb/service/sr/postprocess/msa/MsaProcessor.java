@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -36,7 +37,10 @@ public class MsaProcessor implements PostProcessor {
 
   private static final Logger LOG = LogManager.getLogger(MsaProcessor.class);
 
+  private static final MsaFormat DEFAULT_FORMAT = MsaFormat.CLUSTAL;
+
   private final MsaOptions options;
+  private final MsaFormat format;
   private final ClustaloExecutor clustaloExecutor;
   private final String itolBaseUrl;
 
@@ -67,6 +71,7 @@ public class MsaProcessor implements PostProcessor {
       ClustaloExecutor clustaloExecutor,
       String itolBaseUrl) {
     this.options = options;
+    this.format = Optional.ofNullable(options.getFormat()).orElse(DEFAULT_FORMAT);
     this.clustaloExecutor = clustaloExecutor;
     this.itolBaseUrl = itolBaseUrl;
   }
@@ -77,7 +82,6 @@ public class MsaProcessor implements PostProcessor {
     validateMetadataUrl();
 
     // Get format - use clustal for clustal_dnd since clustalo doesn't have that format
-    MsaFormat format = options.getFormat();
     String clustaloFormat = format == MsaFormat.CLUSTALDND ? "clustal" : format.getValue();
 
     // Create temp files for output
@@ -197,10 +201,10 @@ public class MsaProcessor implements PostProcessor {
    * Validate metadata URL usage - only allowed with clustal format.
    */
   private void validateMetadataUrl() {
-    if (options.getMetadataUrl() != null && options.getFormat() != MsaFormat.CLUSTAL) {
+    if (options.getMetadataUrl() != null && format != MsaFormat.CLUSTAL) {
       throw new BadRequestException(
           "metadataUrl is only supported with 'clustal' format. " +
-              "Current format: " + options.getFormat().getValue()
+              "Current format: " + format.getValue()
       );
     }
   }

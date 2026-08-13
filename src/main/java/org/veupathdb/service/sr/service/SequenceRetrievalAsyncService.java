@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.io.File;
 import java.lang.StringBuilder;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.net.URL;
 
@@ -26,6 +27,9 @@ import org.veupathdb.lib.jackson.Json;
 import org.veupathdb.service.sr.generated.model.JobResponse;
 
 public class SequenceRetrievalAsyncService extends Controller implements SequencesAsyncSequenceType {
+
+  private static final DeflineFormat DEFAULT_DEFLINE_FORMAT = DeflineFormat.REGIONONLY;
+  private static final int DEFAULT_BASES_PER_LINE = 60;
 
   private JobResponse asyncResponse(SequenceRetrievalSpec spec){
     var json  = Json.convert(spec);
@@ -49,8 +53,8 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
   }
   @Override
   public PostSequencesAsyncBySequenceTypeResponse postSequencesAsyncBySequenceType(String sequenceType, SequencePostRequest entity) {
-    var deflineFormat = entity.getDeflineFormat();
-    var basesPerLine = entity.getBasesPerLine();
+    var deflineFormat = Optional.ofNullable(entity.getDeflineFormat()).orElse(DEFAULT_DEFLINE_FORMAT);
+    var basesPerLine = Optional.ofNullable(entity.getBasesPerLine()).orElse(DEFAULT_BASES_PER_LINE);
     var features = entity.getFeatures();
     var spec = new SequenceRetrievalSpecImpl();
     spec.setFeatures(features);

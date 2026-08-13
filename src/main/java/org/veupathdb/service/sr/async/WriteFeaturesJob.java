@@ -20,13 +20,19 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.net.URL;
 
 import htsjdk.tribble.bed.BEDFeature;
+import org.veupathdb.service.sr.generated.model.DeflineFormat;
 
 public class WriteFeaturesJob implements JobExecutor {
+
+  private static final DeflineFormat DEFAULT_DEFLINE_FORMAT = DeflineFormat.REGIONONLY;
+  private static final int DEFAULT_BASES_PER_LINE = 60;
+
   @NotNull
   @Override
   public JobResult execute(@NotNull JobContext jobContext) {
@@ -34,8 +40,8 @@ public class WriteFeaturesJob implements JobExecutor {
 
     var sequenceType = jobSpec.getSequenceType();
     var fileFormat = jobSpec.getFileFormat();
-    var deflineFormat = jobSpec.getDeflineFormat();
-    var basesPerLine = jobSpec.getBasesPerLine();
+    var deflineFormat = Optional.ofNullable(jobSpec.getDeflineFormat()).orElse(DEFAULT_DEFLINE_FORMAT);
+    var basesPerLine = Optional.ofNullable(jobSpec.getBasesPerLine()).orElse(DEFAULT_BASES_PER_LINE);
 
     List<BEDFeature> features;
 
