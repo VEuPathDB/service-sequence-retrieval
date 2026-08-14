@@ -294,7 +294,11 @@ public class MsaProcessor implements PostProcessor {
       os.write("<hr>\n".getBytes(StandardCharsets.UTF_8));
       os.write("<h4>Guide Tree (.dnd format)</h4>\n".getBytes(StandardCharsets.UTF_8));
       os.write("<pre>".getBytes(StandardCharsets.UTF_8));
-      os.write(FormatUtil.escapeHtml(finalTreeData).getBytes(StandardCharsets.UTF_8));
+      String escapedTreeData = finalTreeData
+          .replace("&", "&amp;")
+          .replace("<", "&lt;")
+          .replace(">", "&gt;");
+      os.write(escapedTreeData.getBytes(StandardCharsets.UTF_8));
       os.write("</pre>\n".getBytes(StandardCharsets.UTF_8));
 
       // Write HTML footer
