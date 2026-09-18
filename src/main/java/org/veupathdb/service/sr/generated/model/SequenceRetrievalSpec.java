@@ -56,6 +56,12 @@ public interface SequenceRetrievalSpec {
   @JsonProperty("basesPerLine")
   void setBasesPerLine(Integer basesPerLine);
 
+  @JsonProperty("percentActg")
+  Integer getPercentActg();
+
+  @JsonProperty("percentActg")
+  void setPercentActg(Integer percentActg);
+
   @JsonProperty("sequenceType")
   String getSequenceType();
 

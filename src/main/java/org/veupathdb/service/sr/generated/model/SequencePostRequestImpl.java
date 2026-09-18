@@ -10,6 +10,7 @@ import java.util.List;
     "features",
     "deflineFormat",
     "basesPerLine",
+    "percentActg",
     "postProcess",
     "msaOptions",
     "geneTreeOptions"
@@ -29,6 +30,12 @@ public class SequencePostRequestImpl implements SequencePostRequest {
       defaultValue = "60"
   )
   private Integer basesPerLine;
+
+  @JsonProperty(
+      value = "percentActg",
+      defaultValue = "0"
+  )
+  private Integer percentActg;
 
   @JsonProperty("postProcess")
   private PostProcessType postProcess;
@@ -79,6 +86,22 @@ public class SequencePostRequestImpl implements SequencePostRequest {
   )
   public void setBasesPerLine(Integer basesPerLine) {
     this.basesPerLine = basesPerLine;
+  }
+
+  @JsonProperty(
+      value = "percentActg",
+      defaultValue = "0"
+  )
+  public Integer getPercentActg() {
+    return this.percentActg;
+  }
+
+  @JsonProperty(
+      value = "percentActg",
+      defaultValue = "0"
+  )
+  public void setPercentActg(Integer percentActg) {
+    this.percentActg = percentActg;
   }
 
   @JsonProperty("postProcess")

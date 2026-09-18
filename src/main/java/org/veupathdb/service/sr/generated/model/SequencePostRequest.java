@@ -38,6 +38,18 @@ public interface SequencePostRequest {
   )
   void setBasesPerLine(Integer basesPerLine);
 
+  @JsonProperty(
+      value = "percentActg",
+      defaultValue = "0"
+  )
+  Integer getPercentActg();
+
+  @JsonProperty(
+      value = "percentActg",
+      defaultValue = "0"
+  )
+  void setPercentActg(Integer percentActg);
+
   @JsonProperty("postProcess")
   PostProcessType getPostProcess();
 

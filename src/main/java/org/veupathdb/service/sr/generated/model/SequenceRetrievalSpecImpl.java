@@ -15,6 +15,7 @@ import java.util.List;
     "startOffset",
     "deflineFormat",
     "basesPerLine",
+    "percentActg",
     "sequenceType",
     "postProcess",
     "msaOptions",
@@ -44,6 +45,9 @@ public class SequenceRetrievalSpecImpl implements SequenceRetrievalSpec {
 
   @JsonProperty("basesPerLine")
   private Integer basesPerLine;
+
+  @JsonProperty("percentActg")
+  private Integer percentActg;
 
   @JsonProperty("sequenceType")
   private String sequenceType;
@@ -135,6 +139,16 @@ public class SequenceRetrievalSpecImpl implements SequenceRetrievalSpec {
   @JsonProperty("basesPerLine")
   public void setBasesPerLine(Integer basesPerLine) {
     this.basesPerLine = basesPerLine;
+  }
+
+  @JsonProperty("percentActg")
+  public Integer getPercentActg() {
+    return this.percentActg;
+  }
+
+  @JsonProperty("percentActg")
+  public void setPercentActg(Integer percentActg) {
+    this.percentActg = percentActg;
   }
 
   @JsonProperty("sequenceType")
