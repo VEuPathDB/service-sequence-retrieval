@@ -23,12 +23,16 @@ public class TestReferences extends ReferenceDAOFactory {
   public static final ReferenceSequenceSpec popsetSpec = new ReferenceSequenceSpec("popset", 10, 10000, true);
   public static final ReferenceDAO popsetDao = new ReferenceDAO(popsetSpec, ref("Isolates.fa.fai.sqlite"), ref("Isolates.fa"));
 
+  public static final ReferenceSequenceSpec lowActgSpec = new ReferenceSequenceSpec("lowactg", 10, 10000, true);
+  public static final ReferenceDAO lowActgDao = new ReferenceDAO(lowActgSpec, ref("NonActgContig.fa.fai.sqlite"), ref("NonActgContig.fa"));
+
   public static void setUp(){
     instances = new HashMap<>();
     instances.put("genomic", genomeDao);
     instances.put("protein", proteinDao);
     instances.put("est", estDao);
     instances.put("popset", popsetDao);
+    instances.put("lowactg", lowActgDao);
   }
 
   private static Path ref(String name){
