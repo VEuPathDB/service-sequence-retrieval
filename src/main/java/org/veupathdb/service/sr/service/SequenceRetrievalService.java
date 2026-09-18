@@ -30,6 +30,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
   private static final DeflineFormat DEFAULT_DEFLINE_FORMAT = DeflineFormat.REGIONONLY;
   private static final int DEFAULT_BASES_PER_LINE = 60;
+  private static final int DEFAULT_PERCENT_ACTG = 0;
 
   /**
    * Extend generated streamer class so we can log processing duration
@@ -51,6 +52,9 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
     var deflineFormat = Optional.ofNullable(entity.getDeflineFormat()).orElse(DEFAULT_DEFLINE_FORMAT);
     var basesPerLine = Optional.ofNullable(entity.getBasesPerLine()).orElse(DEFAULT_BASES_PER_LINE);
+    var percentActg = "protein".equalsIgnoreCase(sequenceType)
+        ? DEFAULT_PERCENT_ACTG
+        : Optional.ofNullable(entity.getPercentActg()).orElse(DEFAULT_PERCENT_ACTG);
 
     var features = FeatureAdapter.toBEDFeatures(entity.getFeatures());
 
@@ -59,7 +63,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       validatePostProcessSyncRequest(entity.getPostProcess(), features.size());
     }
 
-    var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
+    var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine, percentActg);
 
     // Check if post-processing is requested
     if (entity.getPostProcess() != null) {
@@ -105,7 +109,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       };
 
       LOG.info("Took " + timer.getElapsedStringAndRestart() + " to read features from input data.");
-      var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
+      var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine, DEFAULT_PERCENT_ACTG);
 
       LOG.info("Took " + timer.getElapsedStringAndRestart() + " to prepare to stream response.");
       return PostSequencesBySequenceTypeAndFileFormatResponse.respond200WithTextXFasta(new StreamerWithLogging(stream));

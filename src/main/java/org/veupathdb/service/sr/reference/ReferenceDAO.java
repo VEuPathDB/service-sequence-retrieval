@@ -63,7 +63,8 @@ public class ReferenceDAO {
   public Consumer<OutputStream> validateAndPrepareResponse(
       List<BEDFeature> features,
       DeflineFormat deflineFormat,
-      int requestedBasesPerLine) {
+      int requestedBasesPerLine,
+      int percentActg) {
     this.spec.validateFeatures(features);
     return outputStream -> {
       try (
@@ -71,7 +72,7 @@ public class ReferenceDAO {
           var statement = connection.prepareStatement("select length, offset, linebases, linewidth from faidx where name = ? limit 1");
           var sequenceFile = new IndexedFastaSequenceFile(this.sequencesPath, transientIndex(statement))
       ) {
-        StreamSequences.write(outputStream, sequenceFile, features, deflineFormat, requestedBasesPerLine);
+        StreamSequences.write(outputStream, sequenceFile, features, deflineFormat, requestedBasesPerLine, percentActg);
       } catch (SQLException | IOException e) {
         throw new RuntimeException(e);
       }

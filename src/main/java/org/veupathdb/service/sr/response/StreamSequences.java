@@ -26,13 +26,24 @@ public class StreamSequences {
                            IndexedFastaSequenceFile sequences,
                            List<BEDFeature> features,
                            DeflineFormat deflineFormat,
-                           int requestedBasesPerLine) {
+                           int requestedBasesPerLine,
+                           int percentActg) {
     int basesPerLine = requestedBasesPerLine > 0 ? requestedBasesPerLine : Integer.MAX_VALUE;
     try (var buf = new BufferedOutputStream(outputStream)) {
       for (var feature : features) {
+        var bases = Bases.getBasesForBedFeature(sequences, feature);
+
+        if (percentActg > 0) {
+          double actualPercentActg = Bases.percentActg(bases);
+          if (actualPercentActg < percentActg) {
+            LOG.info("Skipping feature {} ({}% ACTG, below required {}%)",
+                feature.getName(), actualPercentActg, percentActg);
+            continue;
+          }
+        }
+
         long sequenceLength = sequences.getIndex().getIndexEntry(feature.getContig()).getSize();
         var defline = Deflines.deflineForFeature(feature, deflineFormat, sequenceLength);
-        var bases = Bases.getBasesForBedFeature(sequences, feature);
 
         LOG.debug("Writing sequence for feature {} to OutputStream.", feature.getName());
         appendSequenceToStream(buf, defline, bases, basesPerLine);

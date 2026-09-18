@@ -32,6 +32,7 @@ public class WriteFeaturesJob implements JobExecutor {
 
   private static final DeflineFormat DEFAULT_DEFLINE_FORMAT = DeflineFormat.REGIONONLY;
   private static final int DEFAULT_BASES_PER_LINE = 60;
+  private static final int DEFAULT_PERCENT_ACTG = 0;
 
   @NotNull
   @Override
@@ -42,6 +43,9 @@ public class WriteFeaturesJob implements JobExecutor {
     var fileFormat = jobSpec.getFileFormat();
     var deflineFormat = Optional.ofNullable(jobSpec.getDeflineFormat()).orElse(DEFAULT_DEFLINE_FORMAT);
     var basesPerLine = Optional.ofNullable(jobSpec.getBasesPerLine()).orElse(DEFAULT_BASES_PER_LINE);
+    var percentActg = "protein".equalsIgnoreCase(sequenceType)
+        ? DEFAULT_PERCENT_ACTG
+        : Optional.ofNullable(jobSpec.getPercentActg()).orElse(DEFAULT_PERCENT_ACTG);
 
     List<BEDFeature> features;
 
@@ -94,7 +98,7 @@ public class WriteFeaturesJob implements JobExecutor {
       }
     }
 
-    var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
+    var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine, percentActg);
 
     // Write FASTA to temp file for post-processing
     File tempFasta;

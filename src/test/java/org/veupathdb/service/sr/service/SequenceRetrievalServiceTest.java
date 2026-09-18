@@ -87,6 +87,35 @@ ATGCTAC
   }
 
   @Test
+  public void testJsonPercentActgKeepsFullyActgSequence() throws Exception {
+    var json = """
+{"features": [{"contig": "CDFG01000013.1" , "start": 1, "end": 7, "query": "Q1", "strand": "POSITIVE"}], "deflineFormat": "QUERYANDREGION", "basesPerLine": 60, "percentActg": 100}
+""";
+    var sequenceTypeStr = "GENOMIC";
+    var expected = """
+>Q1 CDFG01000013.1:1-7(+)
+CTCGCCC
+""";
+    testJson(json, sequenceTypeStr, expected);
+  }
+
+  @Test
+  public void testJsonPercentActgIgnoredForProtein() throws Exception {
+    // Amino acid letters overlap only coincidentally with A/C/T/G. MSLTDQI is
+    // 1/7 = ~14.3% ACTG, so a percentActg=100 threshold would drop this
+    // sequence entirely if it were NOT ignored for protein.
+    var json = """
+{"features": [{"contig": "EHI7A_117830-t26_1-p1" , "start": 1, "end": 7, "query": "QUERY" }], "deflineFormat": "QUERYANDREGION", "basesPerLine": 60, "percentActg": 100}
+""";
+    var sequenceTypeStr = "PROTEIN";
+    var expected = """
+>QUERY EHI7A_117830-t26_1-p1:1-7
+MSLTDQI
+""";
+    testJson(json, sequenceTypeStr, expected);
+  }
+
+  @Test
   public void testJsonProtein() throws Exception {
   var json = """
 {"features": [{"contig": "EHI7A_117830-t26_1-p1" , "start": 1, "end": 7, "query": "QUERY" }], "deflineFormat": "QUERYANDREGION", "basesPerLine": 60}'

@@ -30,6 +30,7 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
 
   private static final DeflineFormat DEFAULT_DEFLINE_FORMAT = DeflineFormat.REGIONONLY;
   private static final int DEFAULT_BASES_PER_LINE = 60;
+  private static final int DEFAULT_PERCENT_ACTG = 0;
 
   private JobResponse asyncResponse(SequenceRetrievalSpec spec){
     var json  = Json.convert(spec);
@@ -55,11 +56,15 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
   public PostSequencesAsyncBySequenceTypeResponse postSequencesAsyncBySequenceType(String sequenceType, SequencePostRequest entity) {
     var deflineFormat = Optional.ofNullable(entity.getDeflineFormat()).orElse(DEFAULT_DEFLINE_FORMAT);
     var basesPerLine = Optional.ofNullable(entity.getBasesPerLine()).orElse(DEFAULT_BASES_PER_LINE);
+    var percentActg = "protein".equalsIgnoreCase(sequenceType)
+        ? DEFAULT_PERCENT_ACTG
+        : Optional.ofNullable(entity.getPercentActg()).orElse(DEFAULT_PERCENT_ACTG);
     var features = entity.getFeatures();
     var spec = new SequenceRetrievalSpecImpl();
     spec.setFeatures(features);
     spec.setDeflineFormat(deflineFormat);
     spec.setBasesPerLine(basesPerLine);
+    spec.setPercentActg(percentActg);
     spec.setSequenceType(sequenceType);
 
     // Add post-processing options
