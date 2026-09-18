@@ -53,4 +53,21 @@ public class Bases {
     return bases;
   }
 
+  public static double percentActg(byte[] bases) {
+    if (bases.length == 0) {
+      return 100.0;
+    }
+    int count = 0;
+    for (byte b : bases) {
+      switch (b) {
+        case 'A': case 'a':
+        case 'C': case 'c':
+        case 'T': case 't':
+        case 'G': case 'g':
+          count++;
+      }
+    }
+    return 100.0 * count / bases.length;
+  }
+
 }

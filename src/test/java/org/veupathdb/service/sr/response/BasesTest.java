@@ -49,4 +49,29 @@ public class BasesTest {
     feature.addExon(feature.new Exon(4,4));
     sequenceForFeatureIs(feature, "GCG");
   }
+
+  @Test
+  public void testPercentActgAllBases() {
+    assertEquals(100.0, Bases.percentActg("ACTG".getBytes()));
+  }
+
+  @Test
+  public void testPercentActgMixedCase() {
+    assertEquals(100.0, Bases.percentActg("acTGactg".getBytes()));
+  }
+
+  @Test
+  public void testPercentActgAllN() {
+    assertEquals(0.0, Bases.percentActg("NNNN".getBytes()));
+  }
+
+  @Test
+  public void testPercentActgHalf() {
+    assertEquals(50.0, Bases.percentActg("ACNN".getBytes()));
+  }
+
+  @Test
+  public void testPercentActgEmpty() {
+    assertEquals(100.0, Bases.percentActg(new byte[0]));
+  }
 }
