@@ -38,11 +38,32 @@ public class StreamSequencesTest {
     assertEquals("", output);
   }
 
+  @Test
+  public void testSurvivedFeaturesExcludesFilteredFeature() throws Exception {
+    // A high-ACTG feature (protein fixture reused via lowActgDao's own contig is always the
+    // same one, so instead we exercise the multi-feature case by requesting the same low-ACTG
+    // contig twice: once above threshold via percentActg=0 (kept), and confirm the survived
+    // list mechanics directly against the single fixture contig.
+    var feature = new SimpleBEDFeature(1, 10, LOW_ACTG_CONTIG);
+
+    var keptResult = TestReferences.lowActgDao
+        .validateAndPrepareResponse(List.of(feature), DeflineFormat.REGIONONLY, 60, 20);
+    var keptBaos = new ByteArrayOutputStream();
+    keptResult.stream().accept(keptBaos);
+    assertEquals(List.of(feature), keptResult.getSurvivedFeatures());
+
+    var droppedResult = TestReferences.lowActgDao
+        .validateAndPrepareResponse(List.of(feature), DeflineFormat.REGIONONLY, 60, 21);
+    var droppedBaos = new ByteArrayOutputStream();
+    droppedResult.stream().accept(droppedBaos);
+    assertEquals(List.of(), droppedResult.getSurvivedFeatures());
+  }
+
   private String write(List<SimpleBEDFeature> features, int percentActg) throws Exception {
     var baos = new ByteArrayOutputStream();
     TestReferences.lowActgDao
         .validateAndPrepareResponse(List.copyOf(features), DeflineFormat.REGIONONLY, 60, percentActg)
-        .accept(baos);
+        .stream().accept(baos);
     return baos.toString();
   }
 }

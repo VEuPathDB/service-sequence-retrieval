@@ -46,6 +46,9 @@ public class WriteFeaturesJob implements JobExecutor {
     var percentActg = "protein".equalsIgnoreCase(sequenceType)
         ? DEFAULT_PERCENT_ACTG
         : Optional.ofNullable(jobSpec.getPercentActg()).orElse(DEFAULT_PERCENT_ACTG);
+    if (percentActg < 0 || percentActg > 100) {
+      return JobResult.failure("percentActg must be between 0 and 100, got: " + percentActg);
+    }
 
     List<BEDFeature> features;
 
@@ -98,7 +101,7 @@ public class WriteFeaturesJob implements JobExecutor {
       }
     }
 
-    var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine, percentActg);
+    var preparedResponse = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine, percentActg);
 
     // Write FASTA to temp file for post-processing
     File tempFasta;
@@ -110,14 +113,29 @@ public class WriteFeaturesJob implements JobExecutor {
 
     try {
       try (FileOutputStream fos = new FileOutputStream(tempFasta)) {
-        stream.accept(fos);
+        preparedResponse.stream().accept(fos);
       } catch (IOException e) {
         return JobResult.failure("Failed to write FASTA to temp file: " + e.getMessage());
       }
 
+      // Use the features that actually survived percentActg filtering (and were therefore
+      // actually written to tempFasta) rather than the original, unfiltered request list —
+      // otherwise post-processing (MSA metadata validation, GENETREE) sees a feature set that
+      // doesn't match what's actually in the FASTA.
+      var survivedFeatures = preparedResponse.getSurvivedFeatures();
+
       // Check if post-processing is requested
       if (jobSpec.getPostProcess() != null) {
-        return executeWithPostProcessing(jobContext, jobSpec, tempFasta, features);
+        if (survivedFeatures.isEmpty()) {
+          return JobResult.failure(
+              "All " + features.size() + " requested sequences were filtered out by percentActg; nothing to process.");
+        }
+        if (jobSpec.getPostProcess() == PostProcessType.GENETREE && survivedFeatures.size() < 3) {
+          return JobResult.failure(
+              "Only " + survivedFeatures.size() + " sequences remained after percentActg filtering; " +
+              "gene tree generation requires at least 3.");
+        }
+        return executeWithPostProcessing(jobContext, jobSpec, tempFasta, survivedFeatures);
       } else {
         // No post-processing - write FASTA directly using streaming
         try (FileInputStream fis = new FileInputStream(tempFasta)) {

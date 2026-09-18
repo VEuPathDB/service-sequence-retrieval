@@ -25,6 +25,8 @@ import org.veupathdb.service.sr.generated.model.UploadMethod;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
+import jakarta.ws.rs.BadRequestException;
+
 
 public class SequenceRetrievalServiceTest {
 
@@ -113,6 +115,41 @@ CTCGCCC
 MSLTDQI
 """;
     testJson(json, sequenceTypeStr, expected);
+  }
+
+  @Test
+  public void testJsonPercentActgAboveRangeRejected() throws Exception {
+    var json = """
+{"features": [{"contig": "CDFG01000013.1" , "start": 1, "end": 7, "query": "Q1", "strand": "POSITIVE"}], "deflineFormat": "QUERYANDREGION", "basesPerLine": 60, "percentActg": 101}
+""";
+    var sequencePostRequest = new ObjectMapper().readValue(json, SequencePostRequest.class);
+    var exception = assertThrows(BadRequestException.class, () ->
+        new SequenceRetrievalService().postSequencesBySequenceType("GENOMIC", sequencePostRequest));
+    assertTrue(exception.getMessage().contains("percentActg must be between 0 and 100"));
+  }
+
+  @Test
+  public void testJsonPercentActgNegativeRejected() throws Exception {
+    var json = """
+{"features": [{"contig": "CDFG01000013.1" , "start": 1, "end": 7, "query": "Q1", "strand": "POSITIVE"}], "deflineFormat": "QUERYANDREGION", "basesPerLine": 60, "percentActg": -1}
+""";
+    var sequencePostRequest = new ObjectMapper().readValue(json, SequencePostRequest.class);
+    var exception = assertThrows(BadRequestException.class, () ->
+        new SequenceRetrievalService().postSequencesBySequenceType("GENOMIC", sequencePostRequest));
+    assertTrue(exception.getMessage().contains("percentActg must be between 0 and 100"));
+  }
+
+  @Test
+  public void testJsonPercentActgAtRangeBoundaryAccepted() throws Exception {
+    // 100 is the maximum valid value and must not be rejected by range validation.
+    var json = """
+{"features": [{"contig": "CDFG01000013.1" , "start": 1, "end": 7, "query": "Q1", "strand": "POSITIVE"}], "deflineFormat": "QUERYANDREGION", "basesPerLine": 60, "percentActg": 100}
+""";
+    var expected = """
+>Q1 CDFG01000013.1:1-7(+)
+CTCGCCC
+""";
+    testJson(json, "GENOMIC", expected);
   }
 
   @Test

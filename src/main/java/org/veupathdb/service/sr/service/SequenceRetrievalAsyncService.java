@@ -59,6 +59,9 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
     var percentActg = "protein".equalsIgnoreCase(sequenceType)
         ? DEFAULT_PERCENT_ACTG
         : Optional.ofNullable(entity.getPercentActg()).orElse(DEFAULT_PERCENT_ACTG);
+    if (percentActg < 0 || percentActg > 100) {
+      throw new BadRequestException("percentActg must be between 0 and 100, got: " + percentActg);
+    }
     var features = entity.getFeatures();
     var spec = new SequenceRetrievalSpecImpl();
     spec.setFeatures(features);
