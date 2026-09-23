@@ -62,6 +62,7 @@ public class ClustaloExecutor {
     command.add("--infile=" + inputFile.getAbsolutePath());
     command.add("--outfile=" + outputFile.getAbsolutePath());
     command.add("--outfmt=" + outputFormat);
+    command.add("--threads=4");
     command.add("--force"); // Overwrite output files
     command.add("-v"); // Verbose output
 
