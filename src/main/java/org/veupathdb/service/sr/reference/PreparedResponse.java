@@ -10,15 +10,12 @@ import java.util.function.Consumer;
  * Result of {@link ReferenceDAO#validateAndPrepareResponse}.
  *
  * Wraps the deferred FASTA-streaming {@link Consumer} together with the list of features
- * that actually survived {@code percentActg} filtering. The survived-features list is only
- * populated once the stream consumer has actually been invoked with an OutputStream (i.e.
- * after the FASTA has actually been written) — filtering happens lazily, inside the streaming
- * step, not at the time this object is constructed.
+ * that actually survived {@code percentActg} filtering. {@link #getSurvivedFeatures()} is
+ * only populated after {@link #stream()}'s consumer has been invoked, since filtering happens
+ * during streaming, not at construction time.
  *
- * Callers that only need the plain FASTA output (no post-processing) can ignore
- * {@link #getSurvivedFeatures()} entirely. Callers that feed the output into post-processing
- * (MSA/GENETREE) MUST call {@link #getSurvivedFeatures()} after {@link #stream()} has been
- * invoked, and use that list instead of the original, unfiltered feature list.
+ * Post-processing callers (MSA/GENETREE) must use {@link #getSurvivedFeatures()} instead of
+ * the original feature list, so their inputs match the filtered FASTA content.
  */
 public class PreparedResponse {
 

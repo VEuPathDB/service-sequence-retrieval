@@ -30,7 +30,7 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
 
   private static final DeflineFormat DEFAULT_DEFLINE_FORMAT = DeflineFormat.REGIONONLY;
   private static final int DEFAULT_BASES_PER_LINE = 60;
-  private static final int DEFAULT_PERCENT_ACTG = 0;
+  private static final int NULL_PERCENT_ACTG = 0;
 
   private JobResponse asyncResponse(SequenceRetrievalSpec spec){
     var json  = Json.convert(spec);
@@ -57,8 +57,8 @@ public class SequenceRetrievalAsyncService extends Controller implements Sequenc
     var deflineFormat = Optional.ofNullable(entity.getDeflineFormat()).orElse(DEFAULT_DEFLINE_FORMAT);
     var basesPerLine = Optional.ofNullable(entity.getBasesPerLine()).orElse(DEFAULT_BASES_PER_LINE);
     var percentActg = "protein".equalsIgnoreCase(sequenceType)
-        ? DEFAULT_PERCENT_ACTG
-        : Optional.ofNullable(entity.getPercentActg()).orElse(DEFAULT_PERCENT_ACTG);
+        ? NULL_PERCENT_ACTG
+        : Optional.ofNullable(entity.getPercentActg()).orElse(NULL_PERCENT_ACTG);
     if (percentActg < 0 || percentActg > 100) {
       throw new BadRequestException("percentActg must be between 0 and 100, got: " + percentActg);
     }

@@ -31,7 +31,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
   private static final DeflineFormat DEFAULT_DEFLINE_FORMAT = DeflineFormat.REGIONONLY;
   private static final int DEFAULT_BASES_PER_LINE = 60;
-  private static final int DEFAULT_PERCENT_ACTG = 0;
+  private static final int NULL_PERCENT_ACTG = 0;
 
   /**
    * Extend generated streamer class so we can log processing duration
@@ -54,8 +54,8 @@ public class SequenceRetrievalService implements SequencesSequenceType {
     var deflineFormat = Optional.ofNullable(entity.getDeflineFormat()).orElse(DEFAULT_DEFLINE_FORMAT);
     var basesPerLine = Optional.ofNullable(entity.getBasesPerLine()).orElse(DEFAULT_BASES_PER_LINE);
     var percentActg = "protein".equalsIgnoreCase(sequenceType)
-        ? DEFAULT_PERCENT_ACTG
-        : Optional.ofNullable(entity.getPercentActg()).orElse(DEFAULT_PERCENT_ACTG);
+        ? NULL_PERCENT_ACTG
+        : Optional.ofNullable(entity.getPercentActg()).orElse(NULL_PERCENT_ACTG);
     validatePercentActgRange(percentActg);
 
     var features = FeatureAdapter.toBEDFeatures(entity.getFeatures());
@@ -120,7 +120,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       };
 
       LOG.info("Took " + timer.getElapsedStringAndRestart() + " to read features from input data.");
-      var preparedResponse = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine, DEFAULT_PERCENT_ACTG);
+      var preparedResponse = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine, NULL_PERCENT_ACTG);
 
       LOG.info("Took " + timer.getElapsedStringAndRestart() + " to prepare to stream response.");
       return PostSequencesBySequenceTypeAndFileFormatResponse.respond200WithTextXFasta(new StreamerWithLogging(preparedResponse.stream()));
@@ -189,12 +189,6 @@ public class SequenceRetrievalService implements SequencesSequenceType {
         int requestedCount = entity.getFeatures().size();
         throw new BadRequestException(
             "All " + requestedCount + " requested sequences were filtered out by percentActg; nothing to process.");
-      }
-
-      if (entity.getPostProcess() == PostProcessType.GENETREE && features.size() < 3) {
-        throw new BadRequestException(
-            "Only " + features.size() + " sequences remained after percentActg filtering; " +
-            "gene tree generation requires at least 3.");
       }
 
       // Create post-processor

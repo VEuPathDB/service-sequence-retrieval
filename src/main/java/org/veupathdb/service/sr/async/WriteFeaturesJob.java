@@ -12,7 +12,6 @@ import org.veupathdb.service.sr.postprocess.PostProcessorFactory;
 import org.veupathdb.service.sr.postprocess.ProcessingContext;
 import org.veupathdb.service.sr.util.FeatureAdapter;
 import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
-import org.veupathdb.service.sr.generated.model.PostProcessType;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpec;
 import org.veupathdb.service.sr.generated.model.SequenceRetrievalSpecImpl;
 
@@ -32,7 +31,7 @@ public class WriteFeaturesJob implements JobExecutor {
 
   private static final DeflineFormat DEFAULT_DEFLINE_FORMAT = DeflineFormat.REGIONONLY;
   private static final int DEFAULT_BASES_PER_LINE = 60;
-  private static final int DEFAULT_PERCENT_ACTG = 0;
+  private static final int NULL_PERCENT_ACTG = 0;
 
   @NotNull
   @Override
@@ -44,8 +43,8 @@ public class WriteFeaturesJob implements JobExecutor {
     var deflineFormat = Optional.ofNullable(jobSpec.getDeflineFormat()).orElse(DEFAULT_DEFLINE_FORMAT);
     var basesPerLine = Optional.ofNullable(jobSpec.getBasesPerLine()).orElse(DEFAULT_BASES_PER_LINE);
     var percentActg = "protein".equalsIgnoreCase(sequenceType)
-        ? DEFAULT_PERCENT_ACTG
-        : Optional.ofNullable(jobSpec.getPercentActg()).orElse(DEFAULT_PERCENT_ACTG);
+        ? NULL_PERCENT_ACTG
+        : Optional.ofNullable(jobSpec.getPercentActg()).orElse(NULL_PERCENT_ACTG);
     if (percentActg < 0 || percentActg > 100) {
       return JobResult.failure("percentActg must be between 0 and 100, got: " + percentActg);
     }
@@ -129,11 +128,6 @@ public class WriteFeaturesJob implements JobExecutor {
         if (survivedFeatures.isEmpty()) {
           return JobResult.failure(
               "All " + features.size() + " requested sequences were filtered out by percentActg; nothing to process.");
-        }
-        if (jobSpec.getPostProcess() == PostProcessType.GENETREE && survivedFeatures.size() < 3) {
-          return JobResult.failure(
-              "Only " + survivedFeatures.size() + " sequences remained after percentActg filtering; " +
-              "gene tree generation requires at least 3.");
         }
         return executeWithPostProcessing(jobContext, jobSpec, tempFasta, survivedFeatures);
       } else {
