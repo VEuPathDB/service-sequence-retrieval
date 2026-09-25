@@ -14,6 +14,7 @@ import org.veupathdb.service.sr.postprocess.PostProcessResult;
 import org.veupathdb.service.sr.postprocess.PostProcessor;
 import org.veupathdb.service.sr.postprocess.PostProcessorFactory;
 import org.veupathdb.service.sr.postprocess.ProcessingContext;
+import org.veupathdb.service.sr.reference.PreparedResponse;
 import org.veupathdb.service.sr.reference.ReferenceDAOFactory;
 import org.veupathdb.service.sr.util.EnumUtil;
 import org.veupathdb.service.sr.util.FeatureAdapter;
@@ -30,6 +31,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
   private static final DeflineFormat DEFAULT_DEFLINE_FORMAT = DeflineFormat.REGIONONLY;
   private static final int DEFAULT_BASES_PER_LINE = 60;
+  private static final int NULL_PERCENT_ACTG = 0;
 
   /**
    * Extend generated streamer class so we can log processing duration
@@ -51,6 +53,10 @@ public class SequenceRetrievalService implements SequencesSequenceType {
 
     var deflineFormat = Optional.ofNullable(entity.getDeflineFormat()).orElse(DEFAULT_DEFLINE_FORMAT);
     var basesPerLine = Optional.ofNullable(entity.getBasesPerLine()).orElse(DEFAULT_BASES_PER_LINE);
+    var percentActg = "protein".equalsIgnoreCase(sequenceType)
+        ? NULL_PERCENT_ACTG
+        : Optional.ofNullable(entity.getPercentActg()).orElse(NULL_PERCENT_ACTG);
+    validatePercentActgRange(percentActg);
 
     var features = FeatureAdapter.toBEDFeatures(entity.getFeatures());
 
@@ -59,19 +65,28 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       validatePostProcessSyncRequest(entity.getPostProcess(), features.size());
     }
 
-    var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
+    var preparedResponse = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine, percentActg);
 
     // Check if post-processing is requested
     if (entity.getPostProcess() != null) {
       try {
-        return handlePostProcessing(stream, entity);
+        return handlePostProcessing(preparedResponse, entity);
       } catch (IOException e) {
         throw new RuntimeException("Post-processing failed", e);
       }
     }
 
-    return PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(new StreamerWithLogging(stream));
+    return PostSequencesBySequenceTypeResponse.respond200WithTextXFasta(new StreamerWithLogging(preparedResponse.stream()));
 
+  }
+
+  /**
+   * Validate that percentActg (if non-default) falls within the documented 0-100 range.
+   */
+  private static void validatePercentActgRange(int percentActg) {
+    if (percentActg < 0 || percentActg > 100) {
+      throw new BadRequestException("percentActg must be between 0 and 100, got: " + percentActg);
+    }
   }
 
   @Override
@@ -105,10 +120,10 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       };
 
       LOG.info("Took " + timer.getElapsedStringAndRestart() + " to read features from input data.");
-      var stream = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine);
+      var preparedResponse = ReferenceDAOFactory.get(sequenceType).validateAndPrepareResponse(features, deflineFormat, basesPerLine, NULL_PERCENT_ACTG);
 
       LOG.info("Took " + timer.getElapsedStringAndRestart() + " to prepare to stream response.");
-      return PostSequencesBySequenceTypeAndFileFormatResponse.respond200WithTextXFasta(new StreamerWithLogging(stream));
+      return PostSequencesBySequenceTypeAndFileFormatResponse.respond200WithTextXFasta(new StreamerWithLogging(preparedResponse.stream()));
 
     } catch (IOException e) {
       throw new RuntimeException("Unable to complete file processing", e);
@@ -153,18 +168,28 @@ public class SequenceRetrievalService implements SequencesSequenceType {
    * Handle post-processing of FASTA output.
    */
   private PostSequencesBySequenceTypeResponse handlePostProcessing(
-      Consumer<OutputStream> fastaStream,
+      PreparedResponse preparedResponse,
       SequencePostRequest entity) throws IOException {
 
     // Write FASTA to temp file
     File tempFasta = File.createTempFile("seq-retrieval-", ".fasta");
     try {
       try (FileOutputStream fos = new FileOutputStream(tempFasta)) {
-        fastaStream.accept(fos);
+        preparedResponse.stream().accept(fos);
       }
 
-      // Get features for post-processing
-      var features = FeatureAdapter.toBEDFeatures(entity.getFeatures());
+      // Use the features that actually survived percentActg filtering (and were therefore
+      // actually written to tempFasta) rather than the original, unfiltered request list.
+      // Using the unfiltered list here would hand post-processing a feature/metadata set that
+      // doesn't match the FASTA it's about to read, which can throw confusing errors (MSA
+      // metadata ID mismatches) or silently diverge.
+      var features = preparedResponse.getSurvivedFeatures();
+
+      if (features.isEmpty()) {
+        int requestedCount = entity.getFeatures().size();
+        throw new BadRequestException(
+            "All " + requestedCount + " requested sequences were filtered out by percentActg; nothing to process.");
+      }
 
       // Create post-processor
       SrtServiceOptions options = org.veupathdb.service.sr.Main.getOptions();

@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
 import org.veupathdb.service.sr.response.StreamSequences;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -60,22 +59,23 @@ public class ReferenceDAO {
     return result;
   }
 
-  public Consumer<OutputStream> validateAndPrepareResponse(
+  public PreparedResponse validateAndPrepareResponse(
       List<BEDFeature> features,
       DeflineFormat deflineFormat,
-      int requestedBasesPerLine) {
+      int requestedBasesPerLine,
+      int percentActg) {
     this.spec.validateFeatures(features);
-    return outputStream -> {
+    return new PreparedResponse(outputStream -> {
       try (
           var connection = this.indexDataSource.getConnection();
           var statement = connection.prepareStatement("select length, offset, linebases, linewidth from faidx where name = ? limit 1");
           var sequenceFile = new IndexedFastaSequenceFile(this.sequencesPath, transientIndex(statement))
       ) {
-        StreamSequences.write(outputStream, sequenceFile, features, deflineFormat, requestedBasesPerLine);
+        return StreamSequences.write(outputStream, sequenceFile, features, deflineFormat, requestedBasesPerLine, percentActg);
       } catch (SQLException | IOException e) {
         throw new RuntimeException(e);
       }
-    };
+    });
   }
 
   private FastaSequenceIndexStub transientIndex(PreparedStatement statement) {

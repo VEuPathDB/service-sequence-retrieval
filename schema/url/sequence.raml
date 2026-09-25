@@ -89,6 +89,15 @@ types:
       basesPerLine?:
         type: integer
         default: 60
+      percentActg?:
+        type: integer
+        default: 0
+        description: |
+          Minimum percentage (0-100) of A/C/T/G bases a sequence must
+          contain to be included in the response. Sequences below this
+          threshold are skipped rather than causing downstream
+          post-processing (e.g. MSA) to fail. A value of 0 (the default)
+          disables filtering. Ignored when the sequence type is protein.
       postProcess?:
         type: PostProcessType
       msaOptions?:
@@ -115,6 +124,8 @@ types:
       deflineFormat:
         type: DeflineFormat
       basesPerLine:
+        type: integer
+      percentActg:
         type: integer
       sequenceType:
         type: string

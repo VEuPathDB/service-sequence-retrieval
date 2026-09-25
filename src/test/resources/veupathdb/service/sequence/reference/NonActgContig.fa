@@ -1,0 +1,8 @@
+>LOWACTG01 synthetic low-ACTG-content contig for percentActg testing
+ACNNNNNNNN
+>GOOD01 synthetic high-ACTG contig for percentActg MSA functional test
+AATCCCAAGAAACCACGCGTACGTTCCTAAGATTTAGAGATTCAACTACAGTGTCTTCTA
+>GOOD02 synthetic high-ACTG contig for percentActg MSA functional test, similar to GOOD01
+AATCCGAAGAAACCACGCGTGCGTTCCTAAGATTTAGAGAATCAACTACAGTGTCGTCTA
+>BAD01 synthetic low-ACTG contig for percentActg MSA functional test, should be filtered
+NNNNNNNNNNANNNCCNTNNGNNNGNNNNTNNNNNTNNNNANNGCNANNNNNNNNNNNNN
