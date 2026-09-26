@@ -2,6 +2,7 @@ package org.veupathdb.service.sr.postprocess;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gusdb.fgputil.Timer;
 import org.gusdb.fgputil.runtime.RuntimeUtil;
 
 import java.io.BufferedReader;
@@ -44,10 +45,17 @@ public class MafftExecutor {
    *
    * @param inputFile Input FASTA file
    * @param outputFile Output file for alignment
+   * @param sequenceType Sequence type being aligned, for logging
+   * @param stats Sequence count/length stats for the sequences being aligned, for logging
    * @throws IOException if execution fails
    * @throws MafftException if mafft returns non-zero exit code or times out
    */
-  public void execute(File inputFile, File outputFile) throws IOException, MafftException {
+  public void execute(
+      File inputFile,
+      File outputFile,
+      String sequenceType,
+      SequenceStats stats
+  ) throws IOException, MafftException {
 
     List<String> command = new ArrayList<>();
     command.add(mafftBinaryPath);
@@ -57,6 +65,7 @@ public class MafftExecutor {
 
     LOG.info("Executing mafft: " + String.join(" ", command));
 
+    Timer timer = new Timer();
     StringBuilder stderrOutput = new StringBuilder();
     Optional<Integer> exitValue = RuntimeUtil.executeSubprocess(
         command,
@@ -77,6 +86,8 @@ public class MafftExecutor {
     if (exitValue.get() != 0) {
       throw new MafftException("Mafft failed with exit code " + exitValue.get() + ". Error output:\n" + stderrOutput);
     }
+    LOG.info("mafft execution: sequenceType=" + sequenceType + " " + stats
+        + " wallTime=" + timer.getElapsedString());
     LOG.info("Mafft completed successfully");
   }
 

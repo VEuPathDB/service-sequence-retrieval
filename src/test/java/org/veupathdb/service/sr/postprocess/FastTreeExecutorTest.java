@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,7 +40,7 @@ class FastTreeExecutorTest {
     FastTreeExecutor executor = new FastTreeExecutor("/nonexistent/fasttree", 300);
 
     assertThrows(Exception.class, () ->
-      executor.execute(alignmentFile, outputFile)
+      executor.execute(alignmentFile, outputFile, "protein", SequenceStats.of(List.of()))
     );
   }
 
@@ -50,7 +51,7 @@ class FastTreeExecutorTest {
     File nonExistentInput = tempDir.resolve("nonexistent.fasta").toFile();
 
     assertThrows(Exception.class, () ->
-      executor.execute(nonExistentInput, outputFile)
+      executor.execute(nonExistentInput, outputFile, "protein", SequenceStats.of(List.of()))
     );
   }
 

@@ -23,7 +23,8 @@ class PostProcessorFactoryTest {
         options,
         null,
         mockOptions,
-        ProcessingContext.SYNC
+        ProcessingContext.SYNC,
+        "protein"
     );
 
     assertNotNull(processor);
@@ -40,7 +41,8 @@ class PostProcessorFactoryTest {
         null,
         options,
         mockOptions,
-        ProcessingContext.SYNC
+        ProcessingContext.SYNC,
+        "protein"
     );
 
     assertNotNull(processor);
@@ -55,7 +57,8 @@ class PostProcessorFactoryTest {
             null,
             null,
             mockOptions,
-            ProcessingContext.SYNC
+            ProcessingContext.SYNC,
+            "protein"
         )
     );
   }
@@ -68,7 +71,8 @@ class PostProcessorFactoryTest {
             null,  // Missing msaOptions
             null,
             mockOptions,
-            ProcessingContext.SYNC
+            ProcessingContext.SYNC,
+            "protein"
         )
     );
 
@@ -83,7 +87,8 @@ class PostProcessorFactoryTest {
             null,
             null,  // Missing geneTreeOptions
             mockOptions,
-            ProcessingContext.SYNC
+            ProcessingContext.SYNC,
+            "protein"
         )
     );
 

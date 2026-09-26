@@ -57,7 +57,7 @@ public class StreamSequences {
         long sequenceLength = sequences.getIndex().getIndexEntry(feature.getContig()).getSize();
         var defline = Deflines.deflineForFeature(feature, deflineFormat, sequenceLength);
 
-        LOG.debug("Writing sequence for feature {} to OutputStream.", feature.getName());
+        //LOG.debug("Writing sequence for feature {} to OutputStream.", feature.getName());
         appendSequenceToStream(buf, defline, bases, basesPerLine);
         survivedFeatures.add(feature);
       }

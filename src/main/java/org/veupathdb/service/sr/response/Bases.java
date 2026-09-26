@@ -26,7 +26,7 @@ public class Bases {
 
   // for unit test
   static byte[] getBasesForBedFeature(ReferenceSequence subsequence, BEDFeature feature) {
-    LOG.debug("Retrieving base pairs for subsequence " + subsequence.getName());
+      //LOG.debug("Retrieving base pairs for subsequence " + subsequence.getName());
 
     var bases = subsequence.getBases();
     var basesStart = feature.getStart();

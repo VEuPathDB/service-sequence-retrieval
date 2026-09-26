@@ -161,7 +161,8 @@ public class WriteFeaturesJob implements JobExecutor {
           jobSpec.getMsaOptions(),
           jobSpec.getGeneTreeOptions(),
           options,
-          ProcessingContext.ASYNC
+          ProcessingContext.ASYNC,
+          jobSpec.getSequenceType()
       );
 
       // Process
