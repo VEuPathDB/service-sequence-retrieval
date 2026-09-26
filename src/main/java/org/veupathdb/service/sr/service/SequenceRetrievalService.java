@@ -70,7 +70,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
     // Check if post-processing is requested
     if (entity.getPostProcess() != null) {
       try {
-        return handlePostProcessing(preparedResponse, entity);
+        return handlePostProcessing(preparedResponse, entity, sequenceType);
       } catch (IOException e) {
         throw new RuntimeException("Post-processing failed", e);
       }
@@ -169,7 +169,8 @@ public class SequenceRetrievalService implements SequencesSequenceType {
    */
   private PostSequencesBySequenceTypeResponse handlePostProcessing(
       PreparedResponse preparedResponse,
-      SequencePostRequest entity) throws IOException {
+      SequencePostRequest entity,
+      String sequenceType) throws IOException {
 
     // Write FASTA to temp file
     File tempFasta = File.createTempFile("seq-retrieval-", ".fasta");
@@ -198,7 +199,8 @@ public class SequenceRetrievalService implements SequencesSequenceType {
           entity.getMsaOptions(),
           entity.getGeneTreeOptions(),
           options,
-          ProcessingContext.SYNC
+          ProcessingContext.SYNC,
+          sequenceType
       );
 
       // Process

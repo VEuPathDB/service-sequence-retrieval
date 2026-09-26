@@ -43,6 +43,7 @@ public class MsaProcessor implements PostProcessor {
   private final MsaFormat format;
   private final ClustaloExecutor clustaloExecutor;
   private final String itolBaseUrl;
+  private final String sequenceType;
 
   /**
    * Production constructor.
@@ -50,8 +51,9 @@ public class MsaProcessor implements PostProcessor {
    * @param options MSA-specific options
    * @param config Application configuration
    * @param context Processing context (SYNC or ASYNC) - determines timeout
+   * @param sequenceType Sequence type being aligned, for logging
    */
-  public MsaProcessor(MsaOptions options, SrtServiceOptions config, ProcessingContext context) {
+  public MsaProcessor(MsaOptions options, SrtServiceOptions config, ProcessingContext context, String sequenceType) {
     this(options,
         new ClustaloExecutor(
             config.getClustaloBinaryPath(),
@@ -59,7 +61,8 @@ public class MsaProcessor implements PostProcessor {
                 ? config.getClustaloAsyncTimeoutSeconds()
                 : config.getClustaloSyncTimeoutSeconds()
         ),
-        config.getItolBaseUrl()
+        config.getItolBaseUrl(),
+        sequenceType
     );
   }
 
@@ -69,11 +72,13 @@ public class MsaProcessor implements PostProcessor {
   public MsaProcessor(
       MsaOptions options,
       ClustaloExecutor clustaloExecutor,
-      String itolBaseUrl) {
+      String itolBaseUrl,
+      String sequenceType) {
     this.options = options;
     this.format = Optional.ofNullable(options.getFormat()).orElse(DEFAULT_FORMAT);
     this.clustaloExecutor = clustaloExecutor;
     this.itolBaseUrl = itolBaseUrl;
+    this.sequenceType = sequenceType;
   }
 
   @Override
@@ -94,11 +99,18 @@ public class MsaProcessor implements PostProcessor {
     try {
       // Run clustalo
       try {
+        int maxSeqLength = features.stream()
+            .mapToInt(f -> f.getEnd() - f.getStart() + 1)
+            .max()
+            .orElse(0);
         clustaloExecutor.execute(
             fastaInput,
             alignmentFile,
             clustaloFormat,
-            guideTreeFile
+            guideTreeFile,
+            sequenceType,
+            features.size(),
+            maxSeqLength
         );
       } catch (ClustaloExecutor.ClustaloException e) {
         throw new IOException("Clustalo execution failed", e);

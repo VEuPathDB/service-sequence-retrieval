@@ -78,10 +78,13 @@ class MsaProcessorTest {
         any(File.class),
         any(File.class),
         eq("clustal"),
-        isNull()
-    );
+        isNull(),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
 
-    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
     PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Verify plain text output for clustal without metadata
@@ -100,8 +103,11 @@ class MsaProcessorTest {
         eq(testInputFasta),
         any(File.class),
         eq("clustal"),
-        isNull()
-    );
+        isNull(),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
   }
 
   @Test
@@ -124,10 +130,13 @@ class MsaProcessorTest {
         any(File.class),
         any(File.class),
         eq("clustal"),  // clustal_dnd uses clustal format
-        any(File.class)
-    );
+        any(File.class),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
 
-    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
     PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Verify HTML output
@@ -161,8 +170,11 @@ class MsaProcessorTest {
         eq(testInputFasta),
         any(File.class),
         eq("clustal"),
-        any(File.class)
-    );
+        any(File.class),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
   }
 
   @Test
@@ -182,10 +194,13 @@ class MsaProcessorTest {
         any(File.class),
         any(File.class),
         eq("fasta"),
-        isNull()
-    );
+        isNull(),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
 
-    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
     PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Verify plain text output
@@ -203,8 +218,11 @@ class MsaProcessorTest {
         eq(testInputFasta),
         any(File.class),
         eq("fasta"),
-        isNull()
-    );
+        isNull(),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
   }
 
   @Test
@@ -224,10 +242,13 @@ class MsaProcessorTest {
         any(File.class),
         any(File.class),
         eq("phylip"),
-        isNull()
-    );
+        isNull(),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
 
-    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
     PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Verify plain text output
@@ -237,8 +258,11 @@ class MsaProcessorTest {
         eq(testInputFasta),
         any(File.class),
         eq("phylip"),
-        isNull()
-    );
+        isNull(),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
   }
 
   @Test
@@ -259,10 +283,13 @@ class MsaProcessorTest {
         ArgumentMatchers.any(),
         ArgumentMatchers.any(),
         ArgumentMatchers.any(),
-        isNull()
-    );
+        isNull(),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
 
-    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
 
     PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
     assertNotNull(result);
@@ -283,7 +310,7 @@ class MsaProcessorTest {
     options.setFormat(MsaFormat.FASTA);
     options.setMetadataUrl("https://example.com/metadata.tsv");
 
-    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
 
     // Should throw BadRequestException
     Exception exception = assertThrows(BadRequestException.class, () -> {
@@ -301,7 +328,7 @@ class MsaProcessorTest {
     options.setFormat(MsaFormat.CLUSTALDND);
     options.setMetadataUrl("https://example.com/metadata.tsv");
 
-    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
 
     // Should throw BadRequestException
     Exception exception = assertThrows(BadRequestException.class, () -> {
@@ -323,10 +350,13 @@ class MsaProcessorTest {
             any(File.class),
             any(File.class),
             any(String.class),
-            isNull()
-        );
+            isNull(),
+            any(String.class),
+            anyInt(),
+            anyInt()
+          );
 
-    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
 
     // Should wrap in IOException
     Exception exception = assertThrows(IOException.class, () -> {
@@ -360,10 +390,13 @@ class MsaProcessorTest {
         any(File.class),
         any(File.class),
         eq("clustal"),
-        any(File.class)
-    );
+        any(File.class),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
 
-    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
     PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Use writeContent for streaming results
@@ -401,10 +434,13 @@ class MsaProcessorTest {
         any(File.class),
         any(File.class),
         eq("clustal"),
-        any(File.class)
-    );
+        any(File.class),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
 
-    MsaProcessor processor = new MsaProcessor(options, mockExecutor, customItolUrl);
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, customItolUrl, "protein");
     PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Note: iTOL upload will fail in tests (no network), but the custom URL
@@ -454,10 +490,13 @@ class MsaProcessorTest {
         any(File.class),
         any(File.class),
         eq("clustal"),
-        isNull()
-    );
+        isNull(),
+        any(String.class),
+        anyInt(),
+        anyInt()
+      );
 
-    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de");
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
     PostProcessResult result = processor.process(testInputFasta, features);
 
     // Verify plain text output

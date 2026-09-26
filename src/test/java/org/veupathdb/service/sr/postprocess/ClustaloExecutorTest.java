@@ -47,7 +47,7 @@ class ClustaloExecutorTest {
     ClustaloExecutor executor = new ClustaloExecutor("/nonexistent/clustalo", 300);
 
     assertThrows(Exception.class, () ->
-      executor.execute(inputFile, outputFile, "clustal", guideTreeFile)
+      executor.execute(inputFile, outputFile, "clustal", guideTreeFile, "protein", 2, 4)
     );
   }
 
@@ -58,7 +58,7 @@ class ClustaloExecutorTest {
     File nonExistentInput = tempDir.resolve("nonexistent.fasta").toFile();
 
     assertThrows(Exception.class, () ->
-      executor.execute(nonExistentInput, outputFile, "clustal", guideTreeFile)
+      executor.execute(nonExistentInput, outputFile, "clustal", guideTreeFile, "protein", 2, 4)
     );
   }
 

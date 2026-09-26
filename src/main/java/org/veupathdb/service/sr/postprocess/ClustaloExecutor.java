@@ -26,6 +26,8 @@ public class ClustaloExecutor {
 
   private static final Logger LOG = LogManager.getLogger(ClustaloExecutor.class);
 
+  private static final String PROGRESS_LINE_MARKER = "Progressive alignment progress done";
+
   private final String clustaloBinaryPath;
   private final int timeoutSeconds;
 
@@ -47,6 +49,9 @@ public class ClustaloExecutor {
    * @param outputFile Output file for alignment
    * @param outputFormat Output format (e.g., "clustal", "fasta", "phylip")
    * @param guideTreeFile Optional guide tree output file (null if not needed)
+   * @param sequenceType Sequence type being aligned, for logging
+   * @param numSeqs Number of sequences being aligned, for logging
+   * @param maxSeqLength Length of the longest sequence being aligned, for logging
    * @throws IOException if execution fails
    * @throws ClustaloException if clustalo returns non-zero exit code or times out
    */
@@ -54,7 +59,10 @@ public class ClustaloExecutor {
       File inputFile,
       File outputFile,
       String outputFormat,
-      File guideTreeFile
+      File guideTreeFile,
+      String sequenceType,
+      int numSeqs,
+      int maxSeqLength
   ) throws IOException, ClustaloException {
 
     List<String> command = new ArrayList<>();
@@ -74,6 +82,7 @@ public class ClustaloExecutor {
     LOG.info("Executing clustalo: " + String.join(" ", command));
 
     StringBuilder output = new StringBuilder();
+    StringBuilder cpuInfo = new StringBuilder();
     Optional<Integer> exitValue = RuntimeUtil.executeSubprocess(
         command,
         Collections.emptyMap(),                   // no extra environment
@@ -81,6 +90,9 @@ public class ClustaloExecutor {
         line -> {
           LOG.debug("clustalo: " + line);         // log stdout/stderr at debug level
           output.append(line).append("\n");       // collect output for logging on error
+          if (line.contains(PROGRESS_LINE_MARKER)) {
+            cpuInfo.append(line).append("\n");
+          }
         },
         Optional.empty(),                         // join stdout/stderr
         Optional.of(Duration.of(                  // timeout the subprocess
@@ -93,6 +105,8 @@ public class ClustaloExecutor {
     if (exitValue.get() != 0) {
       throw new ClustaloException("Clustalo failed with exit code " + exitValue.get() + ". Output:\n" + output);
     }
+    LOG.info("sequenceType=" + sequenceType + " numSeqs=" + numSeqs + " maxSeqLength=" + maxSeqLength
+        + " " + cpuInfo.toString().trim());
     LOG.info("Clustalo completed successfully");
   }
 

@@ -18,6 +18,7 @@ public class PostProcessorFactory {
    * @param geneTreeOptions Options for GENETREE (required if type is GENETREE)
    * @param options Application configuration
    * @param context Processing context (SYNC or ASYNC) - affects timeout and resource limits
+   * @param sequenceType Sequence type being processed, for logging
    * @return A PostProcessor instance
    * @throws IllegalArgumentException if the type/options combination is invalid
    */
@@ -26,7 +27,8 @@ public class PostProcessorFactory {
       MsaOptions msaOptions,
       GeneTreeOptions geneTreeOptions,
       SrtServiceOptions options,
-      ProcessingContext context
+      ProcessingContext context,
+      String sequenceType
   ) {
     if (postProcessType == null) {
       throw new IllegalArgumentException("postProcessType cannot be null");
@@ -38,7 +40,7 @@ public class PostProcessorFactory {
           throw new IllegalArgumentException(
               "msaOptions required when postProcess is MSA");
         }
-        yield new MsaProcessor(msaOptions, options, context);
+        yield new MsaProcessor(msaOptions, options, context, sequenceType);
       }
       case GENETREE -> {
         if (geneTreeOptions == null) {
