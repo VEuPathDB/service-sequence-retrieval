@@ -16,6 +16,15 @@ types:
       queuePosition?:
         type: integer
         format: int32
+      created?:
+        type: datetime
+        description: Time the job was submitted. Absent if not yet available.
+      started?:
+        type: datetime
+        description: Time a worker picked up the job. Absent if not yet started.
+      finished?:
+        type: datetime
+        description: Time the job finished. Absent if not yet finished.
     additionalProperties: false
 
   JobDataResponse:

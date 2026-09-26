@@ -49,6 +49,15 @@ types:
       queuePosition?:
         type: integer
         format: int32
+      created?:
+        description: Time the job was submitted. Absent if not yet available.
+        type: datetime
+      started?:
+        description: Time a worker picked up the job. Absent if not yet started.
+        type: datetime
+      finished?:
+        description: Time the job finished. Absent if not yet finished.
+        type: datetime
   JobStatus:
     type: string
     enum:
