@@ -2,12 +2,16 @@ package org.veupathdb.service.sr.service;
 
 import jakarta.ws.rs.NotFoundException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.veupathdb.lib.compute.platform.job.AsyncJob;
 import org.veupathdb.lib.compute.platform.AsyncPlatform;
 import org.veupathdb.lib.hash_id.HashID;
 import org.veupathdb.service.sr.generated.model.JobResponse;
 import org.veupathdb.service.sr.generated.model.JobResponseImpl;
 import org.veupathdb.service.sr.generated.model.JobStatus;
+
+import java.time.OffsetDateTime;
+import java.util.Date;
 
 public class Controller {
 
@@ -63,8 +67,16 @@ public class Controller {
     out.setJobID(job.getJobID().toString());
     out.setQueuePosition(job.getQueuePosition());
     out.setStatus(convertEnum(job));
+    out.setCreated(toDate(job.getCreated()));
+    out.setStarted(toDate(job.getGrabbed()));
+    out.setFinished(toDate(job.getFinished()));
 
     return out;
+  }
+
+  @Nullable
+  private static Date toDate(@Nullable OffsetDateTime time) {
+    return time == null ? null : Date.from(time.toInstant());
   }
 
   private JobStatus convertEnum(AsyncJob job) {
