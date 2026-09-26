@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,7 +40,7 @@ class MafftExecutorTest {
     MafftExecutor executor = new MafftExecutor("/nonexistent/mafft", 300);
 
     assertThrows(Exception.class, () ->
-      executor.execute(inputFile, outputFile)
+      executor.execute(inputFile, outputFile, "protein", SequenceStats.of(List.of()))
     );
   }
 
@@ -50,7 +51,7 @@ class MafftExecutorTest {
     File nonExistentInput = tempDir.resolve("nonexistent.fasta").toFile();
 
     assertThrows(Exception.class, () ->
-      executor.execute(nonExistentInput, outputFile)
+      executor.execute(nonExistentInput, outputFile, "protein", SequenceStats.of(List.of()))
     );
   }
 

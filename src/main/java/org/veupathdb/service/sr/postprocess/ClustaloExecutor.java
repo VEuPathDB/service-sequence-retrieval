@@ -51,8 +51,7 @@ public class ClustaloExecutor {
    * @param outputFormat Output format (e.g., "clustal", "fasta", "phylip")
    * @param guideTreeFile Optional guide tree output file (null if not needed)
    * @param sequenceType Sequence type being aligned, for logging
-   * @param numSeqs Number of sequences being aligned, for logging
-   * @param maxSeqLength Length of the longest sequence being aligned, for logging
+   * @param stats Sequence count/length stats for the sequences being aligned, for logging
    * @throws IOException if execution fails
    * @throws ClustaloException if clustalo returns non-zero exit code or times out
    */
@@ -62,8 +61,7 @@ public class ClustaloExecutor {
       String outputFormat,
       File guideTreeFile,
       String sequenceType,
-      int numSeqs,
-      int maxSeqLength
+      SequenceStats stats
   ) throws IOException, ClustaloException {
 
     List<String> command = new ArrayList<>();
@@ -107,9 +105,8 @@ public class ClustaloExecutor {
     if (exitValue.get() != 0) {
       throw new ClustaloException("Clustalo failed with exit code " + exitValue.get() + ". Output:\n" + output);
     }
-    LOG.info("clustalo execution: sequenceType=" + sequenceType + " numSeqs=" + numSeqs
-        + " maxSeqLength=" + maxSeqLength + " wallTime=" + timer.getElapsedString()
-        + " " + cpuInfo.toString().trim());
+    LOG.info("clustalo execution: sequenceType=" + sequenceType + " " + stats
+        + " wallTime=" + timer.getElapsedString() + " " + cpuInfo.toString().trim());
     LOG.info("Clustalo completed successfully");
   }
 

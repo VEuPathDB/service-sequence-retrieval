@@ -11,6 +11,7 @@ import org.veupathdb.service.sr.generated.model.MsaOptions;
 import org.veupathdb.service.sr.generated.model.MsaOptionsImpl;
 import org.veupathdb.service.sr.postprocess.ClustaloExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
+import org.veupathdb.service.sr.postprocess.SequenceStats;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -80,8 +81,7 @@ class MsaProcessorTest {
         eq("clustal"),
         isNull(),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
@@ -105,8 +105,7 @@ class MsaProcessorTest {
         eq("clustal"),
         isNull(),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
   }
 
@@ -132,8 +131,7 @@ class MsaProcessorTest {
         eq("clustal"),  // clustal_dnd uses clustal format
         any(File.class),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
@@ -172,8 +170,7 @@ class MsaProcessorTest {
         eq("clustal"),
         any(File.class),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
   }
 
@@ -196,8 +193,7 @@ class MsaProcessorTest {
         eq("fasta"),
         isNull(),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
@@ -220,8 +216,7 @@ class MsaProcessorTest {
         eq("fasta"),
         isNull(),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
   }
 
@@ -244,8 +239,7 @@ class MsaProcessorTest {
         eq("phylip"),
         isNull(),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
@@ -260,8 +254,7 @@ class MsaProcessorTest {
         eq("phylip"),
         isNull(),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
   }
 
@@ -285,8 +278,7 @@ class MsaProcessorTest {
         ArgumentMatchers.any(),
         isNull(),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
@@ -352,8 +344,7 @@ class MsaProcessorTest {
             any(String.class),
             isNull(),
             any(String.class),
-            anyInt(),
-            anyInt()
+            any(SequenceStats.class)
           );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
@@ -392,8 +383,7 @@ class MsaProcessorTest {
         eq("clustal"),
         any(File.class),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
@@ -436,8 +426,7 @@ class MsaProcessorTest {
         eq("clustal"),
         any(File.class),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, customItolUrl, "protein");
@@ -492,8 +481,7 @@ class MsaProcessorTest {
         eq("clustal"),
         isNull(),
         any(String.class),
-        anyInt(),
-        anyInt()
+        any(SequenceStats.class)
       );
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");

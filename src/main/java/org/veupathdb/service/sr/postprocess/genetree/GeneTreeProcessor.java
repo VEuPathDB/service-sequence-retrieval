@@ -10,6 +10,7 @@ import org.veupathdb.service.sr.postprocess.MafftExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 import org.veupathdb.service.sr.postprocess.PostProcessor;
 import org.veupathdb.service.sr.postprocess.ProcessingContext;
+import org.veupathdb.service.sr.postprocess.SequenceStats;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class GeneTreeProcessor implements PostProcessor {
   private final GeneTreeOptions options;
   private final MafftExecutor mafftExecutor;
   private final FastTreeExecutor fastTreeExecutor;
+  private final String sequenceType;
 
   /**
    * Production constructor.
@@ -36,8 +38,9 @@ public class GeneTreeProcessor implements PostProcessor {
    * @param options Gene tree-specific options
    * @param config Application configuration
    * @param context Processing context (SYNC or ASYNC) - determines timeout
+   * @param sequenceType Sequence type being processed, for logging
    */
-  public GeneTreeProcessor(GeneTreeOptions options, SrtServiceOptions config, ProcessingContext context) {
+  public GeneTreeProcessor(GeneTreeOptions options, SrtServiceOptions config, ProcessingContext context, String sequenceType) {
     this(options,
         new MafftExecutor(
             config.getMafftBinaryPath(),
@@ -50,17 +53,23 @@ public class GeneTreeProcessor implements PostProcessor {
             context == ProcessingContext.ASYNC
                 ? config.getGeneTreeAsyncTimeoutSeconds()
                 : config.getGeneTreeSyncTimeoutSeconds()
-        )
+        ),
+        sequenceType
     );
   }
 
   /**
    * Constructor for testing with injectable executors.
    */
-  public GeneTreeProcessor(GeneTreeOptions options, MafftExecutor mafftExecutor, FastTreeExecutor fastTreeExecutor) {
+  public GeneTreeProcessor(
+      GeneTreeOptions options,
+      MafftExecutor mafftExecutor,
+      FastTreeExecutor fastTreeExecutor,
+      String sequenceType) {
     this.options = options;
     this.mafftExecutor = mafftExecutor;
     this.fastTreeExecutor = fastTreeExecutor;
+    this.sequenceType = sequenceType;
   }
 
   @Override
@@ -69,11 +78,13 @@ public class GeneTreeProcessor implements PostProcessor {
     File alignmentFile = File.createTempFile("alignment-", ".fasta");
     File treeFile = File.createTempFile("tree-", ".newick");
 
+    SequenceStats stats = SequenceStats.of(features);
+
     try {
       // Step 1: Run mafft for multiple sequence alignment
       LOG.info("Running mafft for multiple sequence alignment");
       try {
-        mafftExecutor.execute(fastaInput, alignmentFile);
+        mafftExecutor.execute(fastaInput, alignmentFile, sequenceType, stats);
       } catch (MafftExecutor.MafftException e) {
         throw new IOException("Mafft execution failed", e);
       }
@@ -81,7 +92,7 @@ public class GeneTreeProcessor implements PostProcessor {
       // Step 2: Run fasttree to generate phylogenetic tree
       LOG.info("Running fasttree to generate phylogenetic tree");
       try {
-        fastTreeExecutor.execute(alignmentFile, treeFile);
+        fastTreeExecutor.execute(alignmentFile, treeFile, sequenceType, stats);
       } catch (FastTreeExecutor.FastTreeException e) {
         throw new IOException("FastTree execution failed", e);
       }

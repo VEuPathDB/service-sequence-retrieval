@@ -3,6 +3,7 @@ package org.veupathdb.service.sr.postprocess;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gusdb.fgputil.Timer;
 import org.gusdb.fgputil.runtime.RuntimeUtil;
 
 import java.io.BufferedReader;
@@ -46,10 +47,17 @@ public class FastTreeExecutor {
    *
    * @param alignmentFile Input alignment file (from mafft)
    * @param outputFile Output file for the phylogenetic tree (Newick format)
+   * @param sequenceType Sequence type being aligned, for logging
+   * @param stats Sequence count/length stats for the sequences being aligned, for logging
    * @throws IOException if execution fails
    * @throws FastTreeException if fasttree returns non-zero exit code or times out
    */
-  public void execute(File alignmentFile, File outputFile) throws IOException, FastTreeException {
+  public void execute(
+      File alignmentFile,
+      File outputFile,
+      String sequenceType,
+      SequenceStats stats
+  ) throws IOException, FastTreeException {
 
     List<String> command = new ArrayList<>();
     command.add(fastTreeBinaryPath);
@@ -58,6 +66,7 @@ public class FastTreeExecutor {
 
     LOG.info("Executing fasttree: " + String.join(" ", command));
 
+    Timer timer = new Timer();
     StringBuilder stderrOutput = new StringBuilder();
     Optional<Integer> exitValue = RuntimeUtil.executeSubprocess(
         command,
@@ -78,6 +87,8 @@ public class FastTreeExecutor {
     if (exitValue.get() != 0) {
       throw new FastTreeException("FastTree failed with exit code " + exitValue.get() + ". Error output:\n" + stderrOutput);
     }
+    LOG.info("fasttree execution: sequenceType=" + sequenceType + " " + stats
+        + " wallTime=" + timer.getElapsedString());
     LOG.info("FastTree completed successfully");
   }
 

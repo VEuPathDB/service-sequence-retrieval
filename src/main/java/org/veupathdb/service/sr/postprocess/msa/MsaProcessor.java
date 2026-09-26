@@ -11,6 +11,7 @@ import org.veupathdb.service.sr.postprocess.ClustaloExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 import org.veupathdb.service.sr.postprocess.PostProcessor;
 import org.veupathdb.service.sr.postprocess.ProcessingContext;
+import org.veupathdb.service.sr.postprocess.SequenceStats;
 
 import jakarta.ws.rs.BadRequestException;
 import java.io.*;
@@ -99,18 +100,13 @@ public class MsaProcessor implements PostProcessor {
     try {
       // Run clustalo
       try {
-        int maxSeqLength = features.stream()
-            .mapToInt(f -> f.getEnd() - f.getStart() + 1)
-            .max()
-            .orElse(0);
         clustaloExecutor.execute(
             fastaInput,
             alignmentFile,
             clustaloFormat,
             guideTreeFile,
             sequenceType,
-            features.size(),
-            maxSeqLength
+            SequenceStats.of(features)
         );
       } catch (ClustaloExecutor.ClustaloException e) {
         throw new IOException("Clustalo execution failed", e);

@@ -9,6 +9,7 @@ import org.veupathdb.service.sr.generated.model.GeneTreeOptionsImpl;
 import org.veupathdb.service.sr.postprocess.FastTreeExecutor;
 import org.veupathdb.service.sr.postprocess.MafftExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
+import org.veupathdb.service.sr.postprocess.SequenceStats;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -57,7 +58,9 @@ class GeneTreeProcessorTest {
       return null;
     }).when(mockMafftExecutor).execute(
         any(File.class),
-        any(File.class)
+        any(File.class),
+        any(String.class),
+        any(SequenceStats.class)
     );
 
     // Mock fasttree execution to create tree file
@@ -68,11 +71,13 @@ class GeneTreeProcessorTest {
       return null;
     }).when(mockFastTreeExecutor).execute(
         any(File.class),
-        any(File.class)
+        any(File.class),
+        any(String.class),
+        any(SequenceStats.class)
     );
 
     GeneTreeProcessor processor = new GeneTreeProcessor(
-      options, mockMafftExecutor, mockFastTreeExecutor);
+      options, mockMafftExecutor, mockFastTreeExecutor, "protein");
     PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
 
     // Verify plain text output (Newick format)
@@ -89,8 +94,8 @@ class GeneTreeProcessorTest {
     assertTrue(output.contains("seq3"));
 
     // Verify both executors were called
-    verify(mockMafftExecutor).execute(eq(testInputFasta), any(File.class));
-    verify(mockFastTreeExecutor).execute(any(File.class), any(File.class));
+    verify(mockMafftExecutor).execute(eq(testInputFasta), any(File.class), any(String.class), any(SequenceStats.class));
+    verify(mockFastTreeExecutor).execute(any(File.class), any(File.class), any(String.class), any(SequenceStats.class));
   }
 
   @Test
@@ -99,16 +104,16 @@ class GeneTreeProcessorTest {
 
     // Mock mafft to throw exception
     doThrow(new MafftExecutor.MafftException("Mafft failed"))
-        .when(mockMafftExecutor).execute(any(File.class), any(File.class));
+        .when(mockMafftExecutor).execute(any(File.class), any(File.class), any(String.class), any(SequenceStats.class));
 
     GeneTreeProcessor processor = new GeneTreeProcessor(
-      options, mockMafftExecutor, mockFastTreeExecutor);
+      options, mockMafftExecutor, mockFastTreeExecutor, "protein");
 
     assertThrows(IOException.class, () -> processor.process(testInputFasta, emptyFeatures));
 
     // Verify mafft was called but fasttree was not
-    verify(mockMafftExecutor).execute(eq(testInputFasta), any(File.class));
-    verify(mockFastTreeExecutor, never()).execute(any(File.class), any(File.class));
+    verify(mockMafftExecutor).execute(eq(testInputFasta), any(File.class), any(String.class), any(SequenceStats.class));
+    verify(mockFastTreeExecutor, never()).execute(any(File.class), any(File.class), any(String.class), any(SequenceStats.class));
   }
 
   @Test
@@ -121,19 +126,19 @@ class GeneTreeProcessorTest {
       Files.writeString(outputFile.toPath(),
         ">seq1\nATGCATGC\n>seq2\nATGCTTGC\n>seq3\nATGCGGGC\n");
       return null;
-    }).when(mockMafftExecutor).execute(any(File.class), any(File.class));
+    }).when(mockMafftExecutor).execute(any(File.class), any(File.class), any(String.class), any(SequenceStats.class));
 
     // Mock fasttree to throw exception
     doThrow(new FastTreeExecutor.FastTreeException("FastTree failed"))
-        .when(mockFastTreeExecutor).execute(any(File.class), any(File.class));
+        .when(mockFastTreeExecutor).execute(any(File.class), any(File.class), any(String.class), any(SequenceStats.class));
 
     GeneTreeProcessor processor = new GeneTreeProcessor(
-      options, mockMafftExecutor, mockFastTreeExecutor);
+      options, mockMafftExecutor, mockFastTreeExecutor, "protein");
 
     assertThrows(IOException.class, () -> processor.process(testInputFasta, emptyFeatures));
 
     // Verify both executors were called
-    verify(mockMafftExecutor).execute(eq(testInputFasta), any(File.class));
-    verify(mockFastTreeExecutor).execute(any(File.class), any(File.class));
+    verify(mockMafftExecutor).execute(eq(testInputFasta), any(File.class), any(String.class), any(SequenceStats.class));
+    verify(mockFastTreeExecutor).execute(any(File.class), any(File.class), any(String.class), any(SequenceStats.class));
   }
 }

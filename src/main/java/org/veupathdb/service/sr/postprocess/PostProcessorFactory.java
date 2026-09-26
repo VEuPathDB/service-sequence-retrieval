@@ -47,7 +47,7 @@ public class PostProcessorFactory {
           throw new IllegalArgumentException(
               "geneTreeOptions required when postProcess is GENETREE");
         }
-        yield new GeneTreeProcessor(geneTreeOptions, options, context);
+        yield new GeneTreeProcessor(geneTreeOptions, options, context, sequenceType);
       }
     };
   }
