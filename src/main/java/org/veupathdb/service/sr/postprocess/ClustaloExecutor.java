@@ -2,6 +2,7 @@ package org.veupathdb.service.sr.postprocess;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.gusdb.fgputil.Timer;
 import org.gusdb.fgputil.runtime.RuntimeUtil;
 import org.veupathdb.service.sr.SrtServiceOptions;
 
@@ -81,6 +82,7 @@ public class ClustaloExecutor {
 
     LOG.info("Executing clustalo: " + String.join(" ", command));
 
+    Timer timer = new Timer();
     StringBuilder output = new StringBuilder();
     StringBuilder cpuInfo = new StringBuilder();
     Optional<Integer> exitValue = RuntimeUtil.executeSubprocess(
@@ -105,7 +107,8 @@ public class ClustaloExecutor {
     if (exitValue.get() != 0) {
       throw new ClustaloException("Clustalo failed with exit code " + exitValue.get() + ". Output:\n" + output);
     }
-    LOG.info("sequenceType=" + sequenceType + " numSeqs=" + numSeqs + " maxSeqLength=" + maxSeqLength
+    LOG.info("clustalo execution: sequenceType=" + sequenceType + " numSeqs=" + numSeqs
+        + " maxSeqLength=" + maxSeqLength + " wallTime=" + timer.getElapsedString()
         + " " + cpuInfo.toString().trim());
     LOG.info("Clustalo completed successfully");
   }
