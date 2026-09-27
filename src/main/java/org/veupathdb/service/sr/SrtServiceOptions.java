@@ -146,7 +146,7 @@ public class SrtServiceOptions extends Options {
     description = "Number or job workers that will consume jobs from the RabbitMQ job queue.",
     arity = "1")
   private Integer jobQueueWorkers;
-  private static final int DEFAULT_JOB_QUEUE_WORKERS = 5;
+  private static final int DEFAULT_JOB_QUEUE_WORKERS = 3;
 
   public String getJobQueueUsername() {
     return jobQueueUsername;
