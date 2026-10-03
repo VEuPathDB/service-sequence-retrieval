@@ -32,11 +32,21 @@ types:
 
   MsaFormat:
     type: string
-    enum: ['fasta', 'clustal', 'clustal_dnd', 'msf', 'phylip', 'selex', 'stockholm', 'vienna']
+    enum: ['fasta', 'clustal', 'clustal_guidetree', 'msf', 'phylip', 'selex', 'stockholm', 'vienna']
+
+  MsaAligner:
+    type: string
+    enum: ['clustalo', 'mafft']
 
   MsaOptions:
     additionalProperties: false
     properties:
+      aligner?:
+        type: MsaAligner
+        default: 'clustalo'
+        description: |
+          Alignment program. With 'mafft', only the formats 'clustal',
+          'clustal_guidetree', 'fasta' and 'phylip' are supported.
       format:
         type: MsaFormat
         default: 'clustal'

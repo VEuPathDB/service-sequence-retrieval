@@ -5,9 +5,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gusdb.fgputil.FormatUtil;
 import org.veupathdb.service.sr.SrtServiceOptions;
+import org.veupathdb.service.sr.generated.model.MsaAligner;
 import org.veupathdb.service.sr.generated.model.MsaFormat;
 import org.veupathdb.service.sr.generated.model.MsaOptions;
 import org.veupathdb.service.sr.postprocess.ClustaloExecutor;
+import org.veupathdb.service.sr.postprocess.MafftExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 import org.veupathdb.service.sr.postprocess.PostProcessor;
 import org.veupathdb.service.sr.postprocess.ProcessingContext;
@@ -29,7 +31,7 @@ import java.util.Set;
 /**
  * Unified post-processor for multiple sequence alignment.
  *
- * Runs clustal-omega with guide tree generation and optionally creates
+ * Runs clustal-omega or mafft with guide tree generation and optionally creates
  * HTML output with iTOL phylogenetic tree visualization.
  *
  * Supports both orthomcl and isolates MSA use cases.
@@ -39,10 +41,15 @@ public class MsaProcessor implements PostProcessor {
   private static final Logger LOG = LogManager.getLogger(MsaProcessor.class);
 
   private static final MsaFormat DEFAULT_FORMAT = MsaFormat.CLUSTAL;
+  private static final MsaAligner DEFAULT_ALIGNER = MsaAligner.CLUSTALO;
+  private static final Set<MsaFormat> MAFFT_FORMATS =
+      Set.of(MsaFormat.CLUSTAL, MsaFormat.CLUSTALGUIDETREE, MsaFormat.FASTA, MsaFormat.PHYLIP);
 
   private final MsaOptions options;
   private final MsaFormat format;
+  private final MsaAligner aligner;
   private final ClustaloExecutor clustaloExecutor;
+  private final MafftExecutor mafftExecutor;
   private final String itolBaseUrl;
   private final String sequenceType;
 
@@ -62,6 +69,12 @@ public class MsaProcessor implements PostProcessor {
                 ? config.getClustaloAsyncTimeoutSeconds()
                 : config.getClustaloSyncTimeoutSeconds()
         ),
+        new MafftExecutor(
+            config.getMafftBinaryPath(),
+            context == ProcessingContext.ASYNC
+                ? config.getClustaloAsyncTimeoutSeconds()
+                : config.getClustaloSyncTimeoutSeconds()
+        ),
         config.getItolBaseUrl(),
         sequenceType
     );
@@ -75,9 +88,23 @@ public class MsaProcessor implements PostProcessor {
       ClustaloExecutor clustaloExecutor,
       String itolBaseUrl,
       String sequenceType) {
+    this(options, clustaloExecutor, null, itolBaseUrl, sequenceType);
+  }
+
+  /**
+   * Constructor for testing with injectable aligner executors and iTOL URL.
+   */
+  public MsaProcessor(
+      MsaOptions options,
+      ClustaloExecutor clustaloExecutor,
+      MafftExecutor mafftExecutor,
+      String itolBaseUrl,
+      String sequenceType) {
     this.options = options;
     this.format = Optional.ofNullable(options.getFormat()).orElse(DEFAULT_FORMAT);
+    this.aligner = Optional.ofNullable(options.getAligner()).orElse(DEFAULT_ALIGNER);
     this.clustaloExecutor = clustaloExecutor;
+    this.mafftExecutor = mafftExecutor;
     this.itolBaseUrl = itolBaseUrl;
     this.sequenceType = sequenceType;
   }
@@ -86,30 +113,46 @@ public class MsaProcessor implements PostProcessor {
   public PostProcessResult process(File fastaInput, List<BEDFeature> features) throws IOException {
     // Validate metadata URL usage
     validateMetadataUrl();
+    validateAlignerFormat();
 
-    // Get format - use clustal for clustal_dnd since clustalo doesn't have that format
-    String clustaloFormat = format == MsaFormat.CLUSTALDND ? "clustal" : format.getValue();
+    // Get format - use clustal for clustal_guidetree since the aligners don't have that format
+    String alignerFormat = format == MsaFormat.CLUSTALGUIDETREE ? "clustal" : format.getValue();
 
     // Create temp files for output
     File alignmentFile = File.createTempFile("alignment-", ".txt");
-    // Only create guide tree file if needed for CLUSTALDND format
-    File guideTreeFile = (format == MsaFormat.CLUSTALDND)
+    // Only create guide tree file if needed for CLUSTALGUIDETREE format
+    File guideTreeFile = (format == MsaFormat.CLUSTALGUIDETREE)
         ? File.createTempFile("guidetree-", ".dnd")
         : null;
 
     try {
-      // Run clustalo
-      try {
-        clustaloExecutor.execute(
-            fastaInput,
-            alignmentFile,
-            clustaloFormat,
-            guideTreeFile,
-            sequenceType,
-            SequenceStats.of(features)
-        );
-      } catch (ClustaloExecutor.ClustaloException e) {
-        throw new IOException("Clustalo execution failed", e);
+      // Run the selected aligner
+      if (aligner == MsaAligner.MAFFT) {
+        try {
+          mafftExecutor.execute(
+              fastaInput,
+              alignmentFile,
+              alignerFormat,
+              guideTreeFile,
+              sequenceType,
+              SequenceStats.of(features)
+          );
+        } catch (MafftExecutor.MafftException e) {
+          throw new IOException("Mafft execution failed", e);
+        }
+      } else {
+        try {
+          clustaloExecutor.execute(
+              fastaInput,
+              alignmentFile,
+              alignerFormat,
+              guideTreeFile,
+              sequenceType,
+              SequenceStats.of(features)
+          );
+        } catch (ClustaloExecutor.ClustaloException e) {
+          throw new IOException("Clustalo execution failed", e);
+        }
       }
 
       // Generate response based on format
@@ -134,7 +177,7 @@ public class MsaProcessor implements PostProcessor {
         return new PostProcessResult("text/plain",
             os -> Files.copy(alignmentFile.toPath(), os),
             List.of(alignmentFile));
-      } else if (format == MsaFormat.CLUSTALDND) {
+      } else if (format == MsaFormat.CLUSTALGUIDETREE) {
         // HTML with iTOL tree link (complex streaming)
         return generateHtmlWithItol(alignmentFile, guideTreeFile);
       } else {
@@ -206,6 +249,18 @@ public class MsaProcessor implements PostProcessor {
   }
 
   /**
+   * Validate that the requested format is supported by the selected aligner.
+   */
+  private void validateAlignerFormat() {
+    if (aligner == MsaAligner.MAFFT && !MAFFT_FORMATS.contains(format)) {
+      throw new BadRequestException(
+          "Format '" + format.getValue() + "' is not supported with aligner 'mafft'. " +
+              "Supported formats: clustal, clustal_guidetree, fasta, phylip"
+      );
+    }
+  }
+
+  /**
    * Validate metadata URL usage - only allowed with clustal format.
    */
   private void validateMetadataUrl() {
@@ -219,7 +274,7 @@ public class MsaProcessor implements PostProcessor {
 
   /**
    * Generate HTML response with iTOL tree link and alignment.
-   * Used for clustal_dnd format. Streams HTML generation to avoid memory overhead.
+   * Used for clustal_guidetree format. Streams HTML generation to avoid memory overhead.
    */
   private PostProcessResult generateHtmlWithItol(File alignmentFile, File guideTreeFile)
       throws IOException {
@@ -288,7 +343,7 @@ public class MsaProcessor implements PostProcessor {
       try (BufferedReader reader = Files.newBufferedReader(alignmentFile.toPath(), StandardCharsets.UTF_8)) {
         String line;
         while ((line = reader.readLine()) != null) {
-          if (line.startsWith("CLUSTAL O")) {
+          if (line.startsWith("CLUSTAL")) {
             os.write(("<h3>" + FormatUtil.escapeHtml(line) + "</h3>\n").getBytes(StandardCharsets.UTF_8));
           } else {
             os.write((FormatUtil.escapeHtml(line) + "\n").getBytes(StandardCharsets.UTF_8));

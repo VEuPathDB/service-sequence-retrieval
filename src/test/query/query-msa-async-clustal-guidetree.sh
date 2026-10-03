@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Test asynchronous MSA with clustal_dnd format
+# Test asynchronous MSA with clustal_guidetree format
 # This will submit a job, wait for completion, and retrieve the results (including guide tree)
 
-echo "Submitting async MSA job with clustal_dnd format..."
+echo "Submitting async MSA job with clustal_guidetree format..."
 
 # Submit job
 JOB_RESPONSE=$(curl --silent -X POST "http://localhost:8080/sequences-async/protein" \
@@ -19,7 +19,7 @@ JOB_RESPONSE=$(curl --silent -X POST "http://localhost:8080/sequences-async/prot
     "basesPerLine": 60,
     "postProcess": "MSA",
     "msaOptions": {
-      "format": "clustal_dnd"
+      "format": "clustal_guidetree"
     }
   }')
 
@@ -69,10 +69,10 @@ echo "Available files:"
 FILES=$(curl --silent "http://localhost:8080/jobs/$JOB_ID/files")
 echo "$FILES" | grep -o '"[^"]*"' | tr -d '"'
 
-# Verify guide tree exists for clustal_dnd format
+# Verify guide tree exists for clustal_guidetree format
 if ! echo "$FILES" | grep -q "guidetree.dnd"; then
   echo ""
-  echo "ERROR: Guide tree file not found! CLUSTALDND format should produce a guide tree."
+  echo "ERROR: Guide tree file not found! CLUSTALGUIDETREE format should produce a guide tree."
   exit 1
 fi
 

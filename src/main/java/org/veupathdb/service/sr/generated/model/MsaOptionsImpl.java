@@ -6,10 +6,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
+    "aligner",
     "format",
     "metadataUrl"
 })
 public class MsaOptionsImpl implements MsaOptions {
+  @JsonProperty(
+      value = "aligner",
+      defaultValue = "clustalo"
+  )
+  private MsaAligner aligner;
+
   @JsonProperty(
       value = "format",
       defaultValue = "clustal"
@@ -18,6 +25,22 @@ public class MsaOptionsImpl implements MsaOptions {
 
   @JsonProperty("metadataUrl")
   private String metadataUrl;
+
+  @JsonProperty(
+      value = "aligner",
+      defaultValue = "clustalo"
+  )
+  public MsaAligner getAligner() {
+    return this.aligner;
+  }
+
+  @JsonProperty(
+      value = "aligner",
+      defaultValue = "clustalo"
+  )
+  public void setAligner(MsaAligner aligner) {
+    this.aligner = aligner;
+  }
 
   @JsonProperty(
       value = "format",

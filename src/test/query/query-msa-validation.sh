@@ -32,7 +32,7 @@ else
 fi
 
 echo ""
-echo "Test 2: metadataUrl with clustal_dnd format (should fail with 400)"
+echo "Test 2: metadataUrl with clustal_guidetree format (should fail with 400)"
 echo "===================================================================="
 RESPONSE=$(curl --silent -w "\nHTTP_STATUS:%{http_code}" -X POST "http://localhost:8080/sequences/protein" \
   -H 'Content-Type: application/json' \
@@ -45,7 +45,7 @@ RESPONSE=$(curl --silent -w "\nHTTP_STATUS:%{http_code}" -X POST "http://localho
     "basesPerLine": 60,
     "postProcess": "MSA",
     "msaOptions": {
-      "format": "clustal_dnd",
+      "format": "clustal_guidetree",
       "metadataUrl": "https://example.com/metadata.tsv"
     }
   }')
@@ -92,7 +92,7 @@ else
 fi
 
 echo ""
-echo "Test 4: clustal_dnd without metadataUrl (should succeed)"
+echo "Test 4: clustal_guidetree without metadataUrl (should succeed)"
 echo "========================================================="
 RESPONSE=$(curl --silent -w "\nHTTP_STATUS:%{http_code}" -X POST "http://localhost:8080/sequences/protein" \
   -H 'Content-Type: application/json' \
@@ -106,7 +106,7 @@ RESPONSE=$(curl --silent -w "\nHTTP_STATUS:%{http_code}" -X POST "http://localho
     "basesPerLine": 60,
     "postProcess": "MSA",
     "msaOptions": {
-      "format": "clustal_dnd"
+      "format": "clustal_guidetree"
     }
   }')
 
@@ -132,4 +132,33 @@ else
 fi
 
 echo ""
+echo "Test 5: mafft with stockholm format (should fail with 400)"
+echo "=========================================================="
+RESPONSE=$(curl --silent -w "\nHTTP_STATUS:%{http_code}" -X POST "http://localhost:8080/sequences/protein" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "features": [
+      {"contig": "EHI7A_117830-t26_1-p1", "start": 1, "end": 100, "query": "SEQ1"},
+      {"contig": "EHI7A_117830-t26_1-p1", "start": 50, "end": 150, "query": "SEQ2"}
+    ],
+    "deflineFormat": "QUERYONLY",
+    "basesPerLine": 60,
+    "postProcess": "MSA",
+    "msaOptions": {
+      "aligner": "mafft",
+      "format": "stockholm"
+    }
+  }')
+
+HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS" | cut -d':' -f2)
+BODY=$(echo "$RESPONSE" | sed '/HTTP_STATUS/d')
+
+if [ "$HTTP_STATUS" = "400" ]; then
+  echo "✓ PASS: Got expected 400 Bad Request"
+  echo "Error message: $BODY"
+else
+  echo "✗ FAIL: Expected 400, got $HTTP_STATUS"
+  echo "Response: $BODY"
+fi
+
 echo "All validation tests complete!"

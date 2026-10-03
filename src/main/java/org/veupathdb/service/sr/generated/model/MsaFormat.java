@@ -9,8 +9,8 @@ public enum MsaFormat {
   @JsonProperty("clustal")
   CLUSTAL("clustal"),
 
-  @JsonProperty("clustal_dnd")
-  CLUSTALDND("clustal_dnd"),
+  @JsonProperty("clustal_guidetree")
+  CLUSTALGUIDETREE("clustal_guidetree"),
 
   @JsonProperty("msf")
   MSF("msf"),

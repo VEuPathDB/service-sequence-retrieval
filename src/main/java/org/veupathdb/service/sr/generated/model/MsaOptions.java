@@ -8,6 +8,18 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 )
 public interface MsaOptions {
   @JsonProperty(
+      value = "aligner",
+      defaultValue = "clustalo"
+  )
+  MsaAligner getAligner();
+
+  @JsonProperty(
+      value = "aligner",
+      defaultValue = "clustalo"
+  )
+  void setAligner(MsaAligner aligner);
+
+  @JsonProperty(
       value = "format",
       defaultValue = "clustal"
   )
