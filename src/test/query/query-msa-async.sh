@@ -37,9 +37,9 @@ echo -e "\n=== Available Files ==="
 files=$(curl --silent "http://localhost:8080/jobs/$jobId/files")
 echo "$files" | jq
 
-# Check for unexpected guide tree (should only exist for clustal-dnd format)
+# Check for unexpected guide tree (should only exist for clustal_guidetree format)
 if echo "$files" | jq -e '.[] | select(. == "guidetree.dnd")' > /dev/null 2>&1; then
-  echo -e "\nERROR: Guide tree file found for non-CLUSTALDND format!"
+  echo -e "\nERROR: Guide tree file found for non-CLUSTALGUIDETREE format!"
   exit 1
 fi
 

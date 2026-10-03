@@ -66,12 +66,17 @@ types:
       - complete
       - failed
       - expired
+  MsaAligner:
+    type: string
+    enum:
+      - clustalo
+      - mafft
   MsaFormat:
     type: string
     enum:
       - fasta
       - clustal
-      - clustal_dnd
+      - clustal_guidetree
       - msf
       - phylip
       - selex
@@ -81,6 +86,12 @@ types:
     type: object
     additionalProperties: false
     properties:
+      aligner?:
+        description: |
+          Alignment program. With 'mafft', only the formats 'clustal',
+          'clustal_guidetree', 'fasta' and 'phylip' are supported.
+        type: MsaAligner
+        default: 'clustalo'
       format:
         type: MsaFormat
         default: 'clustal'

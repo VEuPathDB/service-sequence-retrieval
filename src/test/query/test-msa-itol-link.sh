@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Functional test for MSA with iTOL link feature
-# Tests that clustal_dnd format returns HTML with either:
+# Tests that clustal_guidetree format returns HTML with either:
 # - A valid iTOL hyperlink, OR
 # - An error message about invalid phylogenetic tree
 
@@ -19,7 +19,7 @@ RESPONSE=$(curl -s -X POST "http://localhost:8080/sequences/protein" \
     "basesPerLine": 60,
     "postProcess": "MSA",
     "msaOptions": {
-      "format": "clustal_dnd"
+      "format": "clustal_guidetree"
     }
   }')
 

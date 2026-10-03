@@ -9,7 +9,9 @@ import org.mockito.ArgumentMatchers;
 import org.veupathdb.service.sr.generated.model.MsaFormat;
 import org.veupathdb.service.sr.generated.model.MsaOptions;
 import org.veupathdb.service.sr.generated.model.MsaOptionsImpl;
+import org.veupathdb.service.sr.generated.model.MsaAligner;
 import org.veupathdb.service.sr.postprocess.ClustaloExecutor;
+import org.veupathdb.service.sr.postprocess.MafftExecutor;
 import org.veupathdb.service.sr.postprocess.PostProcessResult;
 import org.veupathdb.service.sr.postprocess.SequenceStats;
 
@@ -112,7 +114,7 @@ class MsaProcessorTest {
   @Test
   void testProcessClustalDndHtml() throws Exception {
     MsaOptions options = new MsaOptionsImpl();
-    options.setFormat(MsaFormat.CLUSTALDND);
+    options.setFormat(MsaFormat.CLUSTALGUIDETREE);
 
     // Mock clustalo execution
     doAnswer(invocation -> {
@@ -128,7 +130,7 @@ class MsaProcessorTest {
     }).when(mockExecutor).execute(
         any(File.class),
         any(File.class),
-        eq("clustal"),  // clustal_dnd uses clustal format
+        eq("clustal"),  // clustal_guidetree uses clustal format
         any(File.class),
         any(String.class),
         any(SequenceStats.class)
@@ -163,7 +165,7 @@ class MsaProcessorTest {
         StandardCharsets.UTF_8);
     assertFalse(treeContent.isEmpty());
 
-    // Verify clustalo was called with clustal format (not clustal_dnd)
+    // Verify clustalo was called with clustal format (not clustal_guidetree)
     verify(mockExecutor).execute(
         eq(testInputFasta),
         any(File.class),
@@ -317,7 +319,7 @@ class MsaProcessorTest {
   @Test
   void testMetadataUrlValidationWithClustalDndThrows() {
     MsaOptions options = new MsaOptionsImpl();
-    options.setFormat(MsaFormat.CLUSTALDND);
+    options.setFormat(MsaFormat.CLUSTALGUIDETREE);
     options.setMetadataUrl("https://example.com/metadata.tsv");
 
     MsaProcessor processor = new MsaProcessor(options, mockExecutor, "https://itol.embl.de", "protein");
@@ -360,7 +362,7 @@ class MsaProcessorTest {
   @Test
   void testHtmlEscaping() throws Exception {
     MsaOptions options = new MsaOptionsImpl();
-    options.setFormat(MsaFormat.CLUSTALDND);
+    options.setFormat(MsaFormat.CLUSTALGUIDETREE);
 
     // Create alignment with special characters
     String alignmentWithSpecialChars = "CLUSTAL O(1.2.4)\n\n" +
@@ -405,7 +407,7 @@ class MsaProcessorTest {
   @Test
   void testConfigurableItolUrl() throws Exception {
     MsaOptions options = new MsaOptionsImpl();
-    options.setFormat(MsaFormat.CLUSTALDND);
+    options.setFormat(MsaFormat.CLUSTALGUIDETREE);
 
     String customItolUrl = "https://custom-itol.example.com";
 
@@ -511,5 +513,43 @@ class MsaProcessorTest {
     int metadataPos = output.indexOf("SEQ1\tEntamoeba");
     int clustalPos = output.indexOf("CLUSTAL");
     assertTrue(metadataPos < clustalPos, "Metadata should appear before clustal alignment");
+  }
+
+  @Test
+  void testMafftAlignerUsesMafftExecutor() throws Exception {
+    MafftExecutor mockMafft = mock(MafftExecutor.class);
+    MsaOptions options = new MsaOptionsImpl();
+    options.setAligner(MsaAligner.MAFFT);
+    options.setFormat(MsaFormat.FASTA);
+
+    doAnswer(invocation -> {
+      Files.copy(mockAlignmentFasta.toPath(), ((File) invocation.getArgument(1)).toPath(),
+          StandardCopyOption.REPLACE_EXISTING);
+      return null;
+    }).when(mockMafft).execute(
+        any(File.class), any(File.class), eq("fasta"), isNull(),
+        any(String.class), any(SequenceStats.class));
+
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, mockMafft, "https://itol.embl.de", "protein");
+    PostProcessResult result = processor.process(testInputFasta, emptyFeatures);
+
+    assertEquals("text/plain", result.getContentType());
+    result.cleanup();
+    verify(mockMafft).execute(
+        eq(testInputFasta), any(File.class), eq("fasta"), isNull(),
+        any(String.class), any(SequenceStats.class));
+    verifyNoInteractions(mockExecutor);
+  }
+
+  @Test
+  void testMafftRejectsUnsupportedFormat() {
+    MsaOptions options = new MsaOptionsImpl();
+    options.setAligner(MsaAligner.MAFFT);
+    options.setFormat(MsaFormat.STOCKHOLM);
+
+    MsaProcessor processor = new MsaProcessor(
+        options, mockExecutor, mock(MafftExecutor.class), "https://itol.embl.de", "protein");
+
+    assertThrows(BadRequestException.class, () -> processor.process(testInputFasta, emptyFeatures));
   }
 }
