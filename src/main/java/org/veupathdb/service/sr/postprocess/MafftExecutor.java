@@ -154,7 +154,7 @@ public class MafftExecutor {
         Collections.emptyMap(),                   // no extra environment
         Optional.empty(),                         // input is read from file, not stdin
         line -> {
-          LOG.debug("mafft: " + line);            // log stderr at debug level
+          LOG.trace("mafft: " + line);            // log stderr at trace level
           stderrOutput.append(line).append("\n"); // collect output for logging on error
         },
         Optional.of(outputFile),                  // write to output file from stdout
