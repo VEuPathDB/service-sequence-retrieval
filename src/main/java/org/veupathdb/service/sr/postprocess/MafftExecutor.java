@@ -66,6 +66,7 @@ public class MafftExecutor {
     List<String> command = new ArrayList<>();
     command.add(mafftBinaryPath);
     command.add("--auto");
+    command.add("--quiet");
     command.add("--anysymbol");
     command.add(inputFile.getAbsolutePath());
     run(command, outputFile, sequenceType, stats);
@@ -119,15 +120,24 @@ public class MafftExecutor {
     return LEAF_INDEX_PREFIX.matcher(tree).replaceAll("$1");
   }
 
-  List<String> buildCommand(File inputFile, String outputFormat, boolean guideTree) {
+  List<String> buildCommand(File inputFile, String outputFormat, boolean guideTree) throws IOException {
     List<String> command = new ArrayList<>();
     command.add(mafftBinaryPath);
     command.add("--auto");
+    command.add("--quiet");
+    command.add("--anysymbol");
+    command.add("--preservecase");
     command.add("--thread");
     command.add(String.valueOf(THREADS));
     switch (outputFormat) {
-      case "clustal" -> command.add("--clustalout");
-      case "phylip" -> command.add("--phylipout");
+      case "clustal" -> {
+        addNameLength(command, inputFile);
+        command.add("--clustalout");
+      }
+      case "phylip" -> {
+        addNameLength(command, inputFile);
+        command.add("--phylipout");
+      }
       case "fasta" -> { }  // mafft's default output
       default -> throw new IllegalArgumentException("Unsupported mafft output format: " + outputFormat);
     }
@@ -136,6 +146,31 @@ public class MafftExecutor {
     }
     command.add(inputFile.getAbsolutePath());
     return command;
+  }
+
+  /**
+   * mafft truncates sequence names in clustal and phylip output unless told how long they are
+   * (clustalo sizes this automatically). Use the longest header line in the input.
+   */
+  private static void addNameLength(List<String> command, File inputFile) throws IOException {
+    int longest = longestNameLength(inputFile);
+    if (longest > 0) {
+      command.add("--namelength");
+      command.add(String.valueOf(longest));
+    }
+  }
+
+  static int longestNameLength(File fastaFile) throws IOException {
+    int longest = 0;
+    try (BufferedReader reader = Files.newBufferedReader(fastaFile.toPath(), StandardCharsets.UTF_8)) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        if (line.startsWith(">")) {
+          longest = Math.max(longest, line.substring(1).strip().length());
+        }
+      }
+    }
+    return longest;
   }
 
   private void run(

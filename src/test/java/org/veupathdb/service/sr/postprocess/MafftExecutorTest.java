@@ -74,20 +74,22 @@ class MafftExecutorTest {
   }
 
   @Test
-  void testBuildCommandClustalWithGuideTree() {
+  void testBuildCommandClustalWithGuideTree() throws IOException {
     MafftExecutor executor = new MafftExecutor("/usr/bin/mafft", 300);
     assertEquals(
-        List.of("/usr/bin/mafft", "--auto", "--thread", "4", "--clustalout", "--treeout",
+        List.of("/usr/bin/mafft", "--auto", "--quiet", "--anysymbol", "--preservecase", "--thread", "4", "--namelength", "4", "--clustalout", "--treeout",
             inputFile.getAbsolutePath()),
         executor.buildCommand(inputFile, "clustal", true));
   }
 
   @Test
-  void testBuildCommandPhylipAndFasta() {
+  void testBuildCommandPhylipAndFasta() throws IOException {
     MafftExecutor executor = new MafftExecutor("/usr/bin/mafft", 300);
-    assertTrue(executor.buildCommand(inputFile, "phylip", false).contains("--phylipout"));
+    var phylip = executor.buildCommand(inputFile, "phylip", false);
+    assertTrue(phylip.contains("--phylipout"));
+    assertTrue(phylip.containsAll(List.of("--namelength", "4")));
     assertEquals(
-        List.of("/usr/bin/mafft", "--auto", "--thread", "4", inputFile.getAbsolutePath()),
+        List.of("/usr/bin/mafft", "--auto", "--quiet", "--anysymbol", "--preservecase", "--thread", "4", inputFile.getAbsolutePath()),
         executor.buildCommand(inputFile, "fasta", false));
   }
 
@@ -108,5 +110,12 @@ class MafftExecutorTest {
   @Test
   void testStripLeafIndexPrefixesKeepsRestOfName() {
     assertEquals("(A_1:0.1,12_B:0.2);", MafftExecutor.stripLeafIndexPrefixes("(1_A_1:0.1,2_12_B:0.2);"));
+  }
+
+  @Test
+  void testLongestNameLengthUsesWholeHeaderLine() throws IOException {
+    File f = tempDir.resolve("names.fasta").toFile();
+    Files.writeString(f.toPath(), ">short\nACGT\n>a_much_longer_name contig:1-10(+)\nACGT\n>mid_name\nACGT\n");
+    assertEquals("a_much_longer_name contig:1-10(+)".length(), MafftExecutor.longestNameLength(f));
   }
 }
