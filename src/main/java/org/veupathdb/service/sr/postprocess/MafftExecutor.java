@@ -31,6 +31,7 @@ public class MafftExecutor {
   private static final Logger LOG = LogManager.getLogger(MafftExecutor.class);
 
   private static final int THREADS = 4;
+  private static final int NAME_LENGTH_PADDING = 3;
   private static final Pattern LEAF_INDEX_PREFIX = Pattern.compile("(?<=[(,])(\\s*)\\d+_");
 
   private final String mafftBinaryPath;
@@ -150,13 +151,14 @@ public class MafftExecutor {
 
   /**
    * mafft truncates sequence names in clustal and phylip output unless told how long they are
-   * (clustalo sizes this automatically). Use the longest header line in the input.
+   * (clustalo sizes this automatically). Use the longest header line in the input plus some
+   * extra whitespace.
    */
   private static void addNameLength(List<String> command, File inputFile) throws IOException {
     int longest = longestNameLength(inputFile);
     if (longest > 0) {
       command.add("--namelength");
-      command.add(String.valueOf(longest));
+      command.add(String.valueOf(longest + NAME_LENGTH_PADDING));
     }
   }
 

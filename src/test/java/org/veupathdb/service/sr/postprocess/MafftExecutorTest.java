@@ -77,7 +77,8 @@ class MafftExecutorTest {
   void testBuildCommandClustalWithGuideTree() throws IOException {
     MafftExecutor executor = new MafftExecutor("/usr/bin/mafft", 300);
     assertEquals(
-        List.of("/usr/bin/mafft", "--auto", "--quiet", "--anysymbol", "--preservecase", "--thread", "4", "--namelength", "4", "--clustalout", "--treeout",
+        List.of("/usr/bin/mafft", "--auto", "--quiet", "--anysymbol", "--preservecase", "--thread", "4",
+            "--namelength", "7", "--clustalout", "--treeout",
             inputFile.getAbsolutePath()),
         executor.buildCommand(inputFile, "clustal", true));
   }
@@ -87,9 +88,10 @@ class MafftExecutorTest {
     MafftExecutor executor = new MafftExecutor("/usr/bin/mafft", 300);
     var phylip = executor.buildCommand(inputFile, "phylip", false);
     assertTrue(phylip.contains("--phylipout"));
-    assertTrue(phylip.containsAll(List.of("--namelength", "4")));
+    assertTrue(phylip.containsAll(List.of("--namelength", "7")));
     assertEquals(
-        List.of("/usr/bin/mafft", "--auto", "--quiet", "--anysymbol", "--preservecase", "--thread", "4", inputFile.getAbsolutePath()),
+        List.of("/usr/bin/mafft", "--auto", "--quiet", "--anysymbol", "--preservecase", "--thread", "4",
+            inputFile.getAbsolutePath()),
         executor.buildCommand(inputFile, "fasta", false));
   }
 
