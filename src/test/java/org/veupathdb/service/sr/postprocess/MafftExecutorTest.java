@@ -118,4 +118,37 @@ class MafftExecutorTest {
     Files.writeString(f.toPath(), ">short\nACGT\n>a_much_longer_name contig:1-10(+)\nACGT\n>mid_name\nACGT\n");
     assertEquals("a_much_longer_name contig:1-10(+)".length(), MafftExecutor.longestNameLength(f));
   }
+
+  private static final String LOC = ":Pf3D7_11_v3:1282966-1306696:f";
+
+  @Test
+  void testCommonLocationSuffix() {
+    assertEquals(LOC, MafftExecutor.commonLocationSuffix(List.of("OHP111" + LOC, "XY2" + LOC)));
+  }
+
+  @Test
+  void testCommonLocationSuffixStrainEndingTheSameWayStopsAtColon() {
+    // strains share a trailing "1" but the suffix must start at a ':'
+    assertEquals(LOC, MafftExecutor.commonLocationSuffix(List.of("OHP111" + LOC, "XY1" + LOC)));
+  }
+
+  @Test
+  void testCommonLocationSuffixStrainContainingColon() {
+    assertEquals(LOC, MafftExecutor.commonLocationSuffix(List.of("A:1" + LOC, "B:2" + LOC)));
+  }
+
+  @Test
+  void testCommonLocationSuffixNoneWhenSingleOrNoColon() {
+    assertEquals("", MafftExecutor.commonLocationSuffix(List.of("OHP111" + LOC)));
+    assertEquals("", MafftExecutor.commonLocationSuffix(List.of("abc", "xbc")));
+  }
+
+  @Test
+  void testStripCommonLocationSuffixRewritesHeaders() throws IOException {
+    File in = tempDir.resolve("dna.fasta").toFile();
+    File out = tempDir.resolve("dna-stripped.fasta").toFile();
+    Files.writeString(in.toPath(), ">OHP111" + LOC + " extra\nACGT\n>XY2" + LOC + "\nAC\nGT\n");
+    MafftExecutor.stripCommonLocationSuffix(in, out);
+    assertEquals(">OHP111 extra\nACGT\n>XY2\nAC\nGT\n", Files.readString(out.toPath()));
+  }
 }

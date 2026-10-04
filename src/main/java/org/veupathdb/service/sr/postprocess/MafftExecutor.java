@@ -31,6 +31,7 @@ public class MafftExecutor {
   private static final Logger LOG = LogManager.getLogger(MafftExecutor.class);
 
   private static final int THREADS = 4;
+  private static final String DNASEQ_TYPE = "dnaseq";
   private static final Pattern LEAF_INDEX_PREFIX = Pattern.compile("(?<=[(,])(\\s*)\\d+_");
 
   private final String mafftBinaryPath;
@@ -92,11 +93,21 @@ public class MafftExecutor {
       String sequenceType,
       SequenceStats stats
   ) throws IOException, MafftException {
-    List<String> command = buildCommand(inputFile, outputFormat, guideTreeFile != null);
+    // dnaseq IDs are "<strain>:<location>", with the same location on every sequence.
+    // Drop the location from the names mafft sees so alignment and tree labels are the strain.
+    File mafftInput = inputFile;
+    boolean tempInput = DNASEQ_TYPE.equalsIgnoreCase(sequenceType);
+    if (tempInput) {
+      mafftInput = File.createTempFile("mafft-input-", ".fasta");
+    }
 
     // mafft writes the guide tree next to the input file as "<input>.tree"
-    File mafftTreeFile = new File(inputFile.getAbsolutePath() + ".tree");
+    File mafftTreeFile = new File(mafftInput.getAbsolutePath() + ".tree");
     try {
+      if (tempInput) {
+        stripCommonLocationSuffix(inputFile, mafftInput);
+      }
+      List<String> command = buildCommand(mafftInput, outputFormat, guideTreeFile != null);
       run(command, outputFile, sequenceType, stats);
       if (guideTreeFile != null) {
         if (!mafftTreeFile.exists()) {
@@ -108,7 +119,76 @@ public class MafftExecutor {
       }
     } finally {
       Files.deleteIfExists(mafftTreeFile.toPath());
+      if (tempInput) {
+        Files.deleteIfExists(mafftInput.toPath());
+      }
     }
+  }
+
+  /**
+   * Write a copy of a FASTA file with the location removed from each sequence ID. IDs look like
+   * "strain:location" (e.g. "OHP111:Pf3D7_11_v3:1282966-1306696:f") where the location is shared
+   * by every sequence, so it is found as the longest common ID suffix beginning at a ':'.
+   * Strain names may themselves contain ':'. Text after the ID on a header line is kept.
+   */
+  static void stripCommonLocationSuffix(File fastaIn, File fastaOut) throws IOException {
+    List<String> lines = Files.readAllLines(fastaIn.toPath(), StandardCharsets.UTF_8);
+    List<String> ids = new ArrayList<>();
+    for (String line : lines) {
+      if (line.startsWith(">")) {
+        ids.add(headerId(line));
+      }
+    }
+    String suffix = commonLocationSuffix(ids);
+    List<String> out = new ArrayList<>(lines.size());
+    for (String line : lines) {
+      if (line.startsWith(">") && !suffix.isEmpty()) {
+        String id = headerId(line);
+        line = ">" + id.substring(0, id.length() - suffix.length()) + line.substring(1 + id.length());
+      }
+      out.add(line);
+    }
+    Files.write(fastaOut.toPath(), out, StandardCharsets.UTF_8);
+  }
+
+  private static String headerId(String headerLine) {
+    int end = 1;
+    while (end < headerLine.length() && !Character.isWhitespace(headerLine.charAt(end))) {
+      end++;
+    }
+    return headerLine.substring(1, end);
+  }
+
+  /**
+   * @return the longest suffix shared by all IDs that starts with ':' and leaves every ID
+   *     non-empty, or "" if there is none (including when there are fewer than two IDs)
+   */
+  static String commonLocationSuffix(List<String> ids) {
+    if (ids.size() < 2) {
+      return "";
+    }
+    String first = ids.get(0);
+    int common = first.length();
+    for (String id : ids) {
+      int n = 0;
+      while (n < common && n < id.length()
+          && id.charAt(id.length() - 1 - n) == first.charAt(first.length() - 1 - n)) {
+        n++;
+      }
+      common = n;
+    }
+    String suffix = first.substring(first.length() - common);
+    int colon = suffix.indexOf(':');
+    if (colon < 0) {
+      return "";
+    }
+    suffix = suffix.substring(colon);
+    for (String id : ids) {
+      if (id.length() <= suffix.length()) {
+        return "";
+      }
+    }
+    return suffix;
   }
 
   /**
