@@ -72,6 +72,7 @@ public class SequenceRetrievalService implements SequencesSequenceType {
       try {
         return handlePostProcessing(preparedResponse, entity, sequenceType);
       } catch (IOException e) {
+        LOG.error("Post-processing failed", e);
         throw new RuntimeException("Post-processing failed", e);
       }
     }

@@ -203,6 +203,9 @@ public class MafftExecutor {
       throw new MafftException("Mafft execution timed out after " + timeoutSeconds + " seconds");
     }
     if (exitValue.get() != 0) {
+      // the output is carried by the exception, which callers log with its cause
+      LOG.error("mafft failed: sequenceType=" + sequenceType + " " + stats
+          + " exitCode=" + exitValue.get());
       throw new MafftException("Mafft failed with exit code " + exitValue.get() + ". Error output:\n" + stderrOutput);
     }
     LOG.info("mafft execution: sequenceType=" + sequenceType + " " + stats

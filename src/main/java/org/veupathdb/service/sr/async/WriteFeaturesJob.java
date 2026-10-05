@@ -1,5 +1,7 @@
 package org.veupathdb.service.sr.async;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.veupathdb.lib.compute.platform.job.JobContext;
 import org.veupathdb.lib.compute.platform.job.JobExecutor;
@@ -28,6 +30,8 @@ import htsjdk.tribble.bed.BEDFeature;
 import org.veupathdb.service.sr.generated.model.DeflineFormat;
 
 public class WriteFeaturesJob implements JobExecutor {
+
+  private static final Logger LOG = LogManager.getLogger(WriteFeaturesJob.class);
 
   private static final DeflineFormat DEFAULT_DEFLINE_FORMAT = DeflineFormat.REGIONONLY;
   private static final int DEFAULT_BASES_PER_LINE = 60;
@@ -107,6 +111,7 @@ public class WriteFeaturesJob implements JobExecutor {
     try {
       tempFasta = File.createTempFile("job-fasta-", ".fasta");
     } catch (IOException e) {
+      LOG.error("Failed to create temp file", e);
       return JobResult.failure("Failed to create temp file: " + e.getMessage());
     }
 
@@ -114,6 +119,7 @@ public class WriteFeaturesJob implements JobExecutor {
       try (FileOutputStream fos = new FileOutputStream(tempFasta)) {
         preparedResponse.stream().accept(fos);
       } catch (IOException e) {
+        LOG.error("Failed to write FASTA to temp file", e);
         return JobResult.failure("Failed to write FASTA to temp file: " + e.getMessage());
       }
 
@@ -135,6 +141,7 @@ public class WriteFeaturesJob implements JobExecutor {
         try (FileInputStream fis = new FileInputStream(tempFasta)) {
           jobContext.getWorkspace().write("output", fis);
         } catch (IOException e) {
+          LOG.error("Failed to write FASTA to workspace", e);
           return JobResult.failure("Failed to write FASTA to workspace: " + e.getMessage());
         }
         return JobResult.success("output");
@@ -178,6 +185,8 @@ public class WriteFeaturesJob implements JobExecutor {
             result.writeContent(pos);
             pos.close();
           } catch (IOException e) {
+            // thrown on a separate thread, where nothing else would log it
+            LOG.error("Failed to stream post-processing output", e);
             throw new RuntimeException("Failed to stream post-processing output", e);
           } finally {
             result.cleanup();
@@ -211,8 +220,11 @@ public class WriteFeaturesJob implements JobExecutor {
 
       return JobResult.success(outputFiles);
     } catch (IOException e) {
+      // the job library does not surface the failure message, so log the full cause chain here
+      LOG.error("Post-processing failed", e);
       return JobResult.failure("Post-processing failed: " + e.getMessage());
     } catch (Exception e) {
+      LOG.error("Unexpected error during post-processing", e);
       return JobResult.failure("Unexpected error during post-processing: " + e.getMessage());
     }
   }

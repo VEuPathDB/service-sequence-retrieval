@@ -103,6 +103,9 @@ public class ClustaloExecutor {
       throw new ClustaloException("Clustalo execution timed out after " + timeoutSeconds + " seconds");
     }
     if (exitValue.get() != 0) {
+      // the output is carried by the exception, which callers log with its cause
+      LOG.error("clustalo failed: sequenceType=" + sequenceType + " " + stats
+          + " exitCode=" + exitValue.get());
       throw new ClustaloException("Clustalo failed with exit code " + exitValue.get() + ". Output:\n" + output);
     }
     LOG.info("clustalo execution: sequenceType=" + sequenceType + " " + stats

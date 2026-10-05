@@ -357,6 +357,7 @@ class MsaProcessorTest {
     });
 
     assertTrue(exception.getMessage().contains("Clustalo execution failed"));
+    assertTrue(exception.getCause().getMessage().contains("Clustalo failed with exit code 1"));
   }
 
   @Test
@@ -539,6 +540,26 @@ class MsaProcessorTest {
         eq(testInputFasta), any(File.class), eq("fasta"), isNull(),
         any(String.class), any(SequenceStats.class));
     verifyNoInteractions(mockExecutor);
+  }
+
+  @Test
+  void testMafftExecutionFailureKeepsMafftOutputAsCause() throws Exception {
+    MafftExecutor mockMafft = mock(MafftExecutor.class);
+    MsaOptions options = new MsaOptionsImpl();
+    options.setAligner(MsaAligner.MAFFT);
+    options.setFormat(MsaFormat.CLUSTAL);
+
+    doThrow(new MafftExecutor.MafftException("Mafft failed with exit code 1. Error output:\nbad input"))
+        .when(mockMafft).execute(
+            any(File.class), any(File.class), any(String.class), isNull(),
+            any(String.class), any(SequenceStats.class));
+
+    MsaProcessor processor = new MsaProcessor(options, mockExecutor, mockMafft, "https://itol.embl.de", "protein");
+
+    Exception exception = assertThrows(IOException.class, () -> processor.process(testInputFasta, emptyFeatures));
+
+    assertTrue(exception.getMessage().contains("Mafft execution failed"));
+    assertTrue(exception.getCause().getMessage().contains("bad input"));
   }
 
   @Test
