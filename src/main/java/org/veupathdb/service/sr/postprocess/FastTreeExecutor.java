@@ -61,8 +61,9 @@ public class FastTreeExecutor {
 
     List<String> command = new ArrayList<>();
     command.add(fastTreeBinaryPath);
+    command.add("-nosupport");
     command.add("-mlnni");
-    command.add("4");
+    command.add("2");
 
     LOG.info("Executing fasttree: " + String.join(" ", command));
 

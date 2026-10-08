@@ -49,7 +49,8 @@ public class MafftExecutor {
   }
 
   /**
-   * Execute mafft to perform multiple sequence alignment.
+   * Execute mafft to perform multiple sequence alignment for the GENETREE pipeline.
+   * Uses {@code --retree 2 --amino} rather than {@code --auto} to speed up alignment.
    *
    * @param inputFile Input FASTA file
    * @param outputFile Output file for alignment
@@ -66,7 +67,9 @@ public class MafftExecutor {
   ) throws IOException, MafftException {
     List<String> command = new ArrayList<>();
     command.add(mafftBinaryPath);
-    command.add("--auto");
+    command.add("--retree");
+    command.add("2");
+    command.add("--amino");
     command.add("--quiet");
     command.add("--anysymbol");
     command.add(inputFile.getAbsolutePath());
