@@ -295,7 +295,8 @@ public class SrtServiceOptions extends Options {
 
   @Option(
     names = "--msa-sync-max-sequences",
-    defaultValue = "${env:MSA_SYNC_MAX_SEQUENCES}",
+    defaultValue = "100",
+    // defaultValue = "${env:MSA_SYNC_MAX_SEQUENCES}",
     description = "Maximum number of sequences allowed for synchronous MSA requests",
     arity = "1")
   private Integer msaSyncMaxSequences;
@@ -386,7 +387,8 @@ public class SrtServiceOptions extends Options {
 
   @Option(
     names = "--genetree-sync-max-sequences",
-    defaultValue = "${env:GENETREE_SYNC_MAX_SEQUENCES}",
+    defaultValue = "100",
+    //defaultValue = "${env:GENETREE_SYNC_MAX_SEQUENCES}",
     description = "Maximum number of sequences allowed for synchronous gene tree requests",
     arity = "1")
   private Integer geneTreeSyncMaxSequences;
