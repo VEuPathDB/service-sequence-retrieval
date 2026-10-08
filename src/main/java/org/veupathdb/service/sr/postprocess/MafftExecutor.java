@@ -72,6 +72,8 @@ public class MafftExecutor {
     command.add("--amino");
     command.add("--quiet");
     command.add("--anysymbol");
+    command.add("--thread");
+    command.add(String.valueOf(THREADS));
     command.add(inputFile.getAbsolutePath());
     run(command, outputFile, sequenceType, stats);
   }
