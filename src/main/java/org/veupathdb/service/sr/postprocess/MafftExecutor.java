@@ -75,7 +75,7 @@ public class MafftExecutor {
     command.add("--thread");
     command.add(String.valueOf(THREADS));
     command.add(inputFile.getAbsolutePath());
-    run(command, outputFile, sequenceType, stats);
+    run(command, outputFile, sequenceType, stats, "genetree ");
   }
 
   /**
@@ -103,7 +103,7 @@ public class MafftExecutor {
     // mafft writes the guide tree next to the input file as "<input>.tree"
     File mafftTreeFile = new File(inputFile.getAbsolutePath() + ".tree");
     try {
-      run(command, outputFile, sequenceType, stats);
+	run(command, outputFile, sequenceType, stats, "");
       if (guideTreeFile != null) {
         if (!mafftTreeFile.exists()) {
           throw new MafftException("Mafft did not produce a guide tree file");
@@ -184,10 +184,11 @@ public class MafftExecutor {
       List<String> command,
       File outputFile,
       String sequenceType,
-      SequenceStats stats
+      SequenceStats stats,
+      String treeMaybe
   ) throws IOException, MafftException {
 
-    LOG.info("Executing mafft: " + String.join(" ", command));
+    LOG.info("Executing " + treeMaybe +"mafft: " + String.join(" ", command));
 
     Timer timer = new Timer();
     StringBuilder stderrOutput = new StringBuilder();
@@ -196,7 +197,7 @@ public class MafftExecutor {
         Collections.emptyMap(),                   // no extra environment
         Optional.empty(),                         // input is read from file, not stdin
         line -> {
-          LOG.trace("mafft: " + line);            // log stderr at trace level
+          LOG.trace(treeMaybe + "mafft: " + line);            // log stderr at trace level
           stderrOutput.append(line).append("\n"); // collect output for logging on error
         },
         Optional.of(outputFile),                  // write to output file from stdout
@@ -205,17 +206,17 @@ public class MafftExecutor {
     );
 
     if (exitValue.isEmpty()) {
-      throw new MafftException("Mafft execution timed out after " + timeoutSeconds + " seconds");
+      throw new MafftException(treeMaybe + "mafft execution timed out after " + timeoutSeconds + " seconds");
     }
     if (exitValue.get() != 0) {
       // the output is carried by the exception, which callers log with its cause
-      LOG.error("mafft failed: sequenceType=" + sequenceType + " " + stats
+      LOG.error(treeMaybe + "mafft failed: sequenceType=" + sequenceType + " " + stats
           + " exitCode=" + exitValue.get());
       throw new MafftException("Mafft failed with exit code " + exitValue.get() + ". Error output:\n" + stderrOutput);
     }
-    LOG.info("mafft execution: sequenceType=" + sequenceType + " " + stats
+    LOG.info(treeMaybe + "mafft execution: sequenceType=" + sequenceType + " " + stats
         + " wallTime=" + timer.getElapsedString());
-    LOG.info("Mafft completed successfully");
+    LOG.info(treeMaybe + "mafft completed successfully");
   }
 
   /**
