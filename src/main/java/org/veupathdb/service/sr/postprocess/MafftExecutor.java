@@ -103,7 +103,7 @@ public class MafftExecutor {
     // mafft writes the guide tree next to the input file as "<input>.tree"
     File mafftTreeFile = new File(inputFile.getAbsolutePath() + ".tree");
     try {
-	run(command, outputFile, sequenceType, stats, "");
+      run(command, outputFile, sequenceType, stats, "dna ");
       if (guideTreeFile != null) {
         if (!mafftTreeFile.exists()) {
           throw new MafftException("Mafft did not produce a guide tree file");
@@ -215,7 +215,7 @@ public class MafftExecutor {
       throw new MafftException("Mafft failed with exit code " + exitValue.get() + ". Error output:\n" + stderrOutput);
     }
     LOG.info(treeMaybe + "mafft execution: sequenceType=" + sequenceType + " " + stats
-        + " wallTime=" + timer.getElapsedString());
+        + " wallTimeSec=" + String.format("%.1f", timer.getElapsed() / 1000.0));
     LOG.info(treeMaybe + "mafft completed successfully");
   }
 

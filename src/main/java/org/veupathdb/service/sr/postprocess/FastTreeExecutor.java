@@ -89,7 +89,7 @@ public class FastTreeExecutor {
       throw new FastTreeException("FastTree failed with exit code " + exitValue.get() + ". Error output:\n" + stderrOutput);
     }
     LOG.info("fasttree execution: sequenceType=" + sequenceType + " " + stats
-        + " wallTime=" + timer.getElapsedString());
+        + " wallTimeSec=" + String.format("%.1f", timer.getElapsed() / 1000.0));
     LOG.info("FastTree completed successfully");
   }
 

@@ -109,7 +109,8 @@ public class ClustaloExecutor {
       throw new ClustaloException("Clustalo failed with exit code " + exitValue.get() + ". Output:\n" + output);
     }
     LOG.info("clustalo execution: sequenceType=" + sequenceType + " " + stats
-        + " wallTime=" + timer.getElapsedString() + " " + cpuInfo.toString().trim());
+        + " wallTimeSec=" + String.format("%.1f", timer.getElapsed() / 1000.0)
+        + " " + cpuInfo.toString().trim());
     LOG.info("Clustalo completed successfully");
   }
 
